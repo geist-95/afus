@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #FAF9F6;
+  --foreground: #000000;
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --color-primary: #663399;
+  --color-secondary: #C495E5;
+  --color-accent: #FAF9F6;
+  --color-warning: #E8583F;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-accent: var(--color-accent);
+  --color-warning: var(--color-warning);
+}
+
+@utility arabic-frame {
+  -webkit-mask-image: 
+    radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
+    radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
+    radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
+    radial-gradient(circle at 100% 100%, transparent 16px, black 16.5px);
+  -webkit-mask-position: top left, top right, bottom left, bottom right;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 51% 51%;
+  mask-image: 
+    radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
+    radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
+    radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
+    radial-gradient(circle at 100% 100%, transparent 16px, black 16.5px);
+  mask-position: top left, top right, bottom left, bottom right;
+  mask-repeat: no-repeat;
+  mask-size: 51% 51%;
+}
+
+@utility arabic-frame-top {
+  -webkit-mask-image: 
+    radial-gradient(circle at 0 0, transparent 24px, black 24.5px),
+    radial-gradient(circle at 100% 0, transparent 24px, black 24.5px),
+    linear-gradient(black, black),
+    linear-gradient(black, black);
+  -webkit-mask-position: top left, top right, bottom left, bottom right;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 51% 51%;
+  mask-image: 
+    radial-gradient(circle at 0 0, transparent 24px, black 24.5px),
+    radial-gradient(circle at 100% 0, transparent 24px, black 24.5px),
+    linear-gradient(black, black),
+    linear-gradient(black, black);
+  mask-position: top left, top right, bottom left, bottom right;
+  mask-repeat: no-repeat;
+  mask-size: 51% 51%;
+}
+
+/* Global resets and styling rules */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure all buttons are fully rounded */
+button, 
+.button, 
+a[role="button"], 
+input[type="submit"], 
+input[type="button"] {
+  border-radius: 9999px !important;
+}
+
+/* Ensure input fields, select dropdowns, and textareas are slightly rounded (e.g. 8px) and not fully rounded */
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select,
+textarea {
+  border-radius: 8px !important;
+}
+
+/* Ensure images have slightly rounded borders */
+img {
+  border-radius: 8px !important;
+}
+
+/* Ensure headers use main font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: #000000;
+}
+
+/* Override all letter-spacing classes to normal */
+* {
+  letter-spacing: normal !important;
+}
+
+/* RTL layout fixes */
+[dir="rtl"] {
+  text-align: right;
+}
+
