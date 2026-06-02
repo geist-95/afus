@@ -3,6 +3,7 @@ import NavBar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -62,6 +63,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
           {/* Flat Footer */}
           <Footer lang={lang} />
+          <SpeedInsights />
         </CartProvider>
         </WishlistProvider>
       </body>

@@ -4,6 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+export const isPlaceholder = supabaseUrl.includes('placeholder');
 
 export const staticCategories = [
   { id: 'cat_jewelry', slug: 'jewelry', name: { en: 'Jewelry', fr: 'Bijoux', ar: 'مجوهرات' } },
@@ -325,6 +326,7 @@ export const mockNotifications = [
 
 export async function fetchShops() {
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase.from('shops').select('*');
     if (error || !data || data.length === 0) throw error || new Error('empty shops');
     return data;
@@ -336,6 +338,7 @@ export async function fetchShops() {
 
 export async function fetchShopBySlug(slug: string) {
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase.from('shops').select('*').eq('slug', slug).single();
     if (error || !data) throw error || new Error('shop not found');
     return data;
@@ -348,6 +351,7 @@ export async function fetchShopBySlug(slug: string) {
 export async function fetchProducts() {
   let list: any[] = [];
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
       .select('*, shops(*), product_variants(*)');
@@ -388,6 +392,7 @@ export async function fetchProducts() {
 
 export async function fetchProductByNumericId(numericId: number) {
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
       .select('*, shops(*), product_variants(*)')
@@ -431,6 +436,7 @@ export async function fetchOrders(shopId?: string, buyerId?: string) {
   }
 
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     let query = supabase.from('orders').select('*, order_items(*, products(*))');
     if (shopId) query = query.eq('shop_id', shopId);
     if (buyerId) query = query.eq('buyer_id', buyerId);
@@ -480,6 +486,7 @@ export async function placeCODCheckout(checkoutData: {
   items: Array<{ product_id: string; variant_id: string | null; quantity: number }>;
 }) {
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase.rpc('place_cod_checkout', {
       p_buyer_id: checkoutData.buyer_id || null,
       p_customer_name: checkoutData.customer_name,
@@ -543,6 +550,7 @@ export async function updateAmanaMilestone(orderId: string, milestone: {
   order_status?: string;
 }) {
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     // 1. Get current history log
     const { data: order } = await supabase.from('orders').select('amana_history').eq('id', orderId).single();
     const history = order?.amana_history || [];
@@ -658,6 +666,7 @@ export async function createProductListing(productData: {
   }
 
   try {
+    if (isPlaceholder) throw new Error('placeholder');
     const slugTranslations = {
       en: (productData.title_translations.en || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       fr: (productData.title_translations.fr || 'produit').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
