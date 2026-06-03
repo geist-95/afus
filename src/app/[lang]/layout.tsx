@@ -25,12 +25,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   // Translated system labels
   const labels: Record<string, Record<string, string>> = {
     en: {
-      promo: "free amana shipping across morocco for all cash on delivery orders",
+      promo: "Free amana shipping across morocco for all cash on delivery orders",
       footerDesc: "afus is a modern two-sided multi-vendor marketplace connecting moroccan artisans directly with clients. fully optimized for cash on delivery (cod) markets using al barid bank amana tracking.",
       rights: "all rights reserved.",
     },
     fr: {
-      promo: "livraison amana gratuite partout au maroc pour toutes les commandes en paiement à la livraison",
+      promo: "Livraison amana gratuite partout au maroc pour toutes les commandes en paiement à la livraison",
       footerDesc: "afus est une place de marché moderne reliant directement les artisans marocains aux clients. entièrement optimisée pour le paiement à la livraison (cod) avec suivi amana d'al barid bank.",
       rights: "tous droits réservés.",
     },
@@ -49,7 +49,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <WishlistProvider>
         <CartProvider>
           {/* Promotional Banner */}
-          <div className="bg-black text-white text-center py-2 px-4 text-xs tracking-wider lowercase border-b border-black font-mono">
+          <div className="bg-[#f5e9fb] text-[#673399] text-center py-2.5 px-4 text-xs font-semibold">
             {t.promo}
           </div>
 

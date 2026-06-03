@@ -1,0 +1,72 @@
+import Image from "next/image";
+import Link from "next/link";
+
+const categories = [
+  { label: "Jewelry",     href: "/categories/jewelry",     img: "/categories/jewelry.png" },
+  { label: "Art",         href: "/categories/art",         img: "/categories/11.png"      },
+  { label: "Beauty",      href: "/categories/beauty",      img: "/categories/beauty.png"  },
+  { label: "Clothing",    href: "/categories/clothing",    img: "/categories/clothing.png"},
+  { label: "Bags",        href: "/categories/bags",        img: "/categories/bags.png"    },
+  { label: "Home Living", href: "/categories/home-living", img: "/categories/home.png"    },
+  { label: "Baby",        href: "/categories/baby",        img: "/categories/baby.png"    },
+];
+
+export default function BrowseByCategory({ lang }: { lang: string }) {
+  return (
+    <div className="max-w-[100rem] mx-auto px-2 md:px-12 py-2 md:py-8">
+      <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">
+        Browse by Category
+      </h2>
+
+      {/* Mobile: horizontal scroll */}
+      <div className="md:hidden">
+        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2" style={{ scrollbarWidth: "none" }}>
+          {categories.map((cat) => (
+            <Link
+              key={cat.label}
+              href={`/${lang}${cat.href}`}
+              className="flex flex-col items-center gap-2 flex-shrink-0"
+            >
+              <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+                <Image
+                  alt={cat.label}
+                  src={cat.img}
+                  width={64}
+                  height={64}
+                  className="object-contain w-full h-full"
+                />
+              </div>
+              <span className="text-xs font-medium text-neutral-900 text-center whitespace-nowrap">
+                {cat.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: evenly distributed row */}
+      <div className="hidden md:flex items-center justify-between w-full max-w-7xl mx-auto gap-1">
+        {categories.map((cat) => (
+          <Link
+            key={cat.label}
+            href={`/${lang}${cat.href}`}
+            className="flex flex-col items-center gap-2 lg:gap-3 hover:opacity-80 transition-opacity flex-1"
+          >
+            <div className="relative w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center flex-shrink-0">
+              <Image
+                alt={cat.label}
+                src={cat.img}
+                width={112}
+                height={112}
+                className="object-contain w-full h-full"
+              />
+            </div>
+            <span className="text-xs md:text-sm font-medium text-neutral-900 text-center whitespace-nowrap">
+              {cat.label}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}

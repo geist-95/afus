@@ -200,21 +200,22 @@ export default function NavBar({ lang }: NavBarProps) {
   }
 
   return (
-    <header className="border-b border-primary/20 bg-white sticky top-0 z-50">
+    <header className="border-b border-primary/10 bg-white sticky top-0 z-50">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link
           href={`/${lang}`}
-          className="text-3xl font-extrabold tracking-tight text-black hover:text-black/80 flex-shrink-0"
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          afus
+          <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none" />
+          <img src="/logo/afus.svg" alt="afus" className="h-5 object-contain !rounded-none" />
         </Link>
 
         {/* Search Bar */}
         <div className="flex-1 mx-4 hidden sm:block">
           <div className="relative flex items-center">
             <input
-              type="text"
+              type="search"
               placeholder={t.searchPlaceholder}
               className="w-full border border-neutral-300 rounded-full pl-6 pr-14 py-2.5 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
             />
@@ -383,7 +384,7 @@ export default function NavBar({ lang }: NavBarProps) {
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setLangOpen(!langOpen)}
-              className="border border-neutral-200 rounded-lg px-3 py-1.5 flex items-center gap-1 bg-white text-xs font-semibold text-black hover:bg-neutral-50 cursor-pointer shadow-sm"
+              className="border border-neutral-200 rounded-lg px-3 py-1.5 flex items-center gap-1 bg-white text-xs font-semibold text-black hover:bg-neutral-50 cursor-pointer"
             >
               <GlobeAltIcon />
               <span className="uppercase">{lang}</span>
@@ -391,7 +392,7 @@ export default function NavBar({ lang }: NavBarProps) {
             </button>
 
             {langOpen && (
-              <div className="absolute right-0 top-full mt-1.5 min-w-[6rem] bg-white border border-neutral-200 rounded-md z-50 p-1 flex flex-col gap-0.5 shadow-md animate-in fade-in-80 duration-100">
+              <div className="absolute right-0 top-full mt-1.5 min-w-[6rem] bg-white border border-neutral-200 rounded-md z-50 p-1 flex flex-col gap-0.5 animate-in fade-in-80 duration-100">
                 <Link
                   href="/en"
                   onClick={() => setLangOpen(false)}
@@ -460,17 +461,22 @@ export default function NavBar({ lang }: NavBarProps) {
               setCatCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
             }}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            className="w-full px-8 py-3 flex gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden min-w-0 text-xs font-semibold text-black"
+            className="w-full py-3 flex items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden min-w-0 text-xs font-semibold text-black"
           >
-            {staticCategories.map((cat) => (
+            {staticCategories.map((cat, index) => [
               <Link
                 key={cat.slug}
                 href={`/${lang}/category/${cat.slug}`}
-                className="hover:text-black/70 transition-colors whitespace-nowrap capitalize"
+                className="hover:text-black/70 transition-colors whitespace-nowrap capitalize flex-shrink-0"
               >
                 {cat.name[lang as 'en' | 'fr' | 'ar'] || cat.name.en}
-              </Link>
-            ))}
+              </Link>,
+              index < staticCategories.length - 1 && (
+                <span key={`sep-${cat.slug}`} className="text-black/30 select-none text-[10px] flex-shrink-0">
+                  ✦
+                </span>
+              )
+            ])}
           </div>
 
           {/* Right fade + chevron */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ProductCard } from './ProductGrid';
 import { staticCategories } from '@/lib/supabase';
@@ -12,24 +12,8 @@ interface DynamicTrailsClientProps {
 }
 
 export default function DynamicTrailsClient({ products, shops, lang }: DynamicTrailsClientProps) {
-  const [selectedCity, setSelectedCity] = useState('Marrakech');
   const [recentCategoryId, setRecentCategoryId] = useState<string | null>(null);
   const [allProducts, setAllProducts] = useState<any[]>(products);
-  const cityProductsScrollRef = useRef<HTMLDivElement>(null);
-  const [cityCanScrollLeft, setCityCanScrollLeft] = useState(false);
-  const [cityCanScrollRight, setCityCanScrollRight] = useState(true);
-
-  useEffect(() => {
-    const el = cityProductsScrollRef.current;
-    if (el) {
-      el.scrollLeft = 0;
-      setCityCanScrollLeft(false);
-      // Wait for DOM layout to stabilize to evaluate scrollability
-      setTimeout(() => {
-        setCityCanScrollRight(el.scrollWidth > el.clientWidth);
-      }, 100);
-    }
-  }, [selectedCity]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -157,11 +141,6 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 8);
 
-  const cityProducts = allProducts.filter((p) => {
-    const shop = shops.find((s) => s.id === p.shop_id);
-    return shop?.merchant_city?.toLowerCase() === selectedCity.toLowerCase();
-  }).slice(0, 16);
-
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
   const recentCategoryName = matchedCategory?.name[lang as 'en'|'fr'|'ar'] || matchedCategory?.name.en || "";
   const recentCategoryProducts = allProducts.filter((p) => {
@@ -176,126 +155,14 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
     return isDirectMatch || legacyMappedId === recentCategoryId;
   }).slice(0, 8);
 
-  const citiesList = [
-    { name: 'Marrakech', icon: '🏺', specialty: { en: 'Brass & rugs', fr: 'Laiton & tapis', ar: 'النحاس والسجاد' } },
-    { name: 'Fes', icon: '🎨', specialty: { en: 'Pottery & tanning', fr: 'Poterie & cuir tanné', ar: 'الفخار ودباغة الجلود' } },
-    { name: 'Casablanca', icon: '🧵', specialty: { en: 'Caftans & fashion', fr: 'Caftans & mode', ar: 'القفطان والموضة' } },
-    { name: 'Rabat', icon: '🪵', specialty: { en: 'Wood & embroidery', fr: 'Bois & broderie', ar: 'الخشب والتطريز' } },
-    { name: 'Salé', icon: '🧺', specialty: { en: 'Woven baskets & clay', fr: 'Vannerie & argile', ar: 'السلال الطينية' } },
-    { name: 'Essaouira', icon: '🌊', specialty: { en: 'Thuya wood carving', fr: 'Bois de thuya sculpté', ar: 'خشب العرعر المزخرف' } },
-    { name: 'Agadir', icon: '🧴', specialty: { en: 'Argan oil crafts', fr: 'Produits d\'argan', ar: 'منتجات الأركان الطبيعية' } },
-    { name: 'Tangier', icon: '⚓', specialty: { en: 'Northern weaving', fr: 'Tissage du nord', ar: 'النسيج الشمالي التقليدي' } },
-  ];
+
 
   const newestStores = [...shops].slice(0, 6);
 
   return (
     <div className="space-y-16">
       
-      {/* 1. Explore Cities Trail */}
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-black">{t.exploreCities}</h2>
-          <p className="text-xs text-neutral-500">{t.exploreCitiesSub}</p>
-        </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
-          {citiesList.map((city) => (
-            <button
-              key={city.name}
-              onClick={() => setSelectedCity(city.name)}
-              className={`flex-shrink-0 snap-start flex items-center gap-3 border px-4 py-3 rounded-full transition-all text-xs font-semibold shadow-sm cursor-pointer ${
-                selectedCity.toLowerCase() === city.name.toLowerCase()
-                  ? 'border-neutral-900 bg-neutral-900 text-white'
-                  : 'border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-800'
-              }`}
-            >
-              <span className="text-lg">{city.icon}</span>
-              <div className="text-left">
-                <span className="block font-bold">{city.name}</span>
-                <span className={`block text-[9px] ${
-                  selectedCity.toLowerCase() === city.name.toLowerCase() ? 'text-white/70' : 'text-neutral-400'
-                }`}>
-                  {city.specialty[lang as 'en'|'fr'|'ar'] || city.specialty.en}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {/* 2. Your City Trail */}
-      <section className="space-y-4 relative">
-        <div>
-          <h2 className="text-xl font-bold text-black">
-            {t.yourCity} ({selectedCity})
-          </h2>
-          <p className="text-xs text-neutral-500">
-            {t.yourCitySub} {selectedCity}
-          </p>
-        </div>
-
-        {cityProducts.length > 0 ? (
-          <div className="relative">
-            {/* Left fade + chevron */}
-            {cityCanScrollLeft && (
-              <div
-                onClick={() => cityProductsScrollRef.current?.scrollBy({ left: -320, behavior: 'smooth' })}
-                className="absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1 pr-6 bg-gradient-to-r from-[#FAF9F6] via-[#FAF9F6]/90 to-transparent pointer-events-auto cursor-pointer"
-                aria-label="Scroll products left"
-              >
-                <div className="w-9 h-9 border border-neutral-300 bg-[#FAF9F6] flex items-center justify-center shadow-sm hover:bg-neutral-100 transition-colors rounded-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-black/75">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                  </svg>
-                </div>
-              </div>
-            )}
-
-            {/* Scrollable row */}
-            <div
-              ref={cityProductsScrollRef}
-              onScroll={() => {
-                const el = cityProductsScrollRef.current;
-                if (!el) return;
-                setCityCanScrollLeft(el.scrollLeft > 4);
-                setCityCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-              }}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              className="w-full flex gap-6 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden snap-x min-w-0"
-            >
-              {cityProducts.map((p) => {
-                const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-                return (
-                  <div key={p.id} className="w-[280px] flex-shrink-0 snap-start">
-                    <ProductCard product={p} shop={shop} lang={lang} t={t} />
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Right fade + chevron */}
-            {cityCanScrollRight && (
-              <div
-                onClick={() => cityProductsScrollRef.current?.scrollBy({ left: 320, behavior: 'smooth' })}
-                className="absolute right-0 top-0 bottom-0 z-10 flex items-center pr-1 pl-6 bg-gradient-to-l from-[#FAF9F6] via-[#FAF9F6]/90 to-transparent pointer-events-auto cursor-pointer"
-                aria-label="Scroll products right"
-              >
-                <div className="w-9 h-9 border border-neutral-300 bg-[#FAF9F6] flex items-center justify-center shadow-sm hover:bg-neutral-100 transition-colors rounded-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4 text-black/75">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="border border-neutral-100 rounded-xl p-8 text-center text-xs text-neutral-400 bg-neutral-50/50">
-            {t.emptyProducts}
-          </div>
-        )}
-      </section>
-
-      {/* 3. New Items Trail */}
+      {/* New Items Trail */}
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-bold text-black">{t.newItems}</h2>

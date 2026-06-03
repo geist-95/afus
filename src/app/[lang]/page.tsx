@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { fetchProducts, fetchShops } from "@/lib/supabase";
 import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";
+import HomeCarousel from "@/components/ui/HomeCarousel";
+import BrowseByCategory from "@/components/ui/BrowseByCategory";
+import CitiesSection from "@/components/ui/CitiesSection";
 
 interface PageProps {
   params: Promise<{ lang: string }> | { lang: string };
@@ -33,15 +36,16 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <div className="space-y-16">
-      {/* Editorial Hero Banner */}
-      <section className="bg-primary/5 rounded-3xl p-8 md:p-16 flex flex-col justify-center items-start text-left min-h-[350px]">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-black max-w-3xl leading-tight">
-          {t.heroTitle}
-        </h1>
-        <p className="mt-6 text-sm md:text-base font-medium text-black/75 max-w-2xl leading-relaxed">
-          {t.heroSubtitle}
-        </p>
-      </section>
+      {/* Editorial Hero Banner / Carousel — breaks out of main padding to go full-width */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <HomeCarousel />
+      </div>
+
+      {/* Browse by Category */}
+      <BrowseByCategory lang={lang} />
+
+      {/* Cities */}
+      <CitiesSection lang={lang} />
 
       {/* Dynamic Trails & FAQ section */}
       <DynamicTrailsClient products={products} shops={shops} lang={lang} />
