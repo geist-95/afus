@@ -40,8 +40,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
       icon: <Zap className="w-3.5 h-3.5 fill-green-400" />
     }
   ];
-
-  const toggleGroup = (group: string) => {
+  const toggleGroup = (group: keyof typeof openGroups) => {
     setOpenGroups(prev => ({ ...prev, [group]: !prev[group] }));
   };
 
