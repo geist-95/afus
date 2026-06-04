@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { fetchProducts, fetchShops } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+import { SimpleProductCard } from "@/components/ui/ProductGrid";
 
 interface PageProps {
   params: Promise<{ lang: string; slug: string }> | { lang: string; slug: string };
@@ -71,7 +72,7 @@ const CITIES: Record<string, {
       fr: "La Colombe Blanche, médina classée à l'UNESCO, célébrée pour ses artisanats andalou-marocains, textiles et musique.",
       ar: "الحمامة البيضاء، مدينة عتيقة في قائمة اليونسكو مشهورة بحرف أندلسية-مغربية، نسيج وموسيقى.",
     },
-    image: "/cities-2/tetouan.jpg",
+    image: "/cities-2/hamama.jpg",
     color: "#1a1200",
     textColor: "#f5e6b0",
   },
@@ -98,34 +99,49 @@ export default async function CityPage({ params }: PageProps) {
 
   return (
     <div className="space-y-12">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-neutral-500">
+        <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
+        <span>/</span>
+        <Link href={`/${lang}/cities`} className="hover:text-black transition-colors">Cities</Link>
+        <span>/</span>
+        <span className="text-black font-medium">{city.name}</span>
+      </nav>
+
       {/* Hero */}
       <div
-        className="relative w-full rounded-3xl overflow-hidden min-h-[340px] flex items-end arabic-frame"
+        className="relative w-full arabic-frame overflow-hidden min-h-[220px] md:min-h-[300px] flex flex-row"
         style={{ backgroundColor: city.color }}
       >
-        <Image
-          src={city.image}
-          alt={city.name}
-          fill
-          className="object-cover opacity-40"
-          priority
-        />
-        <div className="relative z-10 px-10 pb-12 pt-32">
-          <h1
-            className="text-5xl md:text-7xl font-bold !font-ariom"
-            style={{ color: city.textColor }}
-          >
-            {city.name}
-          </h1>
+        {/* Left: solid bg + text */}
+        <div className="flex-1 flex flex-col justify-center px-8 md:px-14 py-10 z-10">
           <p
-            className="mt-2 text-2xl md:text-3xl"
+            className="mb-2 text-xl md:text-2xl"
             style={{ color: city.textColor, fontFamily: "'Noto Sans Tifinagh', sans-serif", opacity: 0.8 }}
           >
             {city.tifinagh}
           </p>
-          <p className="mt-4 max-w-2xl text-base md:text-lg" style={{ color: city.textColor, opacity: 0.85 }}>
+          <h1
+            className="text-4xl md:text-6xl font-bold !font-ariom leading-tight"
+            style={{ color: city.textColor }}
+          >
+            {city.name}
+          </h1>
+          <p className="mt-4 max-w-sm text-sm md:text-base" style={{ color: city.textColor, opacity: 0.85 }}>
             {desc}
           </p>
+        </div>
+
+        {/* Right: image */}
+        <div className="relative w-[45%] md:w-[42%] flex-shrink-0">
+          <Image
+            src={city.image}
+            alt={city.name}
+            fill
+            className="object-cover banner-img"
+            sizes="(max-width: 768px) 45vw, 42vw"
+            quality={90}
+          />
         </div>
       </div>
 
@@ -139,39 +155,8 @@ export default async function CityPage({ params }: PageProps) {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {displayProducts.map((product: any) => {
-              const title =
-                product.title_translations?.[lang] ||
-                product.title_translations?.en ||
-                "Artisan product";
-              const price = product.base_price_mad;
-              const img = product.media_gallery?.[0];
-              const numId = product.numeric_id;
-              const slug_ =
-                product.slug_translations?.[lang] ||
-                product.slug_translations?.en ||
-                "product";
-              return (
-                <Link
-                  key={product.id}
-                  href={`/${lang}/listing/${numId}/${slug_}`}
-                  className="group block"
-                >
-                  <div className="aspect-square relative overflow-hidden rounded-xl bg-neutral-100 arabic-frame">
-                    {img ? (
-                      <Image
-                        src={img}
-                        alt={title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-neutral-400 text-4xl">🧶</div>
-                    )}
-                  </div>
-                  <p className="mt-2 text-sm font-medium text-black line-clamp-2">{title}</p>
-                  <p className="text-sm font-bold text-primary">{price} MAD</p>
-                </Link>
-              );
+              const shop = allShops.find((s: any) => s.id === product.shop_id) || allShops[0];
+              return <SimpleProductCard key={product.id} product={product} lang={lang} shop={shop} />;
             })}
           </div>
         )}

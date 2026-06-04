@@ -7,6 +7,7 @@ import { getActiveSession, logoutUser, UserSession } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useWishlist } from '@/lib/wishlist';
 import { staticCategories } from '@/lib/supabase';
+import LoginModal from './LoginModal';
 
 // Outline SVG Icon Components (matching Etsy design style)
 function MagnifyingGlassIcon() {
@@ -29,6 +30,14 @@ function ShoppingBagIcon() {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5">
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+    </svg>
+  );
+}
+
+function ShoppingCartIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
     </svg>
   );
 }
@@ -114,6 +123,7 @@ export default function NavBar({ lang }: NavBarProps) {
   const catScrollRef = useRef<HTMLDivElement>(null);
   const [catCanScrollLeft, setCatCanScrollLeft] = useState(false);
   const [catCanScrollRight, setCatCanScrollRight] = useState(true);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadSession() {
@@ -217,9 +227,9 @@ export default function NavBar({ lang }: NavBarProps) {
             <input
               type="search"
               placeholder={t.searchPlaceholder}
-              className="w-full border border-neutral-300 rounded-full pl-6 pr-14 py-2.5 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
+              className="w-full border border-neutral-300 rounded-full pl-6 pr-12 py-3 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
             />
-            <button className="absolute right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
+            <button className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
               <MagnifyingGlassIcon />
             </button>
           </div>
@@ -280,7 +290,7 @@ export default function NavBar({ lang }: NavBarProps) {
               </Link>
 
               <Link href={`/${lang}/cart`} className="flex items-center text-black hover:text-black/80 relative" title={t.cart}>
-                <ShoppingBagIcon />
+                <ShoppingCartIcon />
                 {totalItems > 0 && (
                   <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {totalItems}
@@ -358,19 +368,19 @@ export default function NavBar({ lang }: NavBarProps) {
           ) : (
             <>
               <Link
-                href={`/${lang}/login`}
-                className="hover:text-black flex items-center gap-1.5 text-black"
+                href={`/${lang}/seller/onboarding`}
+                className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block"
               >
-                <KeyIcon />
+                {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : 'Sell on afus'}
               </Link>
-              <Link
-                href={`/${lang}/signup`}
-                className="bg-primary text-white px-4 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[11px]"
+              <button
+                onClick={() => setLoginModalOpen(true)}
+                className="bg-primary text-white px-5 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[12px] whitespace-nowrap"
               >
-                {t.signup}
-              </Link>
+                {t.login}
+              </button>
               <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:text-black/80 relative ml-1" title={t.cart}>
-                <ShoppingBagIcon />
+                <ShoppingCartIcon />
                 {totalItems > 0 && (
                   <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                     {totalItems}
@@ -493,6 +503,7 @@ export default function NavBar({ lang }: NavBarProps) {
           )}
         </div>
       </div>
+      <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} lang={lang} />
     </header>
   );
 }

@@ -119,19 +119,21 @@ export default function AddProductPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-8 font-mono text-xs lowercase max-w-3xl mx-auto">
+    <div className="space-y-8 max-w-4xl mx-auto">
       {/* Title */}
-      <div className="border-b border-black pb-4 flex justify-between items-baseline">
+      <div className="border-b border-neutral-200 pb-4 flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-black lowercase">
-            create new listing
+          <h1 className="text-2xl font-bold tracking-tight text-neutral-800">
+            Create New Listing
           </h1>
-          <p className="text-neutral-500 text-xs mt-1">
-            add a new craft product to the marketplace listing catalog
+          <p className="text-neutral-500 text-sm mt-1">
+            Add a new craft product to the marketplace listing catalog
           </p>
         </div>
-        <Link href={`/${lang}/dashboard/orders`} className="border border-black px-3 py-1.5 hover:bg-neutral-50">
-          💼 view orders dashboard
+        <Link href={`/${lang}/dashboard/orders`}>
+          <button className="inline-flex items-center justify-center whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border bg-white hover:bg-neutral-100 hover:text-black h-10 px-4 rounded-lg border-neutral-200 font-semibold text-sm">
+            View Orders ↗
+          </button>
         </Link>
       </div>
 
@@ -139,9 +141,9 @@ export default function AddProductPage({ params }: PageProps) {
         {/* Form Column */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Category Finder / Suggestion Box */}
-          <div className="border border-black p-4 bg-neutral-100 space-y-3">
-            <div className="space-y-1">
-              <label className="block text-neutral-600 font-bold">find category by description (2-3 keywords)</label>
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 space-y-4">
+            <div className="space-y-2">
+              <label className="block text-neutral-800 font-semibold text-sm">Find category by description (2-3 keywords)</label>
               <input
                 type="text"
                 placeholder="e.g. wool berber carpet, silver ring, leather bag..."
@@ -155,13 +157,13 @@ export default function AddProductPage({ params }: PageProps) {
                     setSuggestions([]);
                   }
                 }}
-                className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
               />
             </div>
             
             {suggestions.length > 0 && (
-              <div className="space-y-2">
-                <span className="font-bold text-[10px] text-neutral-500 uppercase tracking-wider block">suggested categories (click to select):</span>
+              <div className="space-y-3 pt-2">
+                <span className="font-bold text-xs text-neutral-500 uppercase tracking-wider block">Suggested categories (click to select):</span>
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((s, idx) => (
                     <button
@@ -173,7 +175,7 @@ export default function AddProductPage({ params }: PageProps) {
                         setSuggestionQuery('');
                         setSuggestions([]);
                       }}
-                      className="border border-black px-3 py-1.5 bg-white hover:bg-black hover:text-white transition-colors text-[10px] font-mono normal-case"
+                      className="border border-neutral-200 px-4 py-2 bg-white hover:bg-neutral-50 hover:border-neutral-300 transition-colors text-sm rounded-lg font-medium"
                     >
                       💡 {s.categoryName} &gt; {s.subcategoryName}
                     </button>
@@ -184,9 +186,9 @@ export default function AddProductPage({ params }: PageProps) {
           </div>
 
           {/* Categories and price */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border border-black p-4 bg-neutral-50">
-            <div className="space-y-1">
-              <label className="block text-neutral-600 font-bold">category</label>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white p-6 rounded-xl border border-neutral-200">
+            <div className="space-y-2">
+              <label className="block text-neutral-800 font-semibold text-sm">Category</label>
               <select
                 value={selectedCatId}
                 onChange={(e) => {
@@ -195,7 +197,7 @@ export default function AddProductPage({ params }: PageProps) {
                   const firstSub = taxonomy.find(c => c.id === catId)?.subcategories[0]?.id || '';
                   setSelectedSubcatId(firstSub);
                 }}
-                className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs normal-case"
+                className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
               >
                 {taxonomy.map(cat => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -203,12 +205,12 @@ export default function AddProductPage({ params }: PageProps) {
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-neutral-600 font-bold">subcategory</label>
+            <div className="space-y-2">
+              <label className="block text-neutral-800 font-semibold text-sm">Subcategory</label>
               <select
                 value={selectedSubcatId}
                 onChange={(e) => setSelectedSubcatId(e.target.value)}
-                className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs normal-case"
+                className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
               >
                 {taxonomy.find(c => c.id === selectedCatId)?.subcategories.map(sub => (
                   <option key={sub.id} value={sub.id}>{sub.name}</option>
@@ -216,138 +218,138 @@ export default function AddProductPage({ params }: PageProps) {
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="block text-neutral-600 font-bold">base price (mad)</label>
+            <div className="space-y-2">
+              <label className="block text-neutral-800 font-semibold text-sm">Base Price (MAD)</label>
               <input
                 type="number"
                 required
                 placeholder="e.g. 350"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
               />
             </div>
           </div>
 
           {/* Sales Promotion (Optional) */}
-          <div className="border border-black p-4 bg-red-50/20 space-y-4">
-            <span className="font-bold border-b border-black pb-0.5 block text-red-800">
-              🏷️ sales promotion (optional)
+          <div className="bg-red-50/30 p-6 rounded-xl border border-red-100 space-y-4">
+            <span className="font-bold border-b border-red-200 pb-2 block text-red-800 text-sm">
+              🏷️ Sales Promotion (Optional)
             </span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="block text-neutral-600 font-bold">sale price (mad)</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+              <div className="space-y-2">
+                <label className="block text-neutral-800 font-semibold text-sm">Sale Price (MAD)</label>
                 <input
                   type="number"
                   placeholder="e.g. 299"
                   value={salePrice}
                   onChange={(e) => setSalePrice(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                  className="w-full border border-red-200 p-3 bg-white focus:outline-none focus:border-red-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-neutral-600 font-bold">promotion expires at (local time)</label>
+              <div className="space-y-2">
+                <label className="block text-neutral-800 font-semibold text-sm">Promotion Expires At</label>
                 <input
                   type="datetime-local"
                   value={saleExpiresAt}
                   onChange={(e) => setSaleExpiresAt(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                  className="w-full border border-red-200 p-3 bg-white focus:outline-none focus:border-red-400 rounded-lg text-sm transition-colors"
                 />
               </div>
             </div>
-            <p className="text-[10px] text-neutral-500">
-              if specified, a sale price will be shown alongside a countdown timer until the expiration date.
+            <p className="text-xs text-neutral-500 pt-1">
+              If specified, a sale price will be shown alongside a countdown timer until the expiration date.
             </p>
           </div>
 
           {/* Trilingual Title Translations */}
-          <div className="border border-black p-4 bg-white space-y-4">
-            <span className="font-bold border-b border-black pb-0.5 block">trilingual titles</span>
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 space-y-5">
+            <span className="font-bold border-b border-neutral-200 pb-2 block text-sm text-neutral-800">Trilingual Titles</span>
             
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">english title</label>
+            <div className="space-y-4 pt-1">
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">English Title</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. handwoven wool berber carpet"
+                  placeholder="e.g. Handwoven wool berber carpet"
                   value={titleEn}
                   onChange={(e) => setTitleEn(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">french title (titre en français)</label>
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">French Title (Titre en français)</label>
                 <input
                   type="text"
                   required
-                  placeholder="ex: tapis berbère en laine tissé main"
+                  placeholder="ex: Tapis berbère en laine tissé main"
                   value={titleFr}
                   onChange={(e) => setTitleFr(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1" dir="rtl">
-                <label className="text-neutral-500 block text-right">العنوان باللغة العربية</label>
+              <div className="space-y-2" dir="rtl">
+                <label className="text-neutral-600 font-semibold text-sm block text-right">العنوان باللغة العربية</label>
                 <input
                   type="text"
                   required
                   placeholder="مثال: سجادة بربرية منسوجة يدوياً من الصوف"
                   value={titleAr}
                   onChange={(e) => setTitleAr(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none text-right font-sans"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors text-right"
                 />
               </div>
             </div>
           </div>
 
           {/* Media drag-and-drop uploader */}
-          <div className="border border-black p-4 bg-white space-y-3">
-            <span className="font-bold border-b border-black pb-0.5 block">product gallery (media uploader)</span>
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 space-y-4">
+            <span className="font-bold border-b border-neutral-200 pb-2 block text-sm text-neutral-800">Product Gallery (Media Uploader)</span>
             <MediaUploader onUploadComplete={handleUploadComplete} maxFiles={4} />
           </div>
 
           {/* Trilingual Descriptions */}
-          <div className="border border-black p-4 bg-white space-y-4">
-            <span className="font-bold border-b border-black pb-0.5 block font-serif-editorial">trilingual descriptions</span>
+          <div className="bg-white p-6 rounded-xl border border-neutral-200 space-y-5">
+            <span className="font-bold border-b border-neutral-200 pb-2 block text-sm text-neutral-800">Trilingual Descriptions</span>
             
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">english description</label>
+            <div className="space-y-4 pt-1">
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">English Description</label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="describe the product's origin, craft methods, size..."
+                  placeholder="Describe the product's origin, craft methods, size..."
                   value={descEn}
                   onChange={(e) => setDescEn(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">french description</label>
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">French Description</label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="décrivez l'origine du produit, le processus de fabrication..."
+                  placeholder="Décrivez l'origine du produit, le processus de fabrication..."
                   value={descFr}
                   onChange={(e) => setDescFr(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1" dir="rtl">
-                <label className="text-neutral-500 block text-right font-sans">الوصف باللغة العربية</label>
+              <div className="space-y-2" dir="rtl">
+                <label className="text-neutral-600 font-semibold text-sm block text-right">الوصف باللغة العربية</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="اكتب تفاصيل المنتج، كيفية الصنع والمواد المستعملة..."
                   value={descAr}
                   onChange={(e) => setDescAr(e.target.value)}
-                  className="w-full border border-black p-2.5 focus:outline-none rounded-none text-right font-sans"
+                  className="w-full border border-neutral-200 p-3 focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors text-right"
                 />
               </div>
             </div>
@@ -355,44 +357,44 @@ export default function AddProductPage({ params }: PageProps) {
 
           <button
             type="submit"
-            className="w-full bg-black text-white hover:bg-neutral-800 text-sm font-mono tracking-widest py-4 border border-black uppercase transition-colors rounded-none font-bold"
+            className="w-full bg-black text-white hover:bg-neutral-800 text-sm py-4 rounded-lg uppercase tracking-wider transition-colors font-bold"
           >
-            publish listing
+            Publish Listing
           </button>
         </form>
 
         {/* Existing Products List */}
         {shopProducts.length > 0 && (
-          <div className="border-t border-black pt-12 mt-12 space-y-6">
+          <div className="border-t border-neutral-200 pt-10 mt-10 space-y-6">
             <div>
-              <h2 className="text-2xl font-serif font-bold text-black block lowercase">
-                active store listings
+              <h2 className="text-2xl font-bold text-neutral-800 block">
+                Active Store Listings
               </h2>
-              <p className="text-neutral-500 text-xs mt-1">
-                view, click, or remove active craft listings from your marketplace catalog
+              <p className="text-neutral-500 text-sm mt-1">
+                View, click, or remove active craft listings from your marketplace catalog
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {shopProducts.map((p) => {
-                const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'artisan craft';
+                const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'Artisan Craft';
                 const slug = p.slug_translations?.[lang as 'en'|'fr'|'ar'] || p.slug_translations?.en || 'product';
                 const image = p.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
                 return (
-                  <div key={p.id} className="border border-black p-4 bg-white flex gap-4 items-center">
-                    <div className="w-16 h-16 border border-black overflow-hidden flex-shrink-0 bg-neutral-50">
+                  <div key={p.id} className="bg-white rounded-xl border border-neutral-200 p-4 flex gap-4 items-center">
+                    <div className="w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-neutral-50 border border-neutral-100">
                       <img src={image} alt={title} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-serif font-bold text-sm truncate text-black">{title}</h4>
-                      <p className="font-mono text-neutral-500 text-[10px] mt-0.5">{p.base_price_mad} dh</p>
+                      <h4 className="font-bold text-sm truncate text-neutral-800">{title}</h4>
+                      <p className="text-neutral-500 text-xs mt-1">{p.base_price_mad} MAD</p>
                     </div>
-                    <div className="flex flex-col gap-1.5 font-mono text-[10px] text-center">
+                    <div className="flex flex-col gap-2 text-xs font-semibold">
                       <Link
                         href={`/${lang}/listing/${p.numeric_id}/${slug}`}
-                        className="border border-black px-2 py-1 bg-neutral-50 hover:bg-neutral-100 font-bold"
+                        className="border border-neutral-200 rounded-md px-3 py-1.5 bg-neutral-50 hover:bg-neutral-100 text-center transition-colors"
                       >
-                        view
+                        View
                       </Link>
                       <button
                         type="button"
@@ -404,9 +406,9 @@ export default function AddProductPage({ params }: PageProps) {
                           setShopProducts(prev => prev.filter(item => item.id !== p.id && item.numeric_id !== p.numeric_id));
                           alert('Listing removed successfully.');
                         }}
-                        className="border border-red-600 px-2 py-1 text-red-600 hover:bg-red-50 font-bold cursor-pointer"
+                        className="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-md transition-colors border border-transparent hover:border-red-100"
                       >
-                        delete
+                        Delete
                       </button>
                     </div>
                   </div>

@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
 import { ProductPageSkeleton } from "@/components/ui/Skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ProductCard } from "@/components/ui/ProductGrid";
+import { ProductCard, SimpleProductCard } from "@/components/ui/ProductGrid";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ListingClientProps {
@@ -886,10 +886,10 @@ export default function ListingClientWrapper({
       {/* Similar Items Section */}
       <div className="pt-16 pb-8 space-y-6 border-t border-neutral-100">
         <h2 className="text-2xl font-bold text-black">Similar Items You Might Like</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {allProductsList.slice(0, 4).map((p) => {
             const shop = allShopsList.find((s) => s.id === p.shop_id) || allShopsList[0];
-            return <ProductCard key={p.id} product={p} shop={shop} lang={lang} t={t} />;
+            return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} />;
           })}
         </div>
       </div>

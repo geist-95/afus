@@ -16,7 +16,7 @@ export default function Footer({ lang }: FooterProps) {
   }
 
   return (
-    <footer className="text-white arabic-frame-top mt-12" style={{ backgroundColor: '#1D0D2C' }}>
+    <footer className="text-white arabic-frame-top mt-12 relative z-20" style={{ backgroundColor: '#1D0D2C' }}>
       <div className="max-w-[100rem] mx-auto px-12 pt-28 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-6 gap-8 md:gap-y-8 md:gap-x-20">
           

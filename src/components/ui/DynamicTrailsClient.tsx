@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ProductCard } from './ProductGrid';
+import { ProductCard, SimpleProductCard } from './ProductGrid';
 import { staticCategories } from '@/lib/supabase';
 
 interface DynamicTrailsClientProps {
@@ -11,9 +11,99 @@ interface DynamicTrailsClientProps {
   lang: string;
 }
 
+function ScrollableTrail({ children }: { children: React.ReactNode }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(true);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+    setShowLeft(scrollLeft > 10);
+    setShowRight(scrollLeft < scrollWidth - clientWidth - 10);
+  };
+
+  useEffect(() => {
+    handleScroll();
+    window.addEventListener('resize', handleScroll);
+    return () => window.removeEventListener('resize', handleScroll);
+  }, [children]);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const scrollAmount = direction === 'left' ? -400 : 400;
+    scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative group/trail">
+      {/* Left Gradient & Chevron */}
+      {showLeft && (
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 flex items-center justify-start pointer-events-none">
+          <button
+            onClick={(e) => { e.preventDefault(); scroll('left'); }}
+            className="w-10 h-10 ml-2 rounded-full bg-white shadow-lg border border-neutral-100 flex items-center justify-center text-black pointer-events-auto hover:scale-110 transition-transform"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+          </button>
+        </div>
+      )}
+
+      {/* Scrollable Container */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+      >
+        {children}
+      </div>
+
+      {/* Right Gradient & Chevron */}
+      {showRight && (
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 flex items-center justify-end pointer-events-none">
+          <button
+            onClick={(e) => { e.preventDefault(); scroll('right'); }}
+            className="w-10 h-10 mr-2 rounded-full bg-white shadow-lg border border-neutral-100 flex items-center justify-center text-black pointer-events-auto hover:scale-110 transition-transform"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AccordionItem({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b border-black/10 py-5 transition-colors cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+      <div className="flex items-center justify-between">
+        <h3 className={`font-medium text-xl md:text-2xl pr-8 ${isOpen ? 'text-black' : 'text-neutral-700'}`}>
+          {question}
+        </h3>
+        <span className="text-xl text-neutral-400 font-light leading-none">
+          {isOpen ? '×' : '+'}
+        </span>
+      </div>
+      {isOpen && (
+        <p className="mt-4 text-base md:text-lg text-neutral-600 leading-relaxed pr-8 max-w-2xl">
+          {answer}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function DynamicTrailsClient({ products, shops, lang }: DynamicTrailsClientProps) {
   const [recentCategoryId, setRecentCategoryId] = useState<string | null>(null);
   const [allProducts, setAllProducts] = useState<any[]>(products);
+  const newArrivalsRef = useRef<HTMLDivElement>(null);
+
+  const scrollNewArrivals = (direction: 'left' | 'right') => {
+    if (!newArrivalsRef.current) return;
+    const scrollAmount = direction === 'left' ? -400 : 400;
+    newArrivalsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -34,7 +124,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
               (p) => p && typeof p === 'object' && p.title_translations
             );
             const combined = [...validLocal, ...products];
-            
+
             // Remove duplicates by numeric_id or id
             const seen = new Set();
             const unique = combined.filter((p) => {
@@ -43,7 +133,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
               seen.add(key);
               return true;
             });
-            
+
             setAllProducts(unique);
           } else {
             setAllProducts(products);
@@ -142,38 +232,55 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
     .slice(0, 8);
 
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
-  const recentCategoryName = matchedCategory?.name[lang as 'en'|'fr'|'ar'] || matchedCategory?.name.en || "";
+  const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar'] || matchedCategory?.name.en || "";
   const recentCategoryProducts = allProducts.filter((p) => {
     const isDirectMatch = p.category_id === recentCategoryId;
     const legacyMappedId = p.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
       : p.category_id === '2b222222-2222-2222-2222-222222222222' ? 'cat_art_collectibles'
-      : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
-      : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
-      : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
-      : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
-      : p.category_id;
+        : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
+          : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
+            : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
+              : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
+                : p.category_id;
     return isDirectMatch || legacyMappedId === recentCategoryId;
   }).slice(0, 8);
 
 
 
   const newestStores = [...shops].slice(0, 6);
+  while (newestStores.length < 6) {
+    newestStores.push({
+      id: `placeholder-${newestStores.length}`,
+      name: 'Coming Soon',
+      merchant_city: 'Morocco',
+      slug: '#',
+      is_placeholder: true
+    });
+  }
 
   return (
     <div className="space-y-16">
-      
+
       {/* New Items Trail */}
       <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-black">{t.newItems}</h2>
-          <p className="text-xs text-neutral-500">{t.newItemsSub}</p>
+        <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+          <div>
+            <h2 className="text-xl md:text-3xl font-bold !text-black">{t.newItems}</h2>
+            <p className="text-xs text-neutral-500 mt-1">{t.newItemsSub}</p>
+          </div>
+          <div className="flex items-center gap-2 hidden sm:flex">
+            <button onClick={() => scrollNewArrivals('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            </button>
+            <button onClick={() => scrollNewArrivals('right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
           {newProducts.map((p) => {
             const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-            return (
-              <ProductCard key={p.id} product={p} shop={shop} lang={lang} t={t} />
-            );
+            return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[calc(20%-12.8px)]" />;
           })}
         </div>
       </section>
@@ -182,33 +289,31 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {recentCategoryName && recentCategoryProducts.length > 0 && (
         <section className="space-y-4">
           <div>
-            <h2 className="text-xl font-bold text-black">
+            <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">
               {t.recentlyViewed} ({recentCategoryName})
             </h2>
             <p className="text-xs text-neutral-500">{t.recentlyViewedSub}</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <ScrollableTrail>
             {recentCategoryProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return (
-                <ProductCard key={p.id} product={p} shop={shop} lang={lang} t={t} />
-              );
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
             })}
-          </div>
+          </ScrollableTrail>
         </section>
       )}
 
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-bold text-black">{t.newestStores}</h2>
+          <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">{t.newestStores}</h2>
           <p className="text-xs text-neutral-500">{t.newestStoresSub}</p>
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
+        <ScrollableTrail>
           {newestStores.map((store) => (
             <div
               key={store.id}
-              className="flex-shrink-0 snap-start w-56 border border-neutral-100 bg-white p-4 rounded-2xl flex flex-col items-center justify-between text-center shadow-sm"
+              className={`flex-shrink-0 snap-start w-56 aspect-square border border-neutral-100/50 bg-white p-4 arabic-frame flex flex-col items-center justify-between text-center transition-colors ${store.is_placeholder ? 'opacity-50' : ''}`}
             >
               <div className="relative w-16 h-16 rounded-full border border-neutral-100 overflow-hidden bg-neutral-50 flex items-center justify-center">
                 {store.logo_url ? (
@@ -233,46 +338,17 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
                 </span>
               </div>
               <Link
-                href={`/${lang}/shop/${store.slug}`}
+                href={store.is_placeholder ? '#' : `/${lang}/shop/${store.slug}`}
                 className="mt-4 w-full block border border-neutral-800 text-neutral-800 font-bold text-[11px] py-1.5 rounded-full hover:bg-neutral-50 transition-colors"
               >
                 {t.visitShop}
               </Link>
             </div>
           ))}
-        </div>
+        </ScrollableTrail>
       </section>
 
-      {/* 6. FAQ Section (before footer) */}
-      <section className="pt-8 border-t border-neutral-200/60 max-w-4xl mx-auto space-y-6">
-        <h2 className="text-2xl font-bold text-black text-center">{t.faqTitle}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-          <div className="space-y-2 bg-white/50 p-4 border border-neutral-100 rounded-xl">
-            <h3 className="font-bold text-sm text-neutral-800 flex items-start gap-1">
-              <span>❓</span> {t.faq1Q}
-            </h3>
-            <p className="text-xs text-neutral-600 leading-relaxed pl-6">{t.faq1A}</p>
-          </div>
-          <div className="space-y-2 bg-white/50 p-4 border border-neutral-100 rounded-xl">
-            <h3 className="font-bold text-sm text-neutral-800 flex items-start gap-1">
-              <span>❓</span> {t.faq2Q}
-            </h3>
-            <p className="text-xs text-neutral-600 leading-relaxed pl-6">{t.faq2A}</p>
-          </div>
-          <div className="space-y-2 bg-white/50 p-4 border border-neutral-100 rounded-xl">
-            <h3 className="font-bold text-sm text-neutral-800 flex items-start gap-1">
-              <span>❓</span> {t.faq3Q}
-            </h3>
-            <p className="text-xs text-neutral-600 leading-relaxed pl-6">{t.faq3A}</p>
-          </div>
-          <div className="space-y-2 bg-white/50 p-4 border border-neutral-100 rounded-xl">
-            <h3 className="font-bold text-sm text-neutral-800 flex items-start gap-1">
-              <span>❓</span> {t.faq4Q}
-            </h3>
-            <p className="text-xs text-neutral-600 leading-relaxed pl-6">{t.faq4A}</p>
-          </div>
-        </div>
-      </section>
+
 
     </div>
   );

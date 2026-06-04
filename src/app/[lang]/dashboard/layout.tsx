@@ -2,10 +2,11 @@
 
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getActiveSession, UserSession } from '@/lib/auth';
-import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, Loader2, ArrowLeft, FolderClosed } from 'lucide-react';
 import { logoutUser } from '@/lib/auth';
+import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -17,39 +18,32 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
   const router = useRouter();
   const pathname = usePathname();
   
-  const labels: Record<string, Record<string, string>> = {
-    en: {
-      overview: 'overview',
-      products: 'products',
-      collections: 'collections',
-      orders: 'orders',
-      settings: 'settings',
-      backToMarketplace: 'back to marketplace',
-      logout: 'logout',
-    },
-    fr: {
-      overview: 'aperçu',
-      products: 'produits',
-      collections: 'collections',
-      orders: 'commandes',
-      settings: 'paramètres',
-      backToMarketplace: 'retour à la boutique',
-      logout: 'déconnexion',
-    },
-    ar: {
-      overview: 'نظرة عامة',
-      products: 'المنتجات',
-      collections: 'المجموعات',
-      orders: 'الطلبات',
-      settings: 'الإعدادات',
-      backToMarketplace: 'العودة للمتجر',
-      logout: 'تسجيل الخروج',
-    }
-  };
-
-  const t = labels[lang] || labels.en;
   const [session, setSession] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openGroups, setOpenGroups] = useState({ store: true, earnings: false, account: false });
+  const [currentBanner, setCurrentBanner] = useState(0);
+
+  const banners = [
+    {
+      message: "Boost your shop visibility with our new artisan features",
+      buttonText: "Upgrade Shop",
+      icon: <Zap className="w-3.5 h-3.5 fill-green-400" />
+    },
+    {
+      message: "Get early access to the exclusive Summer Collection",
+      buttonText: "Learn More",
+      icon: <span className="text-[12px] leading-none">✨</span>
+    },
+    {
+      message: "Enjoy seamless multi-channel selling and workflows",
+      buttonText: "Try Premium",
+      icon: <Zap className="w-3.5 h-3.5 fill-green-400" />
+    }
+  ];
+
+  const toggleGroup = (group: string) => {
+    setOpenGroups(prev => ({ ...prev, [group]: !prev[group] }));
+  };
 
   useEffect(() => {
     async function loadSession() {
@@ -64,150 +58,209 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
     loadSession();
   }, [lang, router]);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % banners.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [banners.length]);
+
   const handleLogout = async () => {
     await logoutUser();
     router.push(`/${lang}/login`);
   };
 
-  if (loading) {
+  if (loading || !session) {
     return (
-      <div className="flex h-screen bg-neutral-50 font-mono text-sm">
-        {/* Sidebar skeleton */}
-        <aside className="w-64 border-r border-black bg-white flex flex-col p-6 space-y-6 animate-pulse">
-          <div className="h-6 bg-neutral-200/60 w-24 rounded" />
-          <div className="space-y-2 mt-4">
-            <div className="h-4 bg-neutral-200/60 w-32 rounded" />
-            <div className="h-3 bg-neutral-200/60 w-48 rounded" />
-          </div>
-          <div className="space-y-3 mt-8">
-            <div className="h-10 bg-neutral-200/60 rounded" />
-            <div className="h-10 bg-neutral-200/60 rounded" />
-            <div className="h-10 bg-neutral-200/60 rounded" />
-          </div>
-        </aside>
-        <main className="flex-1 p-8 space-y-6">
-          <div className="space-y-2 animate-pulse">
-            <div className="h-8 bg-neutral-200/60 w-48 rounded" />
-            <div className="h-4 bg-neutral-200/60 w-72 rounded" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 animate-pulse">
-            <div className="h-32 bg-neutral-200/60 rounded-xl" />
-            <div className="h-32 bg-neutral-200/60 rounded-xl" />
-            <div className="h-32 bg-neutral-200/60 rounded-xl" />
-          </div>
-        </main>
+      <div className="h-[100dvh] overflow-hidden bg-[#2A1C2C] flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin mb-4" />
+          <span className="text-white/60 font-medium">Loading Dashboard...</span>
+        </div>
       </div>
     );
   }
 
-  if (!session) return null;
-  const navItems = [
-    { name: t.overview, href: `/${lang}/dashboard`, icon: LayoutDashboard, exact: true },
-    { name: t.products, href: `/${lang}/dashboard/upload`, icon: Package, exact: false },
-    { name: t.collections, href: `/${lang}/dashboard/collections`, icon: FolderClosed, exact: false },
-    { name: t.orders, href: `/${lang}/dashboard/orders`, icon: ShoppingBag, exact: false },
-    { name: t.settings, href: `/${lang}/dashboard/settings`, icon: Settings, exact: false },
-  ];
-
-  const isActive = (href: string, exact: boolean) => {
-    if (exact) {
-      return pathname === href;
-    }
+  const isActive = (href: string, exact: boolean = false) => {
+    if (exact) return pathname === href;
     return pathname?.startsWith(href);
   };
 
+  const navItemClass = (active: boolean) => 
+    `block px-3 py-2 text-[13px] transition-colors rounded-md font-medium ${
+      active 
+        ? 'bg-neutral-100 text-[#663399] font-bold' 
+        : 'text-neutral-600 hover:text-black hover:bg-neutral-100'
+    }`;
+
+  const mobileNavItemClass = (active: boolean) =>
+    `flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-colors whitespace-nowrap ${
+      active
+        ? 'border-black text-black font-semibold'
+        : 'border-transparent text-neutral-500 hover:text-black hover:border-gray-200 font-medium'
+    }`;
+
   return (
-    <div className="flex h-screen bg-neutral-50 font-mono text-sm">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-black bg-white flex flex-col hidden md:flex">
-        <div className="p-6 border-b border-black">
-          <Link href={`/${lang}`} className="text-2xl font-serif font-bold text-black tracking-tighter">
-            afus.
+    <div className="h-[100dvh] overflow-hidden bg-[#2A1C2C] flex flex-col font-sans antialiased">
+      <header className="h-16 flex items-center justify-between px-6 lg:px-12 flex-shrink-0 w-full">
+        {/* Logo */}
+        <div className="flex-shrink-0 w-[200px]">
+          <Link className="flex items-center gap-3 hover:opacity-80 transition-opacity" href={`/${lang}`}>
+            <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none invert" />
+            <img src="/logo/afus.svg" alt="afus" className="h-5 object-contain !rounded-none invert brightness-0" />
           </Link>
-          <div className="mt-4">
-            <p className="font-bold truncate">{session.shop ? session.shop.name : session.full_name}</p>
-            <p className="text-xs text-neutral-500 truncate">{session.email}</p>
-            {session.role === 'seller' && (
-              <span className="inline-block mt-1 px-2 py-0.5 bg-black text-white text-[10px] uppercase font-bold">
-                Seller Account
-              </span>
-            )}
+        </div>
+
+        {/* Centered Banner */}
+        <div className="hidden lg:flex items-center justify-center flex-1 overflow-hidden">
+          <div className="flex items-center gap-6 text-[13px] text-neutral-300">
+            <button 
+              onClick={() => setCurrentBanner((prev) => (prev === 0 ? banners.length - 1 : prev - 1))}
+              className="text-neutral-500 hover:text-white transition-colors p-1 z-10 relative"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            
+            <div className="relative w-[500px] h-8 flex items-center justify-center overflow-hidden">
+              {banners.map((banner, idx) => (
+                <div 
+                  key={idx} 
+                  className={`absolute flex items-center gap-4 transition-all duration-500 ease-in-out ${idx === currentBanner ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+                >
+                  <span className="whitespace-nowrap">{banner.message}</span>
+                  <button className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-green-500/40 bg-neutral-800/50 text-green-400 hover:bg-neutral-800 transition-colors font-medium whitespace-nowrap">
+                    {banner.icon}
+                    {banner.buttonText}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button 
+              onClick={() => setCurrentBanner((prev) => (prev + 1) % banners.length)}
+              className="text-neutral-500 hover:text-white transition-colors p-1 z-10 relative"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-2">
-          {navItems.map((item) => {
-            const active = isActive(item.href, item.exact);
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center space-x-3 px-4 py-3 border border-black transition-colors ${
-                  active 
-                    ? 'bg-black text-white' 
-                    : 'bg-white text-black hover:bg-neutral-100'
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="font-bold lowercase">{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Right spacing to balance center */}
+        <div className="hidden lg:block w-[200px]"></div>
+      </header>
+      
+      <div className="flex-1 flex flex-col overflow-hidden w-full">
+        <div className="flex-1 bg-white arabic-frame flex flex-col md:flex-row overflow-hidden shadow-2xl rounded-2xl md:rounded-none">
+          
+          {/* Mobile Nav */}
+          <nav className="md:hidden border-b border-neutral-100 bg-white sticky top-0 z-40">
+            <div className="px-4">
+              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>
+                  <LayoutDashboard className="w-[18px] h-[18px]" />
+                  <span>Dashboard</span>
+                </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>
+                  <Package className="w-[18px] h-[18px]" />
+                  <span>Products</span>
+                </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>
+                  <ShoppingBag className="w-[18px] h-[18px]" />
+                  <span>Orders</span>
+                </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>
+                  <FolderClosed className="w-[18px] h-[18px]" />
+                  <span>Collections</span>
+                </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>
+                  <Settings className="w-[18px] h-[18px]" />
+                  <span>Settings</span>
+                </Link>
+                <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-red-500 hover:text-red-700 hover:border-red-200">
+                  <LogOut className="w-[18px] h-[18px]" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+          </nav>
 
-        <div className="p-4 border-t border-black">
-          <button
-            onClick={handleLogout}
-            className="flex items-center space-x-3 px-4 py-3 w-full border border-black bg-white text-black hover:bg-red-50 hover:text-red-600 hover:border-red-600 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="font-bold lowercase hidden md:block">{t.logout}</span>
-          </button>
+          {/* Desktop Sidebar */}
+          <aside className="hidden md:block w-64 bg-neutral-50/50 border-r border-neutral-200 flex-shrink-0 z-30 overflow-hidden">
+            <div className="h-full flex flex-col">
+              <nav className="flex-1 overflow-y-auto p-4 pt-6 space-y-2">
+                
+                {/* My Store Group */}
+                <div className="space-y-1">
+                  <button onClick={() => toggleGroup('store')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                    <div className="flex items-center gap-3 relative">
+                      <Store className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <span>My Store</span>
+                    </div>
+                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.store ? 'rotate-0' : '-rotate-90'}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.store ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>Dashboard</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>Products</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>Orders</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>Collections</Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Earnings Group (Placeholder for UI) */}
+                <div className="space-y-1">
+                  <button onClick={() => toggleGroup('earnings')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                    <div className="flex items-center gap-3 relative">
+                      <Wallet className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <span>Earnings</span>
+                    </div>
+                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.earnings ? 'rotate-0' : '-rotate-90'}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.earnings ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
+                      <Link className={navItemClass(false)} href={`#`}>Overview</Link>
+                      <Link className={navItemClass(false)} href={`#`}>Payouts / Credits</Link>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Account Group */}
+                <div className="space-y-1">
+                  <button onClick={() => toggleGroup('account')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                    <div className="flex items-center gap-3 relative">
+                      <User className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <span>Account</span>
+                    </div>
+                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.account ? 'rotate-0' : '-rotate-90'}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.account ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>Settings</Link>
+                      <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-[13px] transition-colors rounded-md text-red-600 hover:bg-red-50 font-medium">Logout</button>
+                    </div>
+                  </div>
+                </div>
+
+              </nav>
+
+              <div className="p-4 border-t border-neutral-200 mt-auto">
+                <Link className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-neutral-600 hover:text-black transition-colors rounded-lg hover:bg-neutral-100" href={`/${lang}`}>
+                  <ArrowLeft className="w-[18px] h-[18px]" />
+                  <span>Back to App</span>
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main Content Area */}
+          <div className="flex-1 min-w-0 overflow-y-auto bg-[#F9F9F9]">
+            {children}
+          </div>
+
         </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto flex flex-col">
-        {/* Mobile Header */}
-        <header className="md:hidden border-b border-black bg-white p-4 flex justify-between items-center">
-          <Link href={`/${lang}`} className="text-xl font-serif font-bold text-black tracking-tighter">
-            afus.
-          </Link>
-          <button onClick={handleLogout} className="text-xs font-bold uppercase underline">
-            Logout
-          </button>
-        </header>
-
-        {/* Mobile Nav */}
-        <nav className="md:hidden border-b border-black bg-white flex overflow-x-auto">
-          {navItems.map((item) => {
-            const active = isActive(item.href, item.exact);
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex-shrink-0 px-4 py-3 border-r border-black font-bold lowercase ${
-                  active ? 'bg-black text-white' : 'text-black'
-                }`}
-              >
-                {item.name}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex-1 p-4 md:p-8 relative">
-          {children}
-        </div>
-
-        {/* Back Button Bottom Left */}
-        <div className="p-4 border-t border-black bg-white">
-          <Link href={`/${lang}`} className="inline-flex items-center space-x-2 px-4 py-2 border border-black hover:bg-neutral-100 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-bold lowercase">{t.backToMarketplace}</span>
-          </Link>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
+

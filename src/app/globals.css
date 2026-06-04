@@ -100,7 +100,13 @@ textarea {
 }
 
 /* Ensure images have slightly rounded borders */
-img {
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select,
+textarea {
   border-radius: 8px !important;
 }
 
@@ -121,3 +127,11 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 120s linear infinite;
+}

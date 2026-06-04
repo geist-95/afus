@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCart } from '@/lib/cart';
 
 interface ProductGridProps {
@@ -11,6 +12,46 @@ interface ProductGridProps {
   categorySlug?: string;
   categoryFilterId?: string;
   shopFilterId?: string;
+}
+
+export function SimpleProductCard({ product, lang, shop, className }: { product: any; lang: string; shop?: any; className?: string }) {
+  const title =
+    product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] ||
+    product?.title_translations?.en ||
+    'Artisan product';
+  const price = product?.base_price_mad;
+  const img = product?.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
+  const numId = product?.numeric_id;
+  const slug =
+    product?.slug_translations?.[lang as 'en' | 'fr' | 'ar'] ||
+    product?.slug_translations?.en ||
+    'product';
+  const shopName = shop?.name || 'Artisan';
+
+  return (
+    <Link href={`/${lang}/listing/${numId}/${slug}`} className={`group block ${className || ''}`}>
+      <div className="aspect-square relative overflow-hidden bg-neutral-100 arabic-frame">
+        <img
+          src={img}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+      </div>
+      <div className="mt-2 space-y-1">
+        <p className="text-sm font-medium text-neutral-800 truncate leading-tight">{title}</p>
+        <p className="text-xs font-light text-neutral-500 line-clamp-1">{shopName}</p>
+        <p className="text-base font-bold text-black">{price} MAD</p>
+        <div className="flex items-center gap-0.5">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <svg key={star} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-black">
+              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+            </svg>
+          ))}
+          <span className="text-[10px] text-neutral-500 ml-1 font-medium">(24)</span>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 export function ProductCard({
@@ -27,10 +68,10 @@ export function ProductCard({
   const [isHovered, setIsHovered] = useState(false);
   const { addItem } = useCart();
 
-  const title = product?.title_translations?.[lang as 'en'|'fr'|'ar'] || product?.title_translations?.en || 'artisan craft';
+  const title = product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] || product?.title_translations?.en || 'artisan craft';
   const isSaleActive = product.sale_price_mad !== null && product.sale_price_mad !== undefined &&
     (!product.sale_expires_at || new Date(product.sale_expires_at) > new Date());
-  const prodSlug = product?.slug_translations?.[lang as 'en'|'fr'|'ar'] || product?.slug_translations?.en || 'product';
+  const prodSlug = product?.slug_translations?.[lang as 'en' | 'fr' | 'ar'] || product?.slug_translations?.en || 'product';
   const destinationUrl = `/${lang}/listing/${product.numeric_id}/${prodSlug}`;
 
   const firstMedia = product.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
@@ -204,17 +245,17 @@ export default function ProductGrid({
             (p) => p && typeof p === 'object' && p.title_translations
           );
           let all = [...validLocal, ...initialProducts];
-          
+
           if (categoryFilterId) {
             all = all.filter((p) => {
               const isDirectMatch = p.category_id === categoryFilterId;
               const legacyMappedId = p.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
                 : p.category_id === '2b222222-2222-2222-2222-222222222222' ? 'cat_art_collectibles'
-                : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
-                : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
-                : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
-                : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
-                : p.category_id;
+                  : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
+                    : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
+                      : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
+                        : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
+                          : p.category_id;
               return isDirectMatch || legacyMappedId === categoryFilterId;
             });
           }
@@ -222,7 +263,7 @@ export default function ProductGrid({
           if (shopFilterId) {
             all = all.filter((p) => p.shop_id === shopFilterId);
           }
-          
+
           const seen = new Set();
           const unique = all.filter((p) => {
             const key = p.numeric_id || p.id;
@@ -230,7 +271,7 @@ export default function ProductGrid({
             seen.add(key);
             return true;
           });
-          
+
           setProducts(unique);
         }
       } catch (e) {

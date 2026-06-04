@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import Link from 'next/link';
+import { Plus, Package, MoreHorizontal, Wallet, Store } from 'lucide-react';
 
 interface DashboardPageProps {
   params: Promise<{ lang: string }>;
@@ -42,104 +43,133 @@ export default function DashboardPage({ params }: DashboardPageProps) {
 
   if (!session) return null;
 
-  const labels: Record<string, Record<string, string>> = {
-    en: {
-      overview: "overview",
-      welcome: "welcome back",
-      viewShop: "view my shop",
-      totalOrders: "total orders",
-      activeProducts: "active products",
-      totalRevenue: "total revenue",
-      manageOrders: "manage orders →",
-      manageProducts: "manage products →",
-      startSelling: "want to start selling?",
-      noStore: "you currently don't have a store associated with your account. create one now to start uploading and selling products.",
-      createStore: "create store",
-      mad: "mad",
-    },
-    fr: {
-      overview: "aperçu",
-      welcome: "bon retour",
-      viewShop: "voir ma boutique",
-      totalOrders: "commandes totales",
-      activeProducts: "produits actifs",
-      totalRevenue: "revenu total",
-      manageOrders: "gérer les commandes →",
-      manageProducts: "gérer les produits →",
-      startSelling: "envie de commencer à vendre ?",
-      noStore: "vous n'avez actuellement aucune boutique associée à votre compte. créez-en une maintenant pour commencer à publier et vendre vos produits.",
-      createStore: "créer une boutique",
-      mad: "dh",
-    },
-    ar: {
-      overview: "نظرة عامة على لوحة التحكم",
-      welcome: "مرحباً بعودتك",
-      viewShop: "عرض متجري",
-      totalOrders: "إجمالي الطلبات",
-      activeProducts: "المنتجات النشطة",
-      totalRevenue: "إجمالي الإيرادات",
-      manageOrders: "إدارة الطلبات ←",
-      manageProducts: "إدارة المنتجات ←",
-      startSelling: "هل ترغب في البدء بالبيع؟",
-      noStore: "ليس لديك حالياً متجر مرتبط بحسابك. قم بإنشاء متجر الآن للبدء في رفع وبيع منتجاتك.",
-      createStore: "إنشاء متجر",
-      mad: "درهم",
-    }
-  };
-
-  const t = labels[lang] || labels.en;
+  const shopName = session.shop ? session.shop.name : session.full_name;
 
   return (
-    <div className="max-w-4xl space-y-6 animate-in fade-in duration-500 font-mono lowercase">
-      <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-black pb-4 mb-8">
+    <div className="min-h-screen bg-[#F9F9F9] flex flex-col animate-in fade-in duration-500 font-sans">
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-black block">{t.overview}</h1>
-          <p className="text-neutral-500 mt-1">{t.welcome}, {session.full_name}</p>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-800">Seller Dashboard</h1>
+          <p className="text-xs text-neutral-500 mt-0.5">Salam, {shopName}</p>
         </div>
-        {session.shop && (
-          <div className="mt-4 md:mt-0 text-right">
-            <Link 
-              href={`/${lang}/shop/${session.shop.slug}`} 
-              className="bg-black text-white px-4 py-2 font-bold uppercase tracking-widest text-xs hover:bg-neutral-800 transition-colors inline-block"
-            >
-              {t.viewShop}
-            </Link>
+      </div>
+
+      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-7xl flex-1">
+        <div className="flex flex-col lg:flex-row gap-8">
+
+          {/* Main Content Column */}
+          <div className="flex-1 space-y-8 min-w-0">
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                  <div className="text-3xl font-bold tracking-tight leading-none mb-2">{revenue.toFixed(2)}</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Total Revenue (MAD)</div>
+                </div>
+                <div className="p-2 bg-neutral-50 rounded-lg">
+                  <Wallet className="w-5 h-5 text-neutral-400" />
+                </div>
+              </div>
+
+              <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                  <div className="text-3xl font-bold tracking-tight leading-none mb-2">{ordersCount}</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Active Orders</div>
+                </div>
+                <div className="p-2 bg-neutral-50 rounded-lg">
+                  <Package className="w-5 h-5 text-neutral-400" />
+                </div>
+              </div>
+
+              <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
+                <div className="flex flex-col gap-1">
+                  <div className="text-3xl font-bold tracking-tight leading-none mb-2">{productsCount}</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Total Products</div>
+                </div>
+                <div className="p-2 bg-neutral-50 rounded-lg">
+                  <Store className="w-5 h-5 text-neutral-400" />
+                </div>
+              </div>
+            </div>
+
+            {/* Your Products */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold tracking-tight">Your Products</h2>
+                <Link href={`/${lang}/dashboard/upload`}>
+                  <button className="inline-flex items-center justify-center whitespace-nowrap text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 h-9 px-3 text-neutral-500 hover:text-black font-medium">View All</button>
+                </Link>
+              </div>
+              <div className="space-y-3">
+                <Link className="block" href={`/${lang}/dashboard/upload`}>
+                  <div className="w-full rounded-lg border-2 border-dashed border-neutral-300 p-4 flex items-center justify-center text-neutral-500 hover:text-black hover:border-neutral-400 hover:bg-neutral-50 transition-colors cursor-pointer group gap-2">
+                    <Plus className="w-[20px] h-[20px]" />
+                    <span className="text-sm font-semibold tracking-wide">Add New Product</span>
+                  </div>
+                </Link>
+
+                {/* Draft Placeholders (These would be dynamic ideally) */}
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between opacity-60">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded border border-neutral-200 bg-neutral-100 flex items-center justify-center shrink-0">
+                        <Package className="w-[20px] h-[20px] text-neutral-400" />
+                      </div>
+                      <div>
+                        <div className="font-semibold text-sm text-neutral-800">Draft Product #{num}</div>
+                        <div className="text-xs text-neutral-500 mt-0.5">Physical Item • 0.00 MAD</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">Draft</span>
+                      <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 hover:text-black h-8 w-8 text-neutral-400">
+                        <MoreHorizontal className="w-[18px] h-[18px]" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
-        )}
+
+          {/* Right Sidebar Column */}
+          <div className="w-full lg:w-[320px] shrink-0 space-y-6">
+            <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex flex-col items-center relative overflow-hidden">
+              {/* Avatar with thin border */}
+              <div className="relative w-24 h-24 rounded-full p-1 border-2 border-neutral-100 mb-4 z-10 bg-white">
+                <div className="w-full h-full bg-neutral-100 rounded-full flex items-center justify-center overflow-hidden">
+                  {session.shop?.logo_url ? (
+                    <img src={session.shop.logo_url} alt="Shop Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-3xl font-bold text-neutral-400">{shopName.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+              </div>
+              
+              <h3 className="text-xl font-bold tracking-tight mb-1 z-10 text-neutral-800">{shopName}</h3>
+              <p className="text-sm text-neutral-500 mb-6 z-10">@{session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}</p>
+              
+              <div className="w-full grid grid-cols-3 gap-2 z-10">
+                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-neutral-800 mb-0.5">{productsCount}</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Products</span>
+                </div>
+                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-neutral-800 mb-0.5">{ordersCount}</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Sales</span>
+                </div>
+                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
+                  <span className="text-lg font-bold text-neutral-800 mb-0.5">4.9</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Stars</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="border border-black p-6 bg-white shadow-sm">
-          <h3 className="font-bold text-neutral-600 mb-2">{t.totalOrders}</h3>
-          <p className="text-4xl font-serif">{ordersCount}</p>
-          <Link href={`/${lang}/dashboard/orders`} className="text-xs font-bold underline mt-4 inline-block hover:text-neutral-600">
-            {t.manageOrders}
-          </Link>
-        </div>
-
-        <div className="border border-black p-6 bg-white shadow-sm">
-          <h3 className="font-bold text-neutral-600 mb-2">{t.activeProducts}</h3>
-          <p className="text-4xl font-serif">{productsCount}</p>
-          <Link href={`/${lang}/dashboard/upload`} className="text-xs font-bold underline mt-4 inline-block hover:text-neutral-600">
-            {t.manageProducts}
-          </Link>
-        </div>
-
-        <div className="border border-black p-6 bg-white shadow-sm">
-          <h3 className="font-bold text-neutral-600 mb-2">{t.totalRevenue}</h3>
-          <p className="text-4xl font-serif">{revenue} <span className="text-lg">{t.mad}</span></p>
-        </div>
-      </div>
-
-      {!session.shop && (
-        <div className="mt-8 border border-black p-6 bg-[#f4f4f4]">
-          <h2 className="text-xl font-bold mb-2">{t.startSelling}</h2>
-          <p className="mb-4">{t.noStore}</p>
-          <Link href={`/${lang}/dashboard/settings`} className="bg-black text-white px-6 py-3 font-bold uppercase tracking-widest text-xs hover:bg-neutral-800 transition-colors inline-block">
-            {t.createStore}
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

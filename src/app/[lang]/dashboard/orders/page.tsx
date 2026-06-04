@@ -273,21 +273,21 @@ export default function MerchantOrdersPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-8 font-mono text-xs lowercase">
+    <div className="space-y-8 max-w-5xl mx-auto">
       {/* Title */}
-      <div className="border-b border-black pb-4 flex flex-col md:flex-row md:items-baseline md:justify-between gap-4">
-        <h1 className="text-3xl font-serif font-bold tracking-tight lowercase text-black">
+      <div className="border-b border-neutral-200 pb-4 flex flex-col md:flex-row md:items-baseline md:justify-between gap-4">
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-800 capitalize">
           {t.consoleTitle}
         </h1>
         <div className="flex gap-4 items-center">
-          <span className="text-neutral-500">{t.shopSwitcher}:</span>
+          <span className="text-neutral-500 text-sm font-medium">{t.shopSwitcher}:</span>
           <select
             value={selectedShopId}
             onChange={(e) => {
               setSelectedShopId(e.target.value);
               setActiveTrackingSearch(''); // Reset search
             }}
-            className="border border-black p-2 bg-white rounded-none focus:outline-none text-xs font-bold"
+            className="border border-neutral-200 p-2 bg-white rounded-lg focus:outline-none text-sm font-semibold text-neutral-800 transition-colors"
           >
             {shops.map((s) => (
               <option key={s.id} value={s.id}>
@@ -299,19 +299,19 @@ export default function MerchantOrdersPage({ params }: PageProps) {
       </div>
 
       {/* Global Tracking Lookup Input */}
-      <div className="border border-black p-4 bg-neutral-50 flex flex-col md:flex-row gap-4 items-center">
-        <span className="font-bold flex-shrink-0">🔍 search tracking registry:</span>
+      <div className="p-4 bg-white rounded-xl border border-neutral-200 flex flex-col md:flex-row gap-4 items-center">
+        <span className="font-semibold text-sm flex-shrink-0 text-neutral-700">🔍 Search Tracking Registry:</span>
         <input
           type="text"
           value={activeTrackingSearch}
           onChange={(e) => setActiveTrackingSearch(e.target.value)}
           placeholder={t.searchPlaceholder}
-          className="flex-1 border border-black p-2 bg-white focus:outline-none rounded-none text-xs tracking-widest placeholder-neutral-400"
+          className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm transition-colors placeholder-neutral-400"
         />
         {activeTrackingSearch && (
           <button
             onClick={() => setActiveTrackingSearch('')}
-            className="bg-black text-white hover:bg-neutral-800 px-3 py-2 border border-black rounded-none cursor-pointer"
+            className="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm"
           >
             {t.clearSearch}
           </button>
@@ -320,34 +320,34 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
       {/* Orders Output */}
       {filteredOrders.length === 0 ? (
-        <div className="border border-black p-12 text-center text-neutral-400 bg-white">
+        <div className="rounded-xl border border-neutral-200 p-12 text-center text-neutral-400 bg-white">
           {t.emptyOrders}
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6">
           {filteredOrders.map((order) => {
             const isVerified = phoneVerifiedIds.includes(order.id) || order.order_status !== 'pending';
 
             return (
-              <div key={order.id} className="border border-black bg-white shadow-flat-sm flex flex-col">
+              <div key={order.id} className="bg-white rounded-xl border border-neutral-200 flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="p-4 border-b border-black bg-neutral-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                <div className="p-4 border-b border-neutral-100 bg-neutral-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
                   <div className="space-y-1">
-                    <span className="font-bold text-sm block">
+                    <span className="font-bold text-sm block text-neutral-800">
                       {t.orderId}: {order.id.substring(0, 8)}...
                     </span>
-                    <span className="text-[10px] text-neutral-500">
-                      registered: {new Date(order.created_at).toLocaleString()}
+                    <span className="text-xs text-neutral-500">
+                      Registered: {new Date(order.created_at).toLocaleString()}
                     </span>
                   </div>
                   
                    {/* Tracking & Status Badges */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-neutral-500 font-bold text-[10px]">status:</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-neutral-500 font-semibold text-xs uppercase tracking-wider">Status:</span>
                       {order.order_status === 'delivered' ? (
-                        <span className="bg-green-50 text-green-700 border border-green-600 px-2 py-0.5 text-[10px] font-bold uppercase">
-                          delivered ✓
+                        <span className="bg-green-50 text-green-700 border border-green-200 rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wider">
+                          Delivered ✓
                         </span>
                       ) : (
                         <select
@@ -363,103 +363,103 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                             const dbOrders = await fetchOrders();
                             setOrders(dbOrders as Order[]);
                           }}
-                          className="border border-black px-2 py-0.5 bg-white text-[10px] font-bold focus:outline-none rounded-none cursor-pointer"
+                          className="border border-neutral-200 rounded-md px-2.5 py-1 bg-white text-xs font-bold focus:outline-none cursor-pointer capitalize text-neutral-700"
                         >
-                          <option value="pending">pending</option>
-                          <option value="confirmed">confirmed</option>
-                          <option value="shipped">shipped</option>
-                          <option value="delivered">delivered</option>
-                          <option value="returned">returned</option>
+                          <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
+                          <option value="shipped">Shipped</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="returned">Returned</option>
                         </select>
                       )}
                     </div>
 
-                    <span className="bg-black text-white px-2 py-0.5 text-[10px] tracking-wider uppercase font-bold">
-                      amana: {order.amana_tracking_number}
+                    <span className="bg-neutral-800 text-white rounded-md px-2.5 py-1 text-xs tracking-wider uppercase font-bold">
+                      Amana: {order.amana_tracking_number}
                     </span>
-                    <span className="border border-black px-2 py-0.5 bg-white text-[10px] font-bold text-neutral-700">
+                    <span className="border border-neutral-200 rounded-md px-2.5 py-1 bg-white text-xs font-bold text-neutral-600 capitalize">
                       {order.amana_delivery_status.replace('_', ' ')}
                     </span>
                   </div>
                 </div>
 
                 {/* Grid Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-black">
+                <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 text-sm">
                   {/* Customer details */}
-                  <div className="lg:col-span-4 p-4 space-y-3">
-                    <span className="font-bold border-b border-black pb-0.5 block mb-2">buyer logistics</span>
-                    <div className="space-y-1.5">
-                      <div><span className="text-neutral-500">{t.buyer}:</span> <strong className="text-black font-semibold">{order.customer_name}</strong></div>
+                  <div className="lg:col-span-4 p-5 space-y-4">
+                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">Buyer Logistics</span>
+                    <div className="space-y-2 text-neutral-600">
+                      <div><span className="text-neutral-500 capitalize">{t.buyer}:</span> <strong className="text-black font-semibold">{order.customer_name}</strong></div>
                       <div>
-                        <span className="text-neutral-500">{t.phone}:</span>{' '}
+                        <span className="text-neutral-500 capitalize">{t.phone}:</span>{' '}
                         <strong className="text-black font-semibold">{order.customer_phone}</strong>
                         {isVerified ? (
-                          <span className="text-green-700 font-bold block text-[10px] mt-0.5">{t.verifiedBadge}</span>
+                          <span className="text-green-600 font-bold block text-xs mt-1">{t.verifiedBadge}</span>
                         ) : (
                           <button
                             onClick={() => setVerifyingPhoneOrder(order)}
-                            className="text-red-600 font-bold hover:underline block text-[10px] mt-0.5 cursor-pointer"
+                            className="text-red-600 font-bold hover:underline block text-xs mt-1 cursor-pointer transition-colors"
                           >
-                            ⚠️ click to trigger verification sms
+                            ⚠️ Click to trigger verification SMS
                           </button>
                         )}
                       </div>
-                      <div><span className="text-neutral-500">{t.city}:</span> <strong className="text-black font-semibold">{order.shipping_city}</strong></div>
-                      <div><span className="text-neutral-500">{t.address}:</span> <span className="text-neutral-700 leading-normal">{order.shipping_address}</span></div>
+                      <div><span className="text-neutral-500 capitalize">{t.city}:</span> <strong className="text-black font-semibold">{order.shipping_city}</strong></div>
+                      <div><span className="text-neutral-500 capitalize">{t.address}:</span> <span className="text-neutral-700 leading-normal">{order.shipping_address}</span></div>
                     </div>
                   </div>
 
                   {/* Items and cost */}
-                  <div className="lg:col-span-4 p-4 space-y-3">
-                    <span className="font-bold border-b border-black pb-0.5 block mb-2">{t.items}</span>
-                    <div className="space-y-2">
+                  <div className="lg:col-span-4 p-5 space-y-4">
+                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">{t.items}</span>
+                    <div className="space-y-3">
                       {order.items.map((item) => (
                         <div key={item.id} className="flex justify-between items-start gap-4">
                           <div className="space-y-0.5">
                             <span className="font-bold text-neutral-800 line-clamp-1">{item.title}</span>
                             {item.variant_sku && (
-                              <span className="text-[10px] text-neutral-400 block">SKU: {item.variant_sku}</span>
+                              <span className="text-xs text-neutral-400 block uppercase tracking-wider">SKU: {item.variant_sku}</span>
                             )}
                           </div>
-                          <span className="flex-shrink-0 text-neutral-600">
+                          <span className="flex-shrink-0 text-neutral-600 font-medium whitespace-nowrap">
                             {item.quantity}x {item.price_mad} {t.totalMad}
                           </span>
                         </div>
                       ))}
                     </div>
                     
-                    <div className="pt-3 border-t border-dashed border-neutral-300 space-y-1">
-                      <div className="flex justify-between">
-                        <span className="text-neutral-500">subtotal:</span>
+                    <div className="pt-4 border-t border-dashed border-neutral-200 space-y-2">
+                      <div className="flex justify-between text-neutral-600">
+                        <span className="capitalize">Subtotal:</span>
                         <span>{order.subtotal_mad} {t.totalMad}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-neutral-500">amana shipping:</span>
+                      <div className="flex justify-between text-neutral-600">
+                        <span className="capitalize">Amana Shipping:</span>
                         <span>{order.shipping_cost_mad} {t.totalMad}</span>
                       </div>
-                      <div className="flex justify-between font-bold border-t border-black pt-1.5 text-sm">
-                        <span>{t.amount}:</span>
+                      <div className="flex justify-between font-bold border-t border-neutral-200 pt-2 text-base text-neutral-800">
+                        <span className="capitalize">{t.amount}:</span>
                         <span>{order.total_mad} {t.totalMad}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Tracking milestone logs */}
-                  <div className="lg:col-span-4 p-4 space-y-3 bg-neutral-50">
-                    <span className="font-bold border-b border-black pb-0.5 block mb-2">{t.historyTitle}</span>
+                  <div className="lg:col-span-4 p-5 space-y-4 bg-neutral-50/50">
+                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">{t.historyTitle}</span>
                     
-                    <div className="space-y-3 max-h-[160px] overflow-y-auto pr-1">
+                    <div className="space-y-4 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
                       {order.amana_history.map((log, index) => (
-                        <div key={index} className="relative pl-4 border-l border-black space-y-0.5 pb-1">
-                          <div className="absolute w-2 h-2 bg-black left-[-4px] top-1"></div>
+                        <div key={index} className="relative pl-5 border-l-2 border-neutral-200 space-y-1 pb-2">
+                          <div className="absolute w-2.5 h-2.5 bg-neutral-400 rounded-full left-[-5px] top-1.5 border-2 border-white"></div>
                           <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-neutral-800">{log.status.replace('_', ' ')}</span>
-                            <span className="text-[9px] text-neutral-400">
+                            <span className="font-bold text-neutral-800 capitalize">{log.status.replace('_', ' ')}</span>
+                            <span className="text-xs text-neutral-400 font-medium">
                               {new Date(log.timestamp).toLocaleDateString()}
                             </span>
                           </div>
-                          <span className="text-[10px] text-neutral-600 block">node: {log.location}</span>
-                          <p className="text-[10px] text-neutral-500 italic font-sans lowercase">{log.note}</p>
+                          <span className="text-xs text-neutral-600 block capitalize">Node: {log.location}</span>
+                          <p className="text-xs text-neutral-500 italic">{log.note}</p>
                         </div>
                       ))}
                     </div>
@@ -467,20 +467,20 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                 </div>
 
                 {/* Footer buttons */}
-                <div className="p-3 border-t border-black bg-neutral-100 flex flex-wrap gap-2 justify-end">
+                <div className="p-4 border-t border-neutral-100 bg-white flex flex-wrap gap-3 justify-end">
                   <button
                     onClick={() => {
                       setUpdatingStatusOrder(order);
                       setManualTrackingNum(order.amana_tracking_number);
                     }}
                     disabled={order.order_status === 'delivered'}
-                    className="border border-black bg-white hover:bg-neutral-50 px-3 py-1.5 text-[10px] font-bold rounded-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="border border-neutral-200 bg-white hover:bg-neutral-50 hover:text-black text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     🚀 {t.milestoneBtn}
                   </button>
                   <button
                     onClick={() => setActiveLabelOrder(order)}
-                    className="border border-black bg-white hover:bg-neutral-50 px-3 py-1.5 text-[10px] font-bold rounded-none cursor-pointer"
+                    className="bg-neutral-800 hover:bg-black text-white px-4 py-2 text-sm font-semibold rounded-lg cursor-pointer transition-colors"
                   >
                     📄 {t.labelBtn}
                   </button>

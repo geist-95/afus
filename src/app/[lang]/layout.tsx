@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import NavBar from "@/components/ui/NavBar";
-import Footer from "@/components/ui/Footer";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -22,47 +20,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const isAr = lang === "ar";
   const dir = isAr ? "rtl" : "ltr";
 
-  // Translated system labels
-  const labels: Record<string, Record<string, string>> = {
-    en: {
-      promo: "Free amana shipping across morocco for all cash on delivery orders",
-      footerDesc: "afus is a modern two-sided multi-vendor marketplace connecting moroccan artisans directly with clients. fully optimized for cash on delivery (cod) markets using al barid bank amana tracking.",
-      rights: "all rights reserved.",
-    },
-    fr: {
-      promo: "Livraison amana gratuite partout au maroc pour toutes les commandes en paiement à la livraison",
-      footerDesc: "afus est une place de marché moderne reliant directement les artisans marocains aux clients. entièrement optimisée pour le paiement à la livraison (cod) avec suivi amana d'al barid bank.",
-      rights: "tous droits réservés.",
-    },
-    ar: {
-      promo: "شحن أمانة مجاني في جميع أنحاء المغرب لجميع طلبات الدفع عند الاستلام",
-      footerDesc: "أفوس هي منصة سوقية حديثة تربط الحرفيين المغاربة مباشرة بالزبائن. معززة بالكامل لنظام الدفع عند الاستلام مع تتبع أمانة بريد بنك المغرب.",
-      rights: "جميع الحقوق محفوظة.",
-    }
-  };
-
-  const t = labels[lang] || labels.en;
-
   return (
     <html lang={lang} dir={dir} className="h-full" suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-white text-black font-sans antialiased" suppressHydrationWarning>
         <WishlistProvider>
         <CartProvider>
-          {/* Promotional Banner */}
-          <div className="bg-[#f5e9fb] text-[#673399] text-center py-2.5 px-4 text-xs font-semibold">
-            {t.promo}
-          </div>
-
-          {/* Auth-aware NavBar (client component) */}
-          <NavBar lang={lang} />
-
-          {/* Page Content */}
-          <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
-          </main>
-
-          {/* Flat Footer */}
-          <Footer lang={lang} />
+          {children}
           <SpeedInsights />
         </CartProvider>
         </WishlistProvider>

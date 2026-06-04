@@ -38,7 +38,7 @@ const cities = [
     slug: "tetouan",
     name: "Tétouan",
     tifinagh: "ⵟⵉⵟⵡⴰⵏ",
-    image: "/cities-2/tetouan.jpg",
+    image: "/cities-2/hamama.jpg",
     bg: "#1a1200",
     textColor: "#f5e6b0",
   },
