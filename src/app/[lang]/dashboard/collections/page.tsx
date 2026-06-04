@@ -175,18 +175,17 @@ export default function CollectionsPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-8 font-mono text-xs lowercase max-w-4xl mx-auto">
-      {/* Title */}
-      <div className="border-b border-black pb-4 flex justify-between items-baseline">
-        <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-black lowercase">
-            manage collections
-          </h1>
-          <p className="text-neutral-500 text-xs mt-1">
-            group your products into custom merchant collections to showcase on your store page
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col font-sans">
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 shrink-0">
+        <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
+          Manage Collections
+        </h1>
+        <p className="text-xs text-neutral-500 mt-0.5">
+          Group your products into custom merchant collections to showcase on your store page
+        </p>
       </div>
+
+      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-5xl flex-1 space-y-8">
 
       {message && (
         <div className="border border-green-600 bg-green-50 text-green-700 p-3 font-bold font-mono">
@@ -197,62 +196,62 @@ export default function CollectionsPage({ params }: PageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Create Form */}
         <div className="lg:col-span-7 space-y-6">
-          <form onSubmit={handleCreateCollection} className="border border-black p-4 bg-white space-y-6">
-            <span className="font-bold border-b border-black pb-1.5 block text-sm flex items-center gap-2">
-              <Plus className="w-4 h-4" /> create new collection
+          <form onSubmit={handleCreateCollection} className="bg-white rounded-xl border border-neutral-200 p-6 space-y-6">
+            <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 text-sm flex items-center gap-2 capitalize">
+              <Plus className="w-5 h-5" /> Create New Collection
             </span>
 
             {/* Trilingual Title Translations */}
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">english name</label>
+            <div className="space-y-4 pt-1">
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">English Name</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. summer sales, silver rings, berber rugs..."
+                  placeholder="e.g. Summer sales, Silver rings, Berber rugs..."
                   value={nameEn}
                   onChange={(e) => setNameEn(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-neutral-500 block">french name (nom français)</label>
+              <div className="space-y-2">
+                <label className="text-neutral-600 font-semibold text-sm block">French Name (Nom Français)</label>
                 <input
                   type="text"
-                  placeholder="ex: soldes d'été, bagues en argent..."
+                  placeholder="ex: Soldes d'été, Bagues en argent..."
                   value={nameFr}
                   onChange={(e) => setNameFr(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs"
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
               </div>
 
-              <div className="space-y-1" dir="rtl">
-                <label className="text-neutral-500 block text-right font-sans">اسم المجموعة بالعربية</label>
+              <div className="space-y-2" dir="rtl">
+                <label className="text-neutral-600 font-semibold text-sm block text-right">اسم المجموعة بالعربية</label>
                 <input
                   type="text"
                   placeholder="مثال: عروض الصيف، خواتم الفضة..."
                   value={nameAr}
                   onChange={(e) => setNameAr(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white focus:outline-none rounded-none text-xs text-right font-sans"
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors text-right"
                 />
               </div>
             </div>
 
             {/* Products Selector */}
-            <div className="space-y-2">
-              <label className="block text-neutral-600 font-bold">
-                select products to include ({selectedProductIds.length} selected)
+            <div className="space-y-3">
+              <label className="block text-neutral-800 font-semibold text-sm">
+                Select products to include ({selectedProductIds.length} selected)
               </label>
               {products.length === 0 ? (
-                <div className="border border-dashed border-neutral-300 p-6 text-center text-neutral-400">
-                  no products found in your shop. create products first to add them to collections.
+                <div className="border border-dashed border-neutral-200 rounded-lg p-6 text-center text-neutral-500 bg-neutral-50/50 text-sm">
+                  No products found in your shop. Create products first to add them to collections.
                 </div>
               ) : (
-                <div className="border border-black max-h-60 overflow-y-auto divide-y divide-black bg-neutral-50">
+                <div className="border border-neutral-200 rounded-lg max-h-64 overflow-y-auto divide-y divide-neutral-100 custom-scrollbar">
                   {products.map((p) => {
                     const id = p.id || p.numeric_id?.toString();
-                    const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'artisan craft';
+                    const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'Artisan Craft';
                     const isSelected = selectedProductIds.includes(id);
                     const image = p.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
 
@@ -261,17 +260,19 @@ export default function CollectionsPage({ params }: PageProps) {
                         key={id}
                         type="button"
                         onClick={() => toggleProductSelection(id)}
-                        className="w-full text-left p-2.5 hover:bg-neutral-100 flex items-center gap-3 transition-colors rounded-none"
+                        className={`w-full text-left p-3 flex items-center gap-4 transition-colors ${
+                          isSelected ? 'bg-neutral-50 hover:bg-neutral-100' : 'bg-white hover:bg-neutral-50'
+                        }`}
                       >
                         {isSelected ? (
-                          <CheckSquare className="w-4 h-4 text-black flex-shrink-0" />
+                          <CheckSquare className="w-5 h-5 text-neutral-800 flex-shrink-0" />
                         ) : (
-                          <Square className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                          <Square className="w-5 h-5 text-neutral-300 flex-shrink-0" />
                         )}
-                        <img src={image} alt="" className="w-8 h-8 object-cover border border-black flex-shrink-0" />
+                        <img src={image} alt="" className="w-10 h-10 object-cover rounded-md border border-neutral-100 flex-shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="font-serif font-bold text-xs truncate leading-tight">{title}</p>
-                          <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{p.base_price_mad} mad</p>
+                          <p className="font-semibold text-sm text-neutral-800 truncate">{title}</p>
+                          <p className="text-xs text-neutral-500 mt-0.5">{p.base_price_mad} MAD</p>
                         </div>
                       </button>
                     );
@@ -282,42 +283,42 @@ export default function CollectionsPage({ params }: PageProps) {
 
             <button
               type="submit"
-              className="w-full bg-black text-white hover:bg-neutral-800 text-[10px] font-mono tracking-widest py-3.5 border border-black uppercase transition-colors rounded-none font-bold"
+              className="w-full bg-black text-white hover:bg-neutral-800 text-sm py-4 rounded-lg uppercase tracking-wider transition-colors font-bold mt-2"
             >
-              create collection
+              Create Collection
             </button>
           </form>
         </div>
 
         {/* Right Column: Existing Collections */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="border border-black p-4 bg-white space-y-4">
-            <span className="font-bold border-b border-black pb-1.5 block text-sm flex items-center gap-2">
-              <FolderClosed className="w-4 h-4" /> active collections ({collections.length})
+          <div className="bg-white rounded-xl border border-neutral-200 p-6 space-y-5">
+            <span className="font-bold border-b border-neutral-200 pb-2 block text-sm text-neutral-800 flex items-center gap-2 capitalize">
+              <FolderClosed className="w-5 h-5" /> Active Collections ({collections.length})
             </span>
 
             {collections.length === 0 ? (
-              <div className="border border-dashed border-neutral-300 p-8 text-center text-neutral-400">
-                no collections created yet.
+              <div className="border border-dashed border-neutral-200 rounded-lg p-8 text-center text-neutral-500 bg-neutral-50/50 text-sm">
+                No collections created yet.
               </div>
             ) : (
               <div className="space-y-4">
                 {collections.map((c) => {
                   const name = c.name_translations[lang as 'en'|'fr'|'ar'] || c.name_translations.en;
                   return (
-                    <div key={c.id} className="border border-black p-3.5 bg-neutral-50 flex justify-between items-start gap-4">
+                    <div key={c.id} className="rounded-lg border border-neutral-200 p-4 bg-white hover:bg-neutral-50 transition-colors flex justify-between items-start gap-4">
                       <div className="space-y-2 min-w-0 flex-1">
-                        <h4 className="font-serif font-bold text-sm text-black truncate leading-tight">{name}</h4>
-                        <div className="flex gap-1.5 flex-wrap">
-                          <span className="bg-neutral-200 text-neutral-700 px-2 py-0.5 font-bold text-[9px] font-mono">
-                            📦 {c.product_ids.length} products
+                        <h4 className="font-bold text-sm text-neutral-800 truncate">{name}</h4>
+                        <div className="flex gap-2 flex-wrap">
+                          <span className="bg-neutral-100 text-neutral-600 px-2.5 py-1 rounded-md font-semibold text-xs border border-neutral-200">
+                            📦 {c.product_ids.length} Products
                           </span>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleDeleteCollection(c.id)}
-                        className="text-red-600 hover:text-red-800 p-1 border border-red-600 hover:bg-red-50 flex-shrink-0 cursor-pointer"
+                        className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50 flex-shrink-0 cursor-pointer transition-colors"
                         title="Delete collection"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -329,6 +330,7 @@ export default function CollectionsPage({ params }: PageProps) {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

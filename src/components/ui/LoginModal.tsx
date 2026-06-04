@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { loginUser, registerUser } from '@/lib/auth';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -10,11 +11,20 @@ interface LoginModalProps {
 
 export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Reset state and lock body scroll when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setIsRegisterMode(false);
+      setEmail('');
+      setPassword('');
+      setFullName('');
+      setError('');
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -24,6 +34,37 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password || (isRegisterMode && !fullName)) {
+      setError(lang === 'fr' ? 'Veuillez remplir tous les champs.' : lang === 'ar' ? 'الرجاء ملء جميع الحقول.' : 'Please fill all fields.');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+
+    try {
+      if (isRegisterMode) {
+        await registerUser({
+          email,
+          password,
+          fullName,
+          phone: '',
+          role: 'buyer'
+        });
+      } else {
+        await loginUser(email, password);
+      }
+      onClose();
+      window.location.reload(); // Reload to reflect the new session across the app
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during authentication.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -71,13 +112,22 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
         </div>
 
         {/* Form */}
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {error && (
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
+              {error}
+            </div>
+          )}
+
           {isRegisterMode && (
             <div className="space-y-1">
               <label className="text-sm font-medium text-black block">{t.fullName}</label>
               <input 
                 type="text" 
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="w-full border border-neutral-300 rounded-lg px-3 py-2.5 text-black focus:outline-none focus:ring-2 focus:ring-neutral-200 focus:border-black transition-colors"
+                disabled={loading}
               />
             </div>
           )}
@@ -86,7 +136,10 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
             <label className="text-sm font-medium text-black block">{t.email}</label>
             <input 
               type="email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-neutral-300 rounded-lg px-3 py-2.5 text-black focus:outline-none focus:ring-2 focus:ring-neutral-200 focus:border-black transition-colors"
+              disabled={loading}
             />
           </div>
 
@@ -94,7 +147,10 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
             <label className="text-sm font-medium text-black block">{t.password}</label>
             <input 
               type="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-neutral-300 rounded-lg px-3 py-2.5 text-black focus:outline-none focus:ring-2 focus:ring-neutral-200 focus:border-black transition-colors"
+              disabled={loading}
             />
           </div>
 
@@ -117,9 +173,10 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
 
           <button 
             type="submit" 
-            className="w-full bg-[#222222] text-white rounded-full py-3 font-bold hover:bg-black transition-colors mt-2"
+            className="w-full bg-[#222222] text-white rounded-full py-3 font-bold hover:bg-black transition-colors mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={loading}
           >
-            {isRegisterMode ? t.registerBtn : t.signInBtn}
+            {loading ? '...' : isRegisterMode ? t.registerBtn : t.signInBtn}
           </button>
 
           {!isRegisterMode && (

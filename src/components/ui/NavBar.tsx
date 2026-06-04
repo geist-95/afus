@@ -6,7 +6,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { getActiveSession, logoutUser, UserSession } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useWishlist } from '@/lib/wishlist';
-import { staticCategories } from '@/lib/supabase';
+import { staticCategories, fetchProducts } from '@/lib/supabase';
+import { getFollowedShops, getLastCheckedNotifications, updateLastCheckedNotifications } from '@/lib/followers';
 import LoginModal from './LoginModal';
 
 // Outline SVG Icon Components (matching Etsy design style)
@@ -106,6 +107,14 @@ function CheckIcon() {
   );
 }
 
+function BellIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-5 h-5">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+    </svg>
+  );
+}
+
 interface NavBarProps {
   lang: string;
 }
@@ -121,9 +130,44 @@ export default function NavBar({ lang }: NavBarProps) {
   const { totalItems: wishlistCount } = useWishlist();
   const langRef = useRef<HTMLDivElement>(null);
   const catScrollRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
   const [catCanScrollLeft, setCatCanScrollLeft] = useState(false);
   const [catCanScrollRight, setCatCanScrollRight] = useState(true);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [newAlerts, setNewAlerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function checkNotifications() {
+      const followed = getFollowedShops();
+      if (followed.length === 0) {
+        setNewAlerts([]);
+        return;
+      }
+      const lastCheckedStr = getLastCheckedNotifications();
+      const lastChecked = new Date(lastCheckedStr).getTime();
+      
+      const allProds = await fetchProducts();
+      const recent = allProds.filter(p => {
+        if (!followed.includes(p.shop_id)) return false;
+        const createdAt = new Date(p.created_at).getTime();
+        return createdAt > lastChecked;
+      });
+      setNewAlerts(recent);
+    }
+    // Only fetch/check if modal is closed so we don't clear alerts while viewing them
+    if (!notificationsOpen) {
+      checkNotifications();
+    }
+  }, [pathname, notificationsOpen]);
+
+  const handleOpenNotifications = () => {
+    setNotificationsOpen(!notificationsOpen);
+    if (!notificationsOpen && newAlerts.length > 0) {
+      updateLastCheckedNotifications();
+    }
+  };
 
   useEffect(() => {
     async function loadSession() {
@@ -134,11 +178,14 @@ export default function NavBar({ lang }: NavBarProps) {
     loadSession();
   }, [pathname]);
 
-  // Click outside language switcher to close it
+  // Click outside handlers
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (langRef.current && !langRef.current.contains(event.target as Node)) {
         setLangOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -288,6 +335,46 @@ export default function NavBar({ lang }: NavBarProps) {
                   </span>
                 )}
               </Link>
+
+              {/* Notification Bell */}
+              <div className="relative flex items-center" ref={notifRef}>
+                <button onClick={handleOpenNotifications} className="flex items-center text-black hover:text-black/80 relative cursor-pointer" title="Notifications">
+                  <BellIcon />
+                  {newAlerts.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#E8583F] w-2.5 h-2.5 rounded-full border border-white"></span>
+                  )}
+                </button>
+                
+                {notificationsOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-white border border-primary/20 rounded-lg shadow-lg z-50 p-2">
+                    <div className="px-2 py-2 border-b border-primary/10 text-xs font-bold text-black mb-2">
+                      {lang === 'fr' ? 'Alertes' : lang === 'ar' ? 'تنبيهات' : 'Notifications'}
+                    </div>
+                    {newAlerts.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {newAlerts.map(alert => (
+                          <Link 
+                            key={alert.id}
+                            href={`/${lang}/shop/${alert.shops?.slug || '#'}`}
+                            onClick={() => setNotificationsOpen(false)}
+                            className="flex items-start gap-3 p-2 hover:bg-neutral-50 rounded-md transition-colors"
+                          >
+                            <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" className="w-10 h-10 object-cover rounded-md" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
+                              <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'] || alert.title_translations?.en}</p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-neutral-400 text-xs">
+                        {lang === 'fr' ? 'Aucune nouvelle alerte.' : lang === 'ar' ? 'لا توجد تنبيهات جديدة.' : 'No new alerts.'}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               <Link href={`/${lang}/cart`} className="flex items-center text-black hover:text-black/80 relative" title={t.cart}>
                 <ShoppingCartIcon />

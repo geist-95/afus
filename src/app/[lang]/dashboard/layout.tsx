@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { logoutUser } from '@/lib/auth';
-import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap, Tag, MessageSquare } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -171,6 +171,14 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <FolderClosed className="w-[18px] h-[18px]" />
                   <span>Collections</span>
                 </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>
+                  <Tag className="w-[18px] h-[18px]" />
+                  <span>Promotions</span>
+                </Link>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/messages`))} href={`/${lang}/dashboard/messages`}>
+                  <MessageSquare className="w-[18px] h-[18px]" />
+                  <span>Messages</span>
+                </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>
                   <Settings className="w-[18px] h-[18px]" />
                   <span>Settings</span>
@@ -203,6 +211,8 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>Products</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>Orders</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>Collections</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>Promotions</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/messages`))} href={`/${lang}/dashboard/messages`}>Messages</Link>
                     </div>
                   </div>
                 </div>

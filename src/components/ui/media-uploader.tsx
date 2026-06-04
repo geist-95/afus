@@ -167,7 +167,7 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
   };
 
   return (
-    <div className="space-y-4 font-mono text-xs lowercase">
+    <div className="space-y-4 text-sm">
       {/* Drag & Drop Box */}
       <div
         onDragOver={handleDragOver}
@@ -176,7 +176,7 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
         onClick={() => fileInputRef.current?.click()}
         className={`border-2 border-dashed ${
           isDragging ? 'border-black bg-neutral-100' : 'border-neutral-300 hover:border-black bg-neutral-50'
-        } p-8 text-center cursor-pointer transition-colors duration-150 rounded-none flex flex-col items-center justify-center min-h-[160px]`}
+        } p-8 text-center cursor-pointer transition-colors duration-150 rounded-xl flex flex-col items-center justify-center min-h-[160px]`}
       >
         <input
           type="file"
@@ -187,43 +187,43 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
           className="hidden"
         />
         <div className="space-y-2">
-          <span className="text-xl">📷</span>
-          <span className="block font-bold text-neutral-700">
-            {isDragging ? 'drop files here' : 'drag and drop files or click to browse'}
+          <span className="text-2xl mb-2 block">📷</span>
+          <span className="block font-medium text-base text-neutral-800">
+            {isDragging ? 'Drop files here' : 'Drag & drop files or click to browse'}
           </span>
-          <span className="block text-[10px] text-neutral-400">
-            up to {maxFiles} images. client-side high-fidelity compression will be applied instantly.
+          <span className="block text-sm text-neutral-500">
+            Up to {maxFiles} images. High-fidelity compression is applied instantly.
           </span>
         </div>
       </div>
 
       {compressing && (
-        <div className="text-[10px] text-neutral-500 animate-pulse">
-          ⚡ compressing assets in browser thread...
+        <div className="text-sm text-neutral-500 animate-pulse">
+          ⚡ Compressing assets...
         </div>
       )}
 
       {/* Uploaded File List / Reorder Row */}
       {files.length > 0 && (
-        <div className="space-y-2">
-          <span className="font-bold border-b border-black pb-0.5 block mb-2">upload queue & sort priority</span>
+        <div className="space-y-3 mt-6">
+          <span className="font-semibold text-sm text-neutral-800 block">Upload Queue & Sort Priority</span>
           
-          <div className="border border-black divide-y divide-black bg-white">
+          <div className="border border-neutral-200 divide-y divide-neutral-100 rounded-xl bg-white overflow-hidden shadow-sm">
             {files.map((file, idx) => {
               const savings = Math.round(((file.originalSize - file.compressedSize) / file.originalSize) * 100);
 
               return (
-                <div key={file.id} className="p-3 flex items-center justify-between gap-4">
+                <div key={file.id} className="p-3 flex items-center justify-between gap-4 hover:bg-neutral-50 transition-colors">
                   <div className="flex items-center gap-3">
                     {/* Thumbnail */}
-                    <div className="w-12 h-12 border border-black overflow-hidden bg-neutral-100 flex-shrink-0">
+                    <div className="w-12 h-12 border border-neutral-200 rounded-md overflow-hidden bg-neutral-100 flex-shrink-0">
                       <img src={file.dataUrl} alt="upload preview" className="w-full h-full object-cover" />
                     </div>
 
                     {/* Metadata */}
                     <div className="flex flex-col gap-0.5">
-                      <span className="font-bold max-w-[200px] truncate block text-neutral-800">{file.name}</span>
-                      <span className="text-[10px] text-neutral-400">
+                      <span className="font-medium text-sm max-w-[200px] truncate block text-neutral-800">{file.name}</span>
+                      <span className="text-xs text-neutral-500">
                         {formatBytes(file.compressedSize)} (saved {savings}%)
                       </span>
                     </div>
@@ -231,8 +231,8 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
 
                   {/* Actions & Sorting */}
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-[10px] bg-neutral-100 border border-black px-1.5 py-0.5">
-                      rank: {idx + 1}
+                    <span className="font-medium text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded-md">
+                      Rank {idx + 1}
                     </span>
 
                     {/* Priority buttons */}
@@ -240,8 +240,8 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
                       type="button"
                       onClick={() => movePriority(idx, 'up')}
                       disabled={idx === 0}
-                      className="border border-black p-1 hover:bg-neutral-50 disabled:opacity-30 disabled:hover:bg-transparent rounded-none"
-                      title="increase priority"
+                      className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-200 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      title="Move priority up"
                     >
                       ▲
                     </button>
@@ -250,8 +250,8 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
                       type="button"
                       onClick={() => movePriority(idx, 'down')}
                       disabled={idx === files.length - 1}
-                      className="border border-black p-1 hover:bg-neutral-50 disabled:opacity-30 disabled:hover:bg-transparent rounded-none"
-                      title="decrease priority"
+                      className="p-1.5 text-neutral-400 hover:text-neutral-800 hover:bg-neutral-200 rounded-md disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                      title="Move priority down"
                     >
                       ▼
                     </button>
@@ -260,8 +260,8 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
                     <button
                       type="button"
                       onClick={() => removeFile(file.id)}
-                      className="border border-red-600 text-red-600 p-1 hover:bg-red-50 ml-2 rounded-none font-bold"
-                      title="remove file"
+                      className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 ml-2 rounded-md transition-colors"
+                      title="Remove file"
                     >
                       ✕
                     </button>

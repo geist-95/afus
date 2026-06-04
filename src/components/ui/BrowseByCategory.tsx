@@ -14,9 +14,6 @@ const categories = [
 export default function BrowseByCategory({ lang }: { lang: string }) {
   return (
     <div className="max-w-[100rem] mx-auto px-2 md:px-12 py-2 md:py-8">
-      <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">
-        Browse by Category
-      </h2>
 
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">

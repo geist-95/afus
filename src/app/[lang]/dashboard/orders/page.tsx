@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { fetchOrders, fetchShops, updateAmanaMilestone } from '@/lib/supabase';
 import { getActiveSession } from '@/lib/auth';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
+import { FileText, MapPin, Search, CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 interface OrderHistoryEntry {
   status: string;
@@ -273,12 +274,15 @@ export default function MerchantOrdersPage({ params }: PageProps) {
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="min-h-screen flex flex-col font-sans">
       {/* Title */}
-      <div className="border-b border-neutral-200 pb-4 flex flex-col md:flex-row md:items-baseline md:justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-800 capitalize">
-          {t.consoleTitle}
-        </h1>
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row md:items-center justify-between shrink-0 gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
+            {t.consoleTitle}
+          </h1>
+          <p className="text-xs text-neutral-500 mt-0.5">Manage and track your Amana shipping</p>
+        </div>
         <div className="flex gap-4 items-center">
           <span className="text-neutral-500 text-sm font-medium">{t.shopSwitcher}:</span>
           <select
@@ -298,20 +302,25 @@ export default function MerchantOrdersPage({ params }: PageProps) {
         </div>
       </div>
 
+      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-5xl flex-1 space-y-8">
+
       {/* Global Tracking Lookup Input */}
-      <div className="p-4 bg-white rounded-xl border border-neutral-200 flex flex-col md:flex-row gap-4 items-center">
-        <span className="font-semibold text-sm flex-shrink-0 text-neutral-700">🔍 Search Tracking Registry:</span>
+      <div className="p-4 bg-white rounded-xl border border-neutral-200 shadow-sm flex flex-col md:flex-row gap-4 items-center">
+        <div className="flex items-center gap-2 text-neutral-700 flex-shrink-0">
+          <Search className="w-4 h-4" />
+          <span className="font-semibold text-sm">Search Tracking Registry:</span>
+        </div>
         <input
           type="text"
           value={activeTrackingSearch}
           onChange={(e) => setActiveTrackingSearch(e.target.value)}
           placeholder={t.searchPlaceholder}
-          className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm transition-colors placeholder-neutral-400"
+          className="flex-1 border border-neutral-200 p-2 bg-neutral-50 focus:bg-white focus:border-neutral-300 focus:outline-none rounded-lg text-sm transition-all placeholder-neutral-400"
         />
         {activeTrackingSearch && (
           <button
             onClick={() => setActiveTrackingSearch('')}
-            className="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:text-black px-4 py-2.5 rounded-lg transition-colors font-medium text-sm"
+            className="bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-black px-4 py-2 rounded-lg transition-colors font-medium text-sm"
           >
             {t.clearSearch}
           </button>
@@ -467,22 +476,24 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                 </div>
 
                 {/* Footer buttons */}
-                <div className="p-4 border-t border-neutral-100 bg-white flex flex-wrap gap-3 justify-end">
+                <div className="p-4 border-t border-neutral-100 bg-white flex flex-wrap gap-3 justify-end items-center">
                   <button
                     onClick={() => {
                       setUpdatingStatusOrder(order);
                       setManualTrackingNum(order.amana_tracking_number);
                     }}
                     disabled={order.order_status === 'delivered'}
-                    className="border border-neutral-200 bg-white hover:bg-neutral-50 hover:text-black text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                   >
-                    🚀 {t.milestoneBtn}
+                    <MapPin className="w-4 h-4" />
+                    {t.milestoneBtn}
                   </button>
                   <button
                     onClick={() => setActiveLabelOrder(order)}
-                    className="bg-neutral-800 hover:bg-black text-white px-4 py-2 text-sm font-semibold rounded-lg cursor-pointer transition-colors"
+                    className="flex items-center gap-2 bg-black hover:bg-neutral-800 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors shadow-sm"
                   >
-                    📄 {t.labelBtn}
+                    <FileText className="w-4 h-4" />
+                    {t.labelBtn}
                   </button>
                 </div>
               </div>
@@ -593,29 +604,38 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
       {/* MODAL 2: SMS Verification Trigger */}
       {verifyingPhoneOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-black max-w-md w-full p-6 space-y-4 rounded-none">
-            <span className="font-serif font-bold text-lg block lowercase">Moroccan COD phone validation</span>
-            <p className="text-xs text-neutral-600 leading-normal lowercase">
-              we are triggering an on-demand validation SMS containing a confirmation pin code to:
-              <strong className="block text-black font-mono text-sm py-1.5">{verifyingPhoneOrder.customer_phone}</strong>
-              this ensures the buyer is active and limits delivery failures over the Amana logistics network.
-            </p>
-            <div className="border border-neutral-300 p-3 bg-neutral-50 font-mono text-[10px] text-neutral-500 lowercase">
-              SMS Payload: "afus confirmation code [9284] for order of {verifyingPhoneOrder.total_mad} MAD. Please reply verify."
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
+            <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-blue-500" />
+              </div>
+              <h3 className="font-bold text-lg text-neutral-900">Moroccan COD Phone Validation</h3>
             </div>
-            <div className="flex justify-end gap-2 pt-2">
+            
+            <p className="text-sm text-neutral-600 leading-relaxed">
+              We are triggering an on-demand validation SMS containing a confirmation pin code to:
+              <strong className="block text-black font-mono text-base py-2">{verifyingPhoneOrder.customer_phone}</strong>
+              This ensures the buyer is active and limits delivery failures over the Amana logistics network.
+            </p>
+            
+            <div className="border border-neutral-200 p-3 bg-neutral-50 rounded-lg font-mono text-xs text-neutral-500">
+              SMS Payload: "Afus confirmation code [9284] for order of {verifyingPhoneOrder.total_mad} MAD. Please reply verify."
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-2">
               <button
                 onClick={() => setVerifyingPhoneOrder(null)}
-                className="border border-black px-4 py-2 hover:bg-neutral-50 cursor-pointer"
+                className="px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
               >
-                cancel
+                Cancel
               </button>
               <button
                 onClick={() => handleVerifyPhone(verifyingPhoneOrder.id)}
-                className="bg-black text-white hover:bg-neutral-800 border border-black px-4 py-2 uppercase font-bold tracking-wider cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
               >
-                confirm verification
+                <CheckCircle2 className="w-4 h-4" />
+                Confirm Verification
               </button>
             </div>
           </div>
@@ -624,73 +644,83 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
       {/* MODAL 3: Update Amana delivery checkpoint */}
       {updatingStatusOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-black max-w-md w-full p-6 space-y-4 rounded-none">
-            <div className="flex justify-between items-center border-b border-black pb-2">
-              <span className="font-serif font-bold text-lg lowercase">{t.milestoneModalTitle}</span>
-              <button onClick={() => setUpdatingStatusOrder(null)} className="hover:underline text-sm font-mono">✕</button>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
+            <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-5 h-5 text-neutral-700" />
+                </div>
+                <h3 className="font-bold text-lg text-neutral-900 capitalize">{t.milestoneModalTitle}</h3>
+              </div>
+              <button onClick={() => setUpdatingStatusOrder(null)} className="text-neutral-400 hover:text-black transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <form onSubmit={handleAddAmanaMilestone} className="space-y-4 font-mono text-xs lowercase">
-              <div className="space-y-1">
-                <label className="block text-neutral-500">{t.deliveryStatus}</label>
+            <form onSubmit={handleAddAmanaMilestone} className="space-y-4 text-sm">
+              <div className="space-y-1.5">
+                <label className="block font-medium text-neutral-700">{t.deliveryStatus}</label>
                 <select
                   value={newAmanaStatus}
                   onChange={(e) => setNewAmanaStatus(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white rounded-none focus:outline-none"
+                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
                 >
-                  <option value="collected">collected - picked up from workshop</option>
-                  <option value="in_transit">in transit - scanning center transfer</option>
-                  <option value="out_for_delivery">out for delivery - courier allocated</option>
-                  <option value="delivered">delivered - paid cash collected</option>
-                  <option value="delivery_failed">delivery failed - customer unavailable</option>
-                  <option value="returned_to_sender">returned to sender</option>
+                  <option value="collected">Collected - Picked up from workshop</option>
+                  <option value="in_transit">In Transit - Scanning center transfer</option>
+                  <option value="out_for_delivery">Out for Delivery - Courier allocated</option>
+                  <option value="delivered">Delivered - Paid cash collected</option>
+                  <option value="delivery_failed">Delivery Failed - Customer unavailable</option>
+                  <option value="returned_to_sender">Returned to Sender</option>
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-neutral-500">{t.trackingOverride}</label>
+              <div className="space-y-1.5">
+                <label className="block font-medium text-neutral-700">{t.trackingOverride}</label>
                 <input
                   type="text"
                   value={manualTrackingNum}
                   onChange={(e) => setManualTrackingNum(e.target.value)}
-                  className="w-full border border-black p-2.5 bg-white rounded-none focus:outline-none"
+                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-neutral-500">{t.milestoneLocation}</label>
+              <div className="space-y-1.5">
+                <label className="block font-medium text-neutral-700">{t.milestoneLocation}</label>
                 <input
                   type="text"
                   required
                   value={newScanLocation}
                   onChange={(e) => setNewScanLocation(e.target.value)}
                   placeholder="e.g. Rabat Principal Sorting Center"
-                  className="w-full border border-black p-2.5 bg-white rounded-none focus:outline-none"
+                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="block text-neutral-500">{t.milestoneNote}</label>
+              <div className="space-y-1.5">
+                <label className="block font-medium text-neutral-700">{t.milestoneNote}</label>
                 <input
                   type="text"
                   value={newScanNote}
                   onChange={(e) => setNewScanNote(e.target.value)}
-                  placeholder="e.g. sorted into local distribution bin"
-                  className="w-full border border-black p-2.5 bg-white rounded-none focus:outline-none"
+                  placeholder="e.g. Sorted into local distribution bin"
+                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-black text-white hover:bg-neutral-800 border border-black py-3 uppercase font-bold tracking-widest mt-2"
-              >
-                {t.milestoneSave}
-              </button>
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  {t.milestoneSave}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

@@ -68,11 +68,13 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
     <div className="space-y-6">
       {/* Collections Tabs Navigation */}
       {collections.length > 0 && (
-        <div className="border border-black p-2 bg-neutral-100 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 pb-2">
           <button
             onClick={() => setSelectedCollectionId('all')}
-            className={`border border-black px-4 py-2 text-xs font-mono font-bold lowercase transition-all rounded-none ${
-              selectedCollectionId === 'all' ? 'bg-black text-white' : 'bg-white text-black hover:bg-neutral-50'
+            className={`px-5 py-2 text-sm font-medium transition-all rounded-full border ${
+              selectedCollectionId === 'all' 
+                ? 'bg-black text-white border-black shadow-sm' 
+                : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300'
             }`}
           >
             {allLabel}
@@ -83,8 +85,10 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
               <button
                 key={c.id}
                 onClick={() => setSelectedCollectionId(c.id)}
-                className={`border border-black px-4 py-2 text-xs font-mono font-bold lowercase transition-all rounded-none ${
-                  selectedCollectionId === c.id ? 'bg-black text-white' : 'bg-white text-black hover:bg-neutral-50'
+                className={`px-5 py-2 text-sm font-medium transition-all rounded-full border ${
+                  selectedCollectionId === c.id 
+                    ? 'bg-black text-white border-black shadow-sm' 
+                    : 'bg-white text-neutral-600 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300'
                 }`}
               >
                 {name}

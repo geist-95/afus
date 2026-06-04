@@ -289,10 +289,10 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {recentCategoryName && recentCategoryProducts.length > 0 && (
         <section className="space-y-4">
           <div>
-            <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">
+            <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left !text-black">
               {t.recentlyViewed} ({recentCategoryName})
             </h2>
-            <p className="text-xs text-neutral-500">{t.recentlyViewedSub}</p>
+            <p className="text-xs text-neutral-500 text-left">{t.recentlyViewedSub}</p>
           </div>
           <ScrollableTrail>
             {recentCategoryProducts.map((p) => {
@@ -306,8 +306,8 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left md:text-center !text-black">{t.newestStores}</h2>
-          <p className="text-xs text-neutral-500">{t.newestStoresSub}</p>
+          <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left !text-black">{t.newestStores}</h2>
+          <p className="text-xs text-neutral-500 text-left">{t.newestStoresSub}</p>
         </div>
         <ScrollableTrail>
           {newestStores.map((store) => (
