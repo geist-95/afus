@@ -85,38 +85,49 @@ export default async function ShopPage({ params }: PageProps) {
   return (
     <div className="w-full pb-12">
       {/* Full Width Banner (Bleed) */}
-      <div className="relative w-[100vw] ml-[calc(50%-50vw)] h-[200px] md:h-[280px] lg:h-[320px] bg-neutral-100 flex-shrink-0 -mt-8 overflow-hidden arabic-frame-bottom">
-        <img 
-          src={bannerUrl} 
-          alt="shop banner" 
-          className="w-full h-full object-cover" 
+      <div className="relative w-[100vw] ml-[calc(50%-50vw)] h-[160px] md:h-[220px] lg:h-[260px] bg-neutral-100 flex-shrink-0 -mt-8 overflow-hidden arabic-frame-bottom">
+        <img
+          src={bannerUrl}
+          alt="shop banner"
+          className="w-full h-full object-cover"
         />
       </div>
 
       {/* Main Content Area */}
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 lg:mt-0">
-        
+
         {/* Left Sidebar Profile (No background, overlapping avatar) */}
         <div className="w-full lg:w-[300px] xl:w-[320px] flex-shrink-0 flex flex-col z-10">
-          
+
           {/* Avatar (Overlapping banner) */}
-          <div className="flex items-center gap-4 mb-4 -mt-16 md:-mt-20 lg:-mt-24 relative z-20">
+          <div className="flex items-center gap-4 mb-4 -mt-10 md:-mt-12 lg:-mt-16 relative z-20">
             <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl border-4 border-white bg-white overflow-hidden flex-shrink-0">
               <img src={logoUrl} alt="shop logo" className="w-full h-full object-cover" />
             </div>
           </div>
 
-          {/* Name & Verified Icon */}
+          {/* Name */}
           <div className="flex items-center gap-2 flex-wrap mt-2">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#111827] leading-tight tracking-tight">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#111827] leading-tight tracking-tight">
               {shop.name}
             </h1>
+          </div>
+
+          {/* Badges */}
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[11px] font-bold">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.353.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clipRule="evenodd" />
+              </svg>
+              {lang === 'fr' ? 'Fondateur' : lang === 'ar' ? 'مؤسس' : 'Early Founder'}
+            </span>
             {shop.is_verified && (
-              <div title={t.verified} className="text-blue-500 flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-8 md:h-8">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold border border-blue-100">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
                   <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 11.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
                 </svg>
-              </div>
+                {lang === 'fr' ? 'Vendeur Vérifié' : lang === 'ar' ? 'بائع موثق' : 'Verified Seller'}
+              </span>
             )}
           </div>
 
@@ -127,18 +138,18 @@ export default async function ShopPage({ params }: PageProps) {
             </svg>
             <span>{cityObj.name}, Morocco</span>
           </div>
-          
+
           {/* Description */}
           <p className="text-sm md:text-base text-[#4b5563] leading-relaxed mb-6 font-medium mt-1">
-            {shop.description_translations[lang as 'en'|'fr'|'ar'] || shop.description_translations.en}
+            {shop.description_translations[lang as 'en' | 'fr' | 'ar'] || shop.description_translations.en}
           </p>
 
           {/* Action Buttons */}
-          <ShopActionButtons 
-            shopId={shop.id} 
-            contactLabel={t.contact} 
-            subscribeLabel={t.subscribe} 
-            lang={lang} 
+          <ShopActionButtons
+            shopId={shop.id}
+            contactLabel={t.contact}
+            subscribeLabel={t.subscribe}
+            lang={lang}
           />
 
           {/* Stats Flex */}
@@ -154,7 +165,7 @@ export default async function ShopPage({ params }: PageProps) {
                 <span className="text-[#6b7280] text-xs font-normal ml-1">{(0)}</span>
               </span>
             </div>
-            
+
             {/* Sales */}
             <div className="flex items-center justify-between">
               <span className="text-[#6b7280] font-medium">{t.ordersCount}</span>
@@ -177,7 +188,7 @@ export default async function ShopPage({ params }: PageProps) {
               {t.catalog}
             </h2>
           </div>
-          
+
           <ShopCatalogClient
             initialProducts={shopProducts}
             shop={shop}
@@ -188,10 +199,10 @@ export default async function ShopPage({ params }: PageProps) {
 
       {/* Bottom Sections: Reviews, Announcements, FAQ */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 md:mt-24 space-y-16">
-        
+
         {/* Announcements Section */}
-        <section className="border-t border-neutral-200 pt-10 flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/4 lg:w-1/5 shrink-0">
+        <section className="border-t border-neutral-200 pt-10 flex flex-col md:flex-row gap-8 lg:gap-12">
+          <div className="w-full lg:w-[300px] xl:w-[320px] shrink-0">
             <h2 className="text-xl md:text-2xl font-bold text-black mb-1">{lang === 'fr' ? 'Annonce' : lang === 'ar' ? 'إعلان' : 'Announcement'}</h2>
             <p className="text-xs text-neutral-500">{lang === 'fr' ? 'Dernière mise à jour : 03 mai 2021' : 'Last updated: May 03, 2021'}</p>
           </div>
@@ -207,13 +218,13 @@ export default async function ShopPage({ params }: PageProps) {
         </section>
 
         {/* Reviews Section */}
-        <section className="border-t border-neutral-200 pt-10 flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/4 lg:w-1/5 shrink-0">
+        <section className="border-t border-neutral-200 pt-10 flex flex-col md:flex-row gap-8 lg:gap-12">
+          <div className="w-full lg:w-[300px] xl:w-[320px] shrink-0">
             <h2 className="text-xl md:text-2xl font-bold text-black mb-4">{lang === 'fr' ? 'Avis' : lang === 'ar' ? 'التقييمات' : 'Reviews'}</h2>
             <div className="flex items-center gap-1 mb-2">
-               <span className="font-bold text-lg text-black">4.7</span>
-               <svg viewBox="0 0 24 24" fill="#111827" className="w-4 h-4"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
-               <span className="text-neutral-500 text-sm">(21)</span>
+              <span className="font-bold text-lg text-black">4.7</span>
+              <svg viewBox="0 0 24 24" fill="#111827" className="w-4 h-4"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+              <span className="text-neutral-500 text-sm">(21)</span>
             </div>
             <p className="font-bold text-xs text-black mb-1">{lang === 'fr' ? 'Moyenne des évaluations' : 'Average rating'}</p>
             <p className="text-[10px] text-neutral-500 leading-tight">
@@ -227,7 +238,7 @@ export default async function ShopPage({ params }: PageProps) {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" /></svg>
               </button>
             </div>
-            
+
             <div className="space-y-8">
               {/* Mock Review 1 */}
               <div className="flex flex-col sm:flex-row gap-4">
@@ -245,7 +256,7 @@ export default async function ShopPage({ params }: PageProps) {
                   <button className="text-xs font-bold text-black hover:underline mb-4">Voir dans la langue d'origine</button>
                   <div className="flex items-center gap-3 p-2 bg-neutral-50 rounded-lg max-w-sm">
                     <img src={shopProducts[0]?.media_gallery?.[0] || bannerUrl} className="w-12 h-12 object-cover rounded-md" alt="Product" />
-                    <p className="text-xs text-neutral-600 line-clamp-2">{shopProducts[0]?.title_translations?.[lang as 'en'|'fr'|'ar'] || shopProducts[0]?.title_translations?.en || 'Product'}</p>
+                    <p className="text-xs text-neutral-600 line-clamp-2">{shopProducts[0]?.title_translations?.[lang as 'en' | 'fr' | 'ar'] || shopProducts[0]?.title_translations?.en || 'Product'}</p>
                   </div>
                 </div>
               </div>
@@ -254,15 +265,15 @@ export default async function ShopPage({ params }: PageProps) {
         </section>
 
         {/* FAQ Section */}
-        <section className="border-t border-neutral-200 pt-10 pb-8 flex flex-col md:flex-row gap-8">
-          <div className="w-full md:w-1/4 lg:w-1/5 shrink-0">
+        <section className="border-t border-neutral-200 pt-10 pb-8 flex flex-col md:flex-row gap-8 lg:gap-12">
+          <div className="w-full lg:w-[300px] xl:w-[320px] shrink-0">
             <h2 className="text-xl md:text-2xl font-bold text-black mb-2">{lang === 'fr' ? 'FAQ' : lang === 'ar' ? 'الأسئلة الشائعة' : 'FAQ'}</h2>
           </div>
           <div className="flex-1 w-full space-y-4">
             {shop.faq_translations?.length > 0 ? shop.faq_translations.map((faq: any, idx: number) => (
               <div key={idx} className="border border-neutral-200 rounded-xl p-5">
-                <h3 className="font-bold text-black mb-2">{faq.q[lang as 'en'|'fr'|'ar'] || faq.q.en}</h3>
-                <p className="text-neutral-600 text-sm">{faq.a[lang as 'en'|'fr'|'ar'] || faq.a.en}</p>
+                <h3 className="font-bold text-black mb-2">{faq.q[lang as 'en' | 'fr' | 'ar'] || faq.q.en}</h3>
+                <p className="text-neutral-600 text-sm">{faq.a[lang as 'en' | 'fr' | 'ar'] || faq.a.en}</p>
               </div>
             )) : (
               <div className="border border-neutral-200 rounded-xl p-5">

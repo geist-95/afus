@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { logoutUser } from '@/lib/auth';
 import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap, Tag, MessageSquare } from 'lucide-react';
+import { IconBuildingStore, IconMessage2, IconWallet, IconUser, IconShoppingBag, IconPackage, IconFolder, IconTag, IconSettings, IconLogout, IconChevronDown } from '@tabler/icons-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -72,7 +73,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
   if (loading || !session) {
     return (
       <div className="h-[100dvh] overflow-hidden bg-[#2A1C2C] flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center">
+        <div className="flex flex-col items-center">
           <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin mb-4" />
           <span className="text-white/60 font-medium">Loading Dashboard...</span>
         </div>
@@ -197,13 +198,13 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
               <nav className="flex-1 overflow-y-auto p-4 pt-6 space-y-2">
                 
                 {/* My Store Group */}
-                <div className="space-y-1">
-                  <button onClick={() => toggleGroup('store')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                <div className="space-y-1 pt-2">
+                  <button onClick={() => toggleGroup('store')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
-                      <Store className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <IconBuildingStore className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
                       <span>My Store</span>
                     </div>
-                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.store ? 'rotate-0' : '-rotate-90'}`} />
+                    <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.store ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.store ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
@@ -212,36 +213,40 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>Orders</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>Collections</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>Promotions</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/messages`))} href={`/${lang}/dashboard/messages`}>Messages</Link>
                     </div>
                   </div>
                 </div>
 
-                {/* Earnings Group (Placeholder for UI) */}
-                <div className="space-y-1">
-                  <button onClick={() => toggleGroup('earnings')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                <Link href={`/${lang}/dashboard/messages`} className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isActive(`/${lang}/dashboard/messages`) ? 'bg-primary/10 text-primary' : 'text-neutral-800 hover:bg-neutral-100'}`}>
+                  <IconMessage2 className={`w-5 h-5 ${isActive(`/${lang}/dashboard/messages`) ? 'text-primary' : 'text-neutral-500'}`} strokeWidth={1.8} />
+                  <span>Messages</span>
+                </Link>
+
+                {/* Earnings Group */}
+                <div className="space-y-1 pt-2">
+                  <button onClick={() => toggleGroup('earnings')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
-                      <Wallet className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <IconWallet className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
                       <span>Earnings</span>
                     </div>
-                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.earnings ? 'rotate-0' : '-rotate-90'}`} />
+                    <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.earnings ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.earnings ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
-                      <Link className={navItemClass(false)} href={`#`}>Overview</Link>
-                      <Link className={navItemClass(false)} href={`#`}>Payouts / Credits</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/overview`))} href={`/${lang}/dashboard/earnings/overview`}>Overview</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/credits`))} href={`/${lang}/dashboard/earnings/credits`}>Payouts / Credits</Link>
                     </div>
                   </div>
                 </div>
 
                 {/* Account Group */}
-                <div className="space-y-1">
-                  <button onClick={() => toggleGroup('account')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group">
+                <div className="space-y-1 pt-2">
+                  <button onClick={() => toggleGroup('account')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
-                      <User className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" />
+                      <IconUser className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
                       <span>Account</span>
                     </div>
-                    <ChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.account ? 'rotate-0' : '-rotate-90'}`} />
+                    <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.account ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.account ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">

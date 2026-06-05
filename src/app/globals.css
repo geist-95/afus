@@ -118,14 +118,6 @@ body {
   overflow-x: hidden;
 }
 
-/* Ensure all buttons are fully rounded */
-button, 
-.button, 
-a[role="button"], 
-input[type="submit"], 
-input[type="button"] {
-  border-radius: 9999px !important;
-}
 
 /* Ensure input fields, select dropdowns, and textareas are slightly rounded (e.g. 8px) and not fully rounded */
 input[type="text"],

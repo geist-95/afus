@@ -78,20 +78,10 @@ export function ProductPageSkeleton() {
 
 export function DashboardPageSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse max-w-4xl">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-        <Skeleton className="h-32 rounded-xl" />
-        <Skeleton className="h-32 rounded-xl" />
-        <Skeleton className="h-32 rounded-xl" />
-      </div>
-      <div className="space-y-3 pt-6">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
+    <div className="flex h-[60vh] w-full items-center justify-center">
+      <div className="flex flex-col items-center">
+        <div className="w-10 h-10 rounded-full border-4 border-neutral-200 border-t-primary animate-spin mb-4" />
+        <span className="text-neutral-500 font-medium text-sm">Loading...</span>
       </div>
     </div>
   );
