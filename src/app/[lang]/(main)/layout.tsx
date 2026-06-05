@@ -34,10 +34,7 @@ export default async function MainLayout({ children, params }: MainLayoutProps) 
 
   return (
     <>
-      {/* Promotional Banner */}
-      <div className="bg-[#f5e9fb] text-[#673399] text-center py-2.5 px-4 text-xs font-semibold">
-        {t.promo}
-      </div>
+      {/* Auth-aware NavBar (client component) */}
 
       {/* Auth-aware NavBar (client component) */}
       <NavBar lang={lang} />

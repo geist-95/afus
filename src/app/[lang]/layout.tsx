@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import LanguageModal from "@/components/ui/LanguageModal";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body className="min-h-full flex flex-col bg-white text-black font-sans antialiased" suppressHydrationWarning>
         <WishlistProvider>
         <CartProvider>
+          <LanguageModal currentLang={lang} />
           {children}
           <SpeedInsights />
         </CartProvider>

@@ -4,6 +4,8 @@ import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";
 import HomeCarousel from "@/components/ui/HomeCarousel";
 import BrowseByCategory from "@/components/ui/BrowseByCategory";
 import CitiesSection from "@/components/ui/CitiesSection";
+import TrustBanner from "@/components/ui/TrustBanner";
+// import ReviewsCarousel from "@/components/ui/ReviewsCarousel";
 
 interface PageProps {
   params: Promise<{ lang: string }> | { lang: string };
@@ -49,6 +51,11 @@ export default async function HomePage({ params }: PageProps) {
 
       {/* Dynamic Trails & FAQ section */}
       <DynamicTrailsClient products={products} shops={shops} lang={lang} />
+
+      {/* Trust Banner */}
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <TrustBanner lang={lang} />
+      </div>
     </div>
   );
 }

@@ -68,7 +68,7 @@ export default function FAQSection({ lang }: { lang: string }) {
   const t = labels[lang] || labels.en;
 
   return (
-    <div className="w-full bg-white pb-24 md:pb-28 mt-12 -mb-12 relative z-0 overflow-hidden">
+    <div id="faq" className="w-full bg-white pb-24 md:pb-28 mt-12 -mb-12 relative z-0 overflow-hidden">
       <div className="w-full bg-[#1D0D2C] text-white py-3 flex overflow-hidden whitespace-nowrap border-b border-black/5">
         <div className="flex animate-marquee items-center text-sm md:text-base font-bold tracking-[0.2em] opacity-90">
           {Array.from({ length: 20 }).map((_, i) => (

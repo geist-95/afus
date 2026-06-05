@@ -288,11 +288,11 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {/* 4. Recently Viewed Category Trail */}
       {recentCategoryName && recentCategoryProducts.length > 0 && (
         <section className="space-y-4">
-          <div>
-            <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left !text-black">
+          <div className="mb-4 md:mb-[30px]">
+            <h2 className="text-xl md:text-3xl font-bold text-left !text-black">
               {t.recentlyViewed} ({recentCategoryName})
             </h2>
-            <p className="text-xs text-neutral-500 text-left">{t.recentlyViewedSub}</p>
+            <p className="text-xs text-neutral-500 mt-1 text-left">{t.recentlyViewedSub}</p>
           </div>
           <ScrollableTrail>
             {recentCategoryProducts.map((p) => {
@@ -305,15 +305,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
 
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
-        <div>
-          <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-left !text-black">{t.newestStores}</h2>
-          <p className="text-xs text-neutral-500 text-left">{t.newestStoresSub}</p>
+        <div className="mb-4 md:mb-[30px]">
+          <h2 className="text-xl md:text-3xl font-bold text-left !text-black">{t.newestStores}</h2>
+          <p className="text-xs text-neutral-500 mt-1 text-left">{t.newestStoresSub}</p>
         </div>
         <ScrollableTrail>
           {newestStores.map((store) => (
             <div
               key={store.id}
-              className={`flex-shrink-0 snap-start w-56 aspect-square border border-neutral-100/50 bg-white p-4 arabic-frame flex flex-col items-center justify-between text-center transition-colors ${store.is_placeholder ? 'opacity-50' : ''}`}
+              className={`flex-shrink-0 snap-start w-56 aspect-square bg-neutral-50 p-4 arabic-frame flex flex-col items-center justify-between text-center transition-colors ${store.is_placeholder ? 'opacity-50' : ''}`}
             >
               <div className="relative w-16 h-16 rounded-full border border-neutral-100 overflow-hidden bg-neutral-50 flex items-center justify-center">
                 {store.logo_url ? (

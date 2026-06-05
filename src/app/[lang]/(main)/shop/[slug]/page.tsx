@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchProducts, fetchShopBySlug } from "@/lib/supabase";
+import { fetchProducts, fetchShopBySlug, fetchProfile } from "@/lib/supabase";
 import ShopCatalogClient from "./ShopCatalogClient";
 import ShopActionButtons from "./ShopActionButtons";
 
@@ -16,6 +16,15 @@ export default async function ShopPage({ params }: PageProps) {
   // Filter products by this shop
   const allProducts = await fetchProducts();
   const shopProducts = allProducts.filter((p) => p.shop_id === shop.id);
+
+  let owner = null;
+  try {
+    if (shop.owner_id) {
+      owner = await fetchProfile(shop.owner_id);
+    }
+  } catch (error) {
+    console.error("Failed to fetch shop owner", error);
+  }
 
   const CITIES: Record<string, {
     slug: string;
@@ -106,11 +115,16 @@ export default async function ShopPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Name */}
-          <div className="flex items-center gap-2 flex-wrap mt-2">
+          {/* Name and Owner */}
+          <div className="flex flex-col mt-2">
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#111827] leading-tight tracking-tight">
               {shop.name}
             </h1>
+            {owner && (
+              <Link href={`/${lang}/user/${owner.id}`} className="text-sm font-medium text-[#E8583F] hover:underline mt-1">
+                (owned by {owner.full_name || 'Anonymous'})
+              </Link>
+            )}
           </div>
 
           {/* Badges */}

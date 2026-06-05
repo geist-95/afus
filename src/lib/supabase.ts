@@ -348,6 +348,23 @@ export async function fetchShopBySlug(slug: string) {
   }
 }
 
+export async function checkShopSlugAvailable(slug: string): Promise<boolean> {
+  try {
+    if (isPlaceholder) {
+      return !mockShops.some(s => s.slug === slug);
+    }
+    const { data, error } = await supabase.from('shops').select('id').eq('slug', slug).single();
+    if (error && error.code === 'PGRST116') {
+      // 0 rows returned
+      return true;
+    }
+    return !data;
+  } catch (err) {
+    // If error occurs, assume true to not block mock users unnecessarily, but we handled PGRST116
+    return true;
+  }
+}
+
 export async function fetchProducts() {
   let list: any[] = [];
   try {
@@ -719,5 +736,22 @@ export async function createProductListing(productData: {
     };
     mockProducts.push(newProduct);
     return newProduct;
+  }
+}
+
+export async function fetchProfile(userId: string) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (error || !data) throw error || new Error('profile not found');
+    return data;
+  } catch (err) {
+    console.warn(`using mock fallback for profile ${userId}:`, err);
+    return {
+      id: userId,
+      full_name: 'Mock User',
+      role: 'buyer',
+      created_at: new Date().toISOString()
+    };
   }
 }
