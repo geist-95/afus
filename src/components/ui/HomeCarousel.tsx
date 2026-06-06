@@ -156,17 +156,17 @@ export default function HomeCarousel() {
 
                 {/* Overlay Content */}
                 <div className="absolute inset-0 z-20 flex flex-col justify-end px-8 pb-8">
-                  <div className="flex flex-col gap-4 w-full">
+                  <div className="flex flex-col gap-4 w-full transform transition-transform duration-500 ease-out translate-y-[56px] group-hover:translate-y-0">
                     <div>
                       <h2 className="text-3xl font-bold leading-[1.05] tracking-tight !text-white !font-ariom">
                         Turn your craft into a thriving business
                       </h2>
                     </div>
-                    <div className="shrink-0 mt-2">
+                    <div className="shrink-0 mt-2 transform transition-all duration-500 ease-out opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto">
                       <button
                         type="button"
                         onClick={() => setOnboardingOpen(true)}
-                        className="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition hover:opacity-95 active:opacity-90 shadow-lg"
+                        className="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition-[opacity,transform] hover:opacity-95 active:opacity-90 shadow-lg"
                       >
                         Open your shop
                       </button>
