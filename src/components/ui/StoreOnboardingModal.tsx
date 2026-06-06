@@ -390,7 +390,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     <div className="fixed inset-0 z-[200] flex items-stretch justify-stretch">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60"
         onClick={onClose}
       />
 

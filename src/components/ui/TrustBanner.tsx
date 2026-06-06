@@ -8,6 +8,7 @@ interface TrustBannerProps {
 export default function TrustBanner({ lang }: TrustBannerProps) {
   const t = {
     en: {
+      whyChoose: "Why choose afus",
       title: "Support local\nMoroccan artisans.",
       cta: "Discover",
       cod: "Cash on Delivery",
@@ -21,6 +22,7 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       secure: "Secure Cash on Delivery Network",
     },
     fr: {
+      whyChoose: "Pourquoi choisir afus",
       title: "Soutenez les\nartisans marocains.",
       cta: "Découvrir",
       cod: "Paiement à la livraison",
@@ -34,6 +36,7 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       secure: "Réseau de paiement à la livraison sécurisé",
     },
     ar: {
+      whyChoose: "لماذا تختار afus",
       title: "ادعم الحرفيين\nالمغاربة المحليين.",
       cta: "اكتشف",
       cod: "الدفع عند الاستلام",
@@ -47,6 +50,7 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       secure: "شبكة الدفع عند الاستلام الآمنة",
     }
   }[lang] || {
+    whyChoose: "Why choose afus",
     title: "Support local\nMoroccan artisans.",
     cta: "Discover",
     cod: "Cash on Delivery",
@@ -69,6 +73,9 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-4 md:mb-[30px]">
+        <h2 className="text-xl md:text-3xl font-bold text-left !text-black">{t.whyChoose}</h2>
+      </div>
       {/* Main Banner */}
       <div 
         className="w-full h-[160px] pl-10 pr-0 md:pl-16 flex flex-row items-center justify-between relative overflow-hidden"
