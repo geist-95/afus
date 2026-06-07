@@ -134,7 +134,7 @@ export default async function SearchPage({
         <div className="flex-1">
           {results.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {results.map((product) => (
+              {results.map((product: any) => (
                 <SimpleProductCard
                   key={product.id}
                   product={product}
