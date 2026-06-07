@@ -27,11 +27,11 @@ export default function ShopActionButtons({ shopId, contactLabel, subscribeLabel
     : (lang === 'fr' ? 'S\'abonner' : lang === 'ar' ? 'متابعة' : 'Follow');
 
   return (
-    <div className="flex flex-col gap-3 mb-8">
+    <div className="flex flex-row gap-3">
       {/* Contact Button */}
-      <button className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#1f2937] text-white hover:bg-black transition-colors font-medium text-sm w-full shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-          <path fillRule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 01-.814 1.686.75.75 0 00.44 1.223zM8.25 10.875a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25zM10.875 12a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0zm4.875-1.125a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clipRule="evenodd" />
+      <button className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white text-black hover:bg-neutral-100 transition-colors font-medium text-sm w-full sm:w-auto shadow-sm border border-transparent">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
         </svg>
         {contactLabel}
       </button>
@@ -39,13 +39,13 @@ export default function ShopActionButtons({ shopId, contactLabel, subscribeLabel
       {/* Follow Button */}
       <button 
         onClick={handleToggle}
-        className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border-2 transition-colors font-bold text-sm w-full ${
+        className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border transition-colors font-medium text-sm w-full sm:w-auto ${
           followed 
-            ? 'border-neutral-200 bg-neutral-100 text-[#111827] hover:bg-neutral-200' 
-            : 'border-neutral-200 bg-transparent text-[#111827] hover:bg-neutral-50'
+            ? 'border-white/20 bg-white/10 text-white hover:bg-white/20' 
+            : 'border-white text-white bg-transparent hover:bg-white/5'
         }`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={followed ? "#ef4444" : "none"} stroke={followed ? "#ef4444" : "currentColor"} strokeWidth={2} className="w-4 h-4">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={followed ? "#ef4444" : "none"} stroke={followed ? "#ef4444" : "currentColor"} strokeWidth={1.5} className="w-5 h-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
         </svg>
         {followLabel}

@@ -1,4 +1,6 @@
 import Link from "next/link";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { fetchProducts, fetchShops } from "@/lib/supabase";
 import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";
 import HomeCarousel from "@/components/ui/HomeCarousel";

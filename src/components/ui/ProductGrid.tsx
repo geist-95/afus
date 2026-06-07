@@ -15,12 +15,14 @@ interface ProductGridProps {
 }
 
 export function SimpleProductCard({ product, lang, shop, className }: { product: any; lang: string; shop?: any; className?: string }) {
+  const [isHovered, setIsHovered] = useState(false);
   const title =
     product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] ||
     product?.title_translations?.en ||
     'Artisan product';
   const price = product?.base_price_mad;
   const img = product?.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
+  const imgHover = product?.media_gallery?.[1];
   const numId = product?.numeric_id;
   const slug =
     product?.slug_translations?.[lang as 'en' | 'fr' | 'ar'] ||
@@ -29,10 +31,15 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
   const shopName = shop?.name || 'Artisan';
 
   return (
-    <Link href={`/${lang}/listing/${numId}/${slug}`} className={`group block ${className || ''}`}>
+    <Link 
+      href={`/${lang}/listing/${numId}/${slug}`} 
+      className={`group block ${className || ''}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="aspect-square relative overflow-hidden bg-neutral-100 arabic-frame">
         <img
-          src={img}
+          src={isHovered && imgHover ? imgHover : img}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />

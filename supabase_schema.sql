@@ -44,6 +44,7 @@ CREATE TABLE shops (
     is_vacation_mode BOOLEAN DEFAULT false,
     average_rating NUMERIC(3,2) DEFAULT 0.00,
     completed_orders_count INTEGER DEFAULT 0,
+    reviews_count INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
@@ -261,6 +262,66 @@ CREATE POLICY "Allow users to manage their own notifications" ON notifications
     FOR ALL USING (recipient_id = auth.uid());
 
 
+-- 9. REVIEWS Table
+CREATE TABLE reviews (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    reviewer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+    UNIQUE(reviewer_id, product_id, order_id)
+);
+
+CREATE INDEX idx_reviews_shop_id ON reviews(shop_id);
+CREATE INDEX idx_reviews_reviewer_id ON reviews(reviewer_id);
+
+ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access to reviews" ON reviews
+    FOR SELECT USING (true);
+
+CREATE POLICY "Allow buyers to create and manage their own reviews" ON reviews
+    FOR ALL USING (auth.uid() = reviewer_id);
+
+-- TRIGGER TO UPDATE SHOP REPUTATION
+CREATE OR REPLACE FUNCTION update_shop_reputation()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_shop_id UUID;
+    v_avg_rating NUMERIC(3,2);
+    v_review_count INTEGER;
+BEGIN
+    IF TG_OP = 'DELETE' THEN
+        v_shop_id := OLD.shop_id;
+    ELSE
+        v_shop_id := NEW.shop_id;
+    END IF;
+
+    SELECT COALESCE(AVG(rating), 0), COUNT(id)
+    INTO v_avg_rating, v_review_count
+    FROM reviews
+    WHERE shop_id = v_shop_id;
+
+    UPDATE shops
+    SET average_rating = v_avg_rating, reviews_count = v_review_count
+    WHERE id = v_shop_id;
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_shop_reputation
+AFTER INSERT OR UPDATE OR DELETE ON reviews
+FOR EACH ROW
+EXECUTE FUNCTION update_shop_reputation();
+
+
 -- AMANA SHIPPING COST CALCULATOR FUNCTION
 -- Standard rates for Amana shipping in Morocco:
 -- Intra-city: 35 MAD, Inter-city: 45 MAD. Rural/Remote: 55 MAD.
@@ -438,3 +499,82 @@ INSERT INTO categories (id, slug, name_translations) VALUES
 ('4d444444-4444-4444-4444-444444444444', 'clothing', '{"en": "clothing", "fr": "vêtements", "ar": "ملابس"}'),
 ('5e555555-5555-5555-5555-555555555555', 'bags', '{"en": "bags", "fr": "sacs", "ar": "حقائب"}'),
 ('6f666666-6666-6666-6666-666666666666', 'home-living', '{"en": "home living", "fr": "maison et vie", "ar": "المنزل والمعيشة"}');
+
+
+-- SEARCH SYSTEM EXTENSION AND RPC
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE OR REPLACE FUNCTION search_products(
+    search_term TEXT,
+    min_price NUMERIC DEFAULT NULL,
+    max_price NUMERIC DEFAULT NULL,
+    location_filter TEXT DEFAULT NULL,
+    sort_by TEXT DEFAULT 'relevant'
+)
+RETURNS TABLE (
+    id UUID,
+    shop_id UUID,
+    category_id UUID,
+    numeric_id BIGINT,
+    slug_translations JSONB,
+    title_translations JSONB,
+    description_translations JSONB,
+    base_price_mad NUMERIC,
+    media_gallery TEXT[],
+    stock_quantity INTEGER,
+    is_active BOOLEAN,
+    created_at TIMESTAMP WITH TIME ZONE,
+    shop_data JSONB,
+    rank REAL
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        p.id,
+        p.shop_id,
+        p.category_id,
+        p.numeric_id,
+        p.slug_translations,
+        p.title_translations,
+        p.description_translations,
+        p.base_price_mad,
+        p.media_gallery,
+        p.stock_quantity,
+        p.is_active,
+        p.created_at,
+        jsonb_build_object(
+            'id', s.id,
+            'name', s.name,
+            'slug', s.slug,
+            'merchant_city', s.merchant_city,
+            'logo_url', s.logo_url
+        ) as shop_data,
+        -- Calculate rank using trigram similarity on english title
+        -- (In a real app we might combine across translations or use tsvector)
+        COALESCE(similarity(p.title_translations->>'en', search_term), 0) +
+        COALESCE(similarity(p.description_translations->>'en', search_term), 0) * 0.5 as rank
+    FROM products p
+    JOIN shops s ON p.shop_id = s.id
+    WHERE 
+        p.is_active = true
+        AND (
+            search_term IS NULL 
+            OR search_term = ''
+            OR p.title_translations->>'en' ILIKE '%' || search_term || '%'
+            OR p.description_translations->>'en' ILIKE '%' || search_term || '%'
+            OR similarity(p.title_translations->>'en', search_term) > 0.1
+        )
+        AND (min_price IS NULL OR p.base_price_mad >= min_price)
+        AND (max_price IS NULL OR p.base_price_mad <= max_price)
+        AND (location_filter IS NULL OR location_filter = '' OR LOWER(s.merchant_city) = LOWER(location_filter))
+    ORDER BY 
+        CASE WHEN sort_by = 'relevant' THEN 
+            COALESCE(similarity(p.title_translations->>'en', search_term), 0) +
+            COALESCE(similarity(p.description_translations->>'en', search_term), 0) * 0.5
+        ELSE 0 END DESC,
+        CASE WHEN sort_by = 'newest' THEN p.created_at ELSE '1970-01-01'::timestamp END DESC,
+        CASE WHEN sort_by = 'price_asc' THEN p.base_price_mad ELSE 0 END ASC,
+        CASE WHEN sort_by = 'price_desc' THEN p.base_price_mad ELSE 0 END DESC;
+END;
+$$ LANGUAGE plpgsql;
+

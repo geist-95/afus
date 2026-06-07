@@ -320,6 +320,31 @@ export const mockNotifications = [
   }
 ];
 
+export const mockReviews = [
+  {
+    id: 'r1',
+    shop_id: 's1',
+    product_id: 'p1',
+    reviewer_id: 'b2',
+    order_id: 'o2',
+    rating: 5,
+    comment: 'Exceptional craftsmanship! The rug is beautiful and completely transforms my living room. Fast shipping to Rabat as well.',
+    created_at: '2026-06-01T10:00:00Z',
+    reviewer_profile: {
+      full_name: 'Youssef El Alami',
+      avatar_url: null
+    },
+    product: {
+      title_translations: {
+        en: 'handwoven wool tazar rug - authentic marrakech Berber art',
+        fr: 'tapis tazar en laine tissé main - art berbère authentique de marrakech',
+        ar: 'سجاد تازار صوف منسوج يدوياً - فن بربري أصيل من مراكش'
+      },
+      media_gallery: ['https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop']
+    }
+  }
+];
+
 // ============================================
 // LIVE DATABASE CONNECTION API WRAPPERS
 // ============================================
@@ -475,18 +500,7 @@ export async function fetchOrders(shopId?: string, buyerId?: string) {
   } catch (err) {
     console.warn('using mock fallback for orders:', err);
     let list = localOrders;
-    try {
-      const { data: dbShops } = await supabase.from('shops').select('id');
-      if (dbShops && dbShops.length > 0) {
-        list = list.map((o: any) => {
-          if (o.shop_id === 's1') o.shop_id = dbShops[0].id;
-          if (o.shop_id === 's2' && dbShops.length > 1) o.shop_id = dbShops[1].id;
-          return o;
-        });
-      }
-    } catch (e) {
-      // Ignore fallback mapping error
-    }
+
 
     if (shopId) list = list.filter((o: any) => o.shop_id === shopId);
     if (buyerId) list = list.filter((o: any) => o.buyer_id === buyerId);
@@ -739,6 +753,37 @@ export async function createProductListing(productData: {
   }
 }
 
+export const mockProfiles = [
+  {
+    id: 's1_owner',
+    full_name: 'Atlas Artisanat Owner',
+    role: 'seller',
+    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop',
+    bio: 'Artisan crafting authentic Moroccan carpets in Marrakech.',
+    created_at: '2026-01-15T12:00:00Z'
+  },
+  {
+    id: 's2_owner',
+    full_name: 'Maison du Cuir Owner',
+    role: 'seller',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
+    bio: 'Specialist in premium leather goods from Fez.',
+    created_at: '2026-02-10T09:30:00Z'
+  },
+  {
+    id: 'b1',
+    full_name: 'Amine Bensouda',
+    role: 'buyer',
+    created_at: '2026-05-01T14:00:00Z'
+  },
+  {
+    id: 'b2',
+    full_name: 'Youssef El Alami',
+    role: 'buyer',
+    created_at: '2026-05-20T16:45:00Z'
+  }
+];
+
 export async function fetchProfile(userId: string) {
   try {
     if (isPlaceholder) throw new Error('placeholder');
@@ -747,11 +792,214 @@ export async function fetchProfile(userId: string) {
     return data;
   } catch (err) {
     console.warn(`using mock fallback for profile ${userId}:`, err);
-    return {
+    let baseProfile = mockProfiles.find((p) => p.id === userId) || {
       id: userId,
       full_name: 'Mock User',
       role: 'buyer',
       created_at: new Date().toISOString()
     };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const localSession = localStorage.getItem('afus_session_user');
+        if (localSession) {
+          const parsed = JSON.parse(localSession);
+          if (parsed.id === userId) {
+            baseProfile = {
+              ...baseProfile,
+              full_name: parsed.full_name || baseProfile.full_name,
+              role: parsed.role || baseProfile.role,
+              bio: parsed.shop?.metadata?.description || baseProfile.bio,
+              avatar_url: parsed.shop?.metadata?.logo_url || baseProfile.avatar_url
+            };
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse local profile:', e);
+      }
+    }
+
+    return baseProfile;
+  }
+}
+
+export async function searchProducts(
+  searchTerm: string,
+  filters: {
+    minPrice?: number;
+    maxPrice?: number;
+    location?: string;
+    sortBy?: 'relevant' | 'newest' | 'price_asc' | 'price_desc';
+  } = {}
+) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    
+    const { data, error } = await supabase.rpc('search_products', {
+      search_term: searchTerm || '',
+      min_price: filters.minPrice || null,
+      max_price: filters.maxPrice || null,
+      location_filter: filters.location || null,
+      sort_by: filters.sortBy || 'relevant'
+    });
+
+    if (error) throw error;
+    
+    // Map shop_data into shops relation to match other functions
+    return (data || []).map((item: any) => ({
+      ...item,
+      shops: item.shop_data
+    }));
+
+  } catch (err) {
+    console.warn('using mock fallback for searchProducts:', err);
+    
+    let results = await fetchProducts(); // uses local/mock products
+    
+    const term = searchTerm?.toLowerCase().trim() || '';
+
+    if (term) {
+      results = results.filter((p: any) => {
+        const enTitle = p.title_translations?.en?.toLowerCase() || '';
+        const enDesc = p.description_translations?.en?.toLowerCase() || '';
+        return enTitle.includes(term) || enDesc.includes(term);
+      });
+    }
+
+    if (filters.minPrice) {
+      results = results.filter((p: any) => p.base_price_mad >= filters.minPrice!);
+    }
+    if (filters.maxPrice) {
+      results = results.filter((p: any) => p.base_price_mad <= filters.maxPrice!);
+    }
+
+    if (filters.location && filters.location !== '') {
+      results = results.filter((p: any) => {
+        const city = p.shops?.merchant_city || p.shop?.merchant_city || '';
+        return city.toLowerCase() === filters.location!.toLowerCase();
+      });
+    }
+
+    results.sort((a: any, b: any) => {
+      if (filters.sortBy === 'newest') {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      } else if (filters.sortBy === 'price_asc') {
+        return a.base_price_mad - b.base_price_mad;
+      } else if (filters.sortBy === 'price_desc') {
+        return b.base_price_mad - a.base_price_mad;
+      }
+      // default relevant (mock doesn't have true rank, just sort by newest)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    return results;
+  }
+}
+
+export async function fetchShopReviews(shopId: string) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*, reviewer_profile:profiles!reviewer_id(full_name, avatar_url), product:products!product_id(title_translations, media_gallery)')
+      .eq('shop_id', shopId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.warn('using mock fallback for shop reviews:', err);
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('local_reviews');
+        if (cached) {
+          const localReviews = JSON.parse(cached);
+          const shopRev = localReviews.filter((r: any) => r.shop_id === shopId);
+          return [...shopRev, ...mockReviews.filter(r => r.shop_id === shopId)];
+        }
+      } catch (e) {}
+    }
+    return mockReviews.filter(r => r.shop_id === shopId);
+  }
+}
+
+export async function fetchUserReviews(userId: string) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*, shop:shops!shop_id(name), product:products!product_id(title_translations, media_gallery)')
+      .eq('reviewer_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.warn('using mock fallback for user reviews:', err);
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('local_reviews');
+        if (cached) {
+          const localReviews = JSON.parse(cached);
+          const userRev = localReviews.filter((r: any) => r.reviewer_id === userId);
+          return [...userRev, ...mockReviews.filter(r => r.reviewer_id === userId)];
+        }
+      } catch (e) {}
+    }
+    return mockReviews.filter(r => r.reviewer_id === userId);
+  }
+}
+
+export async function submitReview(payload: {
+  shop_id: string;
+  product_id: string;
+  reviewer_id: string;
+  order_id: string;
+  rating: number;
+  comment: string;
+}) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase
+      .from('reviews')
+      .insert(payload)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('using mock fallback for submitReview:', err);
+    
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('local_reviews') || '[]';
+      try {
+        const localReviews = JSON.parse(cached);
+        // Check if already reviewed
+        const exists = localReviews.find((r: any) => r.reviewer_id === payload.reviewer_id && r.order_id === payload.order_id && r.product_id === payload.product_id);
+        if (exists) {
+          throw new Error('You have already reviewed this item.');
+        }
+
+        const newReview = {
+          id: 'r_' + Math.random().toString(36).substring(2, 9),
+          ...payload,
+          created_at: new Date().toISOString(),
+          reviewer_profile: {
+            full_name: 'You',
+            avatar_url: null
+          },
+          product: mockProducts.find(p => p.id === payload.product_id) || {
+             title_translations: { en: 'Product', fr: 'Produit', ar: 'منتج' },
+             media_gallery: []
+          }
+        };
+        localReviews.unshift(newReview);
+        localStorage.setItem('local_reviews', JSON.stringify(localReviews));
+        return newReview;
+      } catch (e) {
+        throw e;
+      }
+    }
+    return { id: 'r_mock', ...payload, created_at: new Date().toISOString() };
   }
 }

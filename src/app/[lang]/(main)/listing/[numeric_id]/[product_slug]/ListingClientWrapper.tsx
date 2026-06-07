@@ -178,22 +178,10 @@ export default function ListingClientWrapper({
         );
 
         if (product) {
-          // Add placeholders to see how the gallery layout looks
           if (product.media_gallery && product.media_gallery.length > 0) {
-            product.media_gallery = [
-              product.media_gallery[0],
-              "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&fit=crop",
-              "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=800&fit=crop",
-              "https://images.unsplash.com/photo-1533614767277-2808c14d9baf?w=800&fit=crop"
-            ];
             setActiveImage(product.media_gallery[0]);
           } else {
-            product.media_gallery = [
-              activeImage,
-              "https://images.unsplash.com/photo-1544816155-12df9643f363?w=800&fit=crop",
-              "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=800&fit=crop",
-              "https://images.unsplash.com/photo-1533614767277-2808c14d9baf?w=800&fit=crop"
-            ];
+            product.media_gallery = [activeImage];
           }
           setFetchedProduct(product);
           if (typeof window !== 'undefined' && product.category_id) {
@@ -389,8 +377,8 @@ export default function ListingClientWrapper({
                     key={idx}
                     role="button"
                     tabIndex={0}
-                    onClick={() => { setActiveImage(imgUrl); setIsFullscreen(true); }}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { setActiveImage(imgUrl); setIsFullscreen(true); } }}
+                    onClick={(e) => { e.stopPropagation(); setActiveImage(imgUrl); }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setActiveImage(imgUrl); } }}
                     className={`cursor-pointer rounded-2xl flex-shrink-0 snap-start border ${activeImage === imgUrl ? 'border-primary border-2' : 'border-primary/20'} h-20 w-20 overflow-hidden bg-primary/5`}
                   >
                     <img src={imgUrl} alt="" className="w-full h-full object-cover" />
@@ -455,15 +443,13 @@ export default function ListingClientWrapper({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-bold text-black">{fetchedShop?.name || initialShopName}</h3>
+                      <Link href={`/${lang}/shop/${fetchedShop?.id || ''}`}>
+                        <h3 className="text-xl font-bold text-black hover:underline">{fetchedShop?.name || initialShopName}</h3>
+                      </Link>
                       <span className="text-sm text-neutral-500">{fetchedShop?.merchant_city || "Marrakech"}</span>
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
-                      <span className="flex items-center gap-1">★ 4.8 (788)</span>
-                      <span>·</span>
-                      <span>6,3K</span>
-                      <span>·</span>
-                      <span>1,5 ans</span>
+                      <span className="flex items-center gap-1">★ {fetchedShop?.average_rating || 5.0} ({fetchedShop?.completed_orders_count || 1})</span>
                     </div>
                   </div>
                 </div>
@@ -590,8 +576,8 @@ export default function ListingClientWrapper({
               <div className="flex flex-wrap items-baseline gap-3">
                 {isSaleActive ? (
                   <>
-                    <span className="text-3xl font-bold text-warning tracking-wider lowercase">
-                      {fetchedProduct.sale_price_mad} {t.mad}
+                    <span className="text-3xl font-bold text-warning tracking-wider">
+                      Now at {fetchedProduct.sale_price_mad} DH
                     </span>
                     <span className="text-lg text-black/30 line-through tracking-wider lowercase">
                       {basePrice} {t.mad}
@@ -601,8 +587,8 @@ export default function ListingClientWrapper({
                     </span>
                   </>
                 ) : (
-                  <span className="text-3xl font-bold tracking-wider lowercase text-black">
-                    {currentPrice} {t.mad}
+                  <span className="text-3xl font-bold tracking-wider text-black">
+                    Now at {currentPrice} DH
                   </span>
                 )}
               </div>
@@ -615,21 +601,16 @@ export default function ListingClientWrapper({
               )}
             </div>
 
-            {/* Listing Description */}
-            <p className="text-sm text-black/70 leading-relaxed">
-              {fetchedProduct?.description_translations?.[lang] || fetchedProduct?.description_translations?.en || "No description provided."}
-            </p>
-
             <div className="w-full h-px bg-neutral-200"></div>
 
-            <div className="space-y-4">
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, idx) => (
-                  <span key={idx} className="bg-neutral-100 text-neutral-600 px-3 py-1 rounded-md text-xs font-semibold capitalize">
-                    {tag}
-                  </span>
-                ))}
+            <div className="space-y-2 py-2">
+              <div className="flex items-start gap-2 text-sm text-black/80">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                <span>Arrives soon! Get it by <span className="underline decoration-dashed underline-offset-4">{formatDate(delDateMin)} - {formatDate(delDateMax)}</span> if you order today</span>
+              </div>
+              <div className="flex items-start gap-2 text-sm text-black/80">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                <span>Returns & exchanges accepted</span>
               </div>
             </div>
           </div>
@@ -746,6 +727,11 @@ export default function ListingClientWrapper({
               
               {detailsExpanded && (
                 <div className="pb-6 space-y-6 animate-in slide-in-from-top-2 fade-in duration-200">
+                  {/* Listing Description */}
+                  <p className="text-sm text-black/70 leading-relaxed">
+                    {fetchedProduct?.description_translations?.[lang] || fetchedProduct?.description_translations?.en || "No description provided."}
+                  </p>
+
                   {/* Specifications */}
                   <div className="flex flex-col space-y-5 text-sm">
                     <div className="flex flex-col space-y-1">
@@ -894,7 +880,7 @@ export default function ListingClientWrapper({
         </div>
       </div>
       {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center">
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center">
           <button 
             onClick={() => { setIsFullscreen(false); setZoomLevel(1); }}
             className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors z-50"

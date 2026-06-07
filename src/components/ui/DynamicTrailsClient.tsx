@@ -227,9 +227,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const t = labels[lang] || labels.en;
 
   // Filter lists using the local products merged state
-  const newProducts = [...allProducts]
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    .slice(0, 8);
+  const newProducts = [...allProducts].slice(0, 8);
 
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
   const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar'] || matchedCategory?.name.en || "";

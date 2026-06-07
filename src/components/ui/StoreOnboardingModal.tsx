@@ -479,7 +479,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       <p className="text-neutral-500 mt-2 text-base">{t.alreadyHaveAccount}</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4">
+                    <form onSubmit={handleLogin} className="space-y-4 text-left">
                       {error && (
                         <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
                           {error}
@@ -493,7 +493,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             type="email"
                             value={loginEmail}
                             onChange={(e) => setLoginEmail(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-center text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
                             placeholder="you@example.com"
                             disabled={loading}
                           />
@@ -507,7 +507,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             type="password"
                             value={loginPassword}
                             onChange={(e) => setLoginPassword(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-center text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
                             placeholder="••••••••"
                             disabled={loading}
                           />
@@ -543,7 +543,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       <p className="text-neutral-500 mt-2 text-base">{t.accountSubtitle}</p>
                     </div>
 
-                    <form onSubmit={handleAccountNext} className="space-y-4">
+                    <form onSubmit={handleAccountNext} className="space-y-4 text-left">
                       {error && (
                         <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
                           {error}
@@ -558,7 +558,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-center text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
                             placeholder="Youssef Alami"
                           />
                         </div>
@@ -572,7 +572,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-center text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
                             placeholder="you@example.com"
                           />
                         </div>
@@ -586,7 +586,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-center text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
                             placeholder="At least 6 characters"
                           />
                         </div>

@@ -68,7 +68,7 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
     { icon: <IconCashBanknote className="w-5 h-5 text-[#532e71]" />, title: t.cod, desc: t.codDesc },
     { icon: <IconShieldCheck className="w-5 h-5 text-[#532e71]" />, title: t.authentic, desc: t.authenticDesc },
     { icon: <IconBuildingStore className="w-5 h-5 text-[#532e71]" />, title: t.direct, desc: t.directDesc },
-    { icon: <span className="text-xl leading-none">🇲🇦</span>, title: t.delivery, desc: t.deliveryDesc },
+    { icon: <IconTruck className="w-5 h-5 text-[#532e71]" />, title: t.delivery, desc: t.deliveryDesc },
   ];
 
   return (

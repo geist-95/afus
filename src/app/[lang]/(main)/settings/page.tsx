@@ -59,39 +59,31 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="w-full bg-[#FAFAFA] min-h-screen pb-20">
-      <div className="bg-[#111827] text-white py-12 mb-8">
-        <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-2">
-            <IconSettings className="w-8 h-8 text-[#E8583F]" />
-            <h1 className="text-3xl font-bold">Account Settings</h1>
-          </div>
-          <p className="text-neutral-400">Manage your personal information and preferences.</p>
+    <div className="min-h-screen flex flex-col font-sans bg-neutral-50/30">
+      {/* Header */}
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-neutral-800 tracking-tight">Account Settings</h1>
+          <p className="text-xs text-neutral-500 mt-0.5">Manage your personal information and preferences.</p>
         </div>
       </div>
 
-      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-8">
+      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-6xl flex-1 space-y-6">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* Sidebar */}
-          <div className="w-full md:w-[250px] flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-              <nav className="flex flex-col">
-                <button className="flex items-center gap-3 px-4 py-3 bg-[#E8583F]/10 text-[#E8583F] font-semibold border-l-4 border-[#E8583F] text-left">
-                  <IconUser className="w-5 h-5" />
-                  General Info
-                </button>
-                <button className="flex items-center gap-3 px-4 py-3 text-neutral-600 hover:bg-neutral-50 transition-colors text-left border-l-4 border-transparent hover:border-neutral-200">
-                  <IconShieldLock className="w-5 h-5" />
-                  Security
-                </button>
-              </nav>
-            </div>
+          {/* Secondary Sidebar */}
+          <div className="w-full lg:w-64 shrink-0 space-y-1">
+             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors bg-neutral-100 text-neutral-900">
+                <IconUser className="w-4 h-4" /> General Info
+             </button>
+             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900">
+                <IconShieldLock className="w-4 h-4" /> Security
+             </button>
           </div>
 
           {/* Main Form Content */}
-          <div className="flex-1 bg-white rounded-2xl shadow-sm border border-neutral-200 p-6 md:p-8">
-            <h2 className="text-xl font-bold text-black mb-6">General Information</h2>
+          <div className="flex-1 w-full bg-white rounded-xl border border-neutral-200 p-6 md:p-8 min-h-[500px]">
+            <h2 className="text-lg font-bold text-neutral-800 mb-6">General Information</h2>
             
             {message && (
               <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-lg border border-green-200 text-sm font-medium">
@@ -102,43 +94,34 @@ export default function SettingsPage() {
             <form onSubmit={handleSave} className="space-y-6 max-w-lg">
               
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                  <IconUser className="w-4 h-4 text-neutral-400" />
-                  Full Name
-                </label>
+                <label className="block font-semibold text-neutral-800 text-sm">Full Name</label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full border border-neutral-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                   placeholder="Enter your full name"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                  <IconMail className="w-4 h-4 text-neutral-400" />
-                  Email Address
-                </label>
+                <label className="block font-semibold text-neutral-800 text-sm">Email Address</label>
                 <input
                   type="email"
                   value={session?.email || ""}
                   disabled
-                  className="w-full border border-neutral-200 bg-neutral-50 text-neutral-500 rounded-lg px-4 py-2.5 outline-none cursor-not-allowed"
+                  className="w-full border border-neutral-200 bg-neutral-50 text-neutral-500 rounded-lg p-3 outline-none cursor-not-allowed text-sm"
                 />
-                <p className="text-[11px] text-neutral-400 mt-1">Email address cannot be changed currently.</p>
+                <p className="text-xs text-neutral-400 mt-1">Email address cannot be changed currently.</p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-neutral-700 flex items-center gap-2">
-                  <IconPhone className="w-4 h-4 text-neutral-400" />
-                  Phone Number
-                </label>
+                <label className="block font-semibold text-neutral-800 text-sm">Phone Number</label>
                 <input
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full border border-neutral-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                   placeholder="+212 600 000 000"
                 />
               </div>
@@ -147,7 +130,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="bg-primary text-white px-8 py-2.5 rounded-full font-bold hover:bg-primary/90 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="bg-neutral-800 hover:bg-black text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {saving && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>}
                   {saving ? 'Saving...' : 'Save Changes'}

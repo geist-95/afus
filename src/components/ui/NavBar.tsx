@@ -251,16 +251,27 @@ export default function NavBar({ lang }: NavBarProps) {
 
         {/* Search Bar */}
         <div className="flex-1 mx-4 hidden sm:block">
-          <div className="relative flex items-center">
+          <form 
+            className="relative flex items-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const q = formData.get('q') as string;
+              if (q.trim()) {
+                router.push(`/${lang}/search?q=${encodeURIComponent(q.trim())}`);
+              }
+            }}
+          >
             <input
               type="search"
+              name="q"
               placeholder={t.searchPlaceholder}
               className="w-full border border-neutral-300 rounded-full pl-6 pr-12 py-3 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
             />
-            <button className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
+            <button type="submit" className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
               <MagnifyingGlassIcon />
             </button>
-          </div>
+          </form>
         </div>
 
         {/* Nav Actions */}
