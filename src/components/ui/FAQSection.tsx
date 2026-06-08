@@ -9,17 +9,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-export default function FAQSection({ lang }: { lang: string }) {
+export default function FAQSection({ lang, alwaysShow = false }: { lang: string, alwaysShow?: boolean }) {
   const pathname = usePathname();
   
-  // Only show on home page
-  if (pathname !== `/${lang}` && pathname !== `/${lang}/`) {
+  const isHomePage = pathname === `/${lang}` || pathname === `/${lang}/`;
+  const isAboutPage = pathname.includes('/about');
+  
+  if (!alwaysShow && !isHomePage && !isAboutPage) {
     return null;
   }
 
   const labels: Record<string, Record<string, string>> = {
     en: {
-      faqTitle: "Frequently Asked Questions",
+      faqTitle: "FAQ",
+      faqSub: "Have questions? Find helpful answers to understand Afus and how our platform connects you with authentic artisans.",
       faq1Q: "What is afus?",
       faq1A: "afus is a curated multi-vendor marketplace designed to connect authentic Moroccan artisans directly with consumers. We highlight regional heritage crafts and handle cash-on-delivery transactions securely.",
       faq2Q: "How does Cash on Delivery (COD) work?",
@@ -34,7 +37,8 @@ export default function FAQSection({ lang }: { lang: string }) {
       faq6A: "Yes, authentic Moroccan artisans can apply to become merchants. We verify your artisan register profile before approving.",
     },
     fr: {
-      faqTitle: "Questions fréquemment posées",
+      faqTitle: "FAQ",
+      faqSub: "Vous avez des questions ? Trouvez des réponses utiles pour comprendre Afus et la façon dont notre plateforme vous connecte avec des artisans authentiques.",
       faq1Q: "Qu'est-ce que afus?",
       faq1A: "afus est une place de marché multi-vendeurs conçue pour connecter directement les artisans marocains authentiques avec les consommateurs. Nous mettons en valeur l'artisanat régional et gérons les paiements à la livraison en toute sécurité.",
       faq2Q: "Comment fonctionne le paiement à la livraison (COD) ?",
@@ -49,7 +53,8 @@ export default function FAQSection({ lang }: { lang: string }) {
       faq6A: "Oui, les artisans marocains authentiques peuvent postuler pour devenir vendeurs. Nous vérifions votre profil du registre de l'artisanat avant approbation.",
     },
     ar: {
-      faqTitle: "الأسئلة الشائعة",
+      faqTitle: "أسئلة شائعة",
+      faqSub: "هل لديك أسئلة؟ ابحث عن إجابات مفيدة لفهم أفوس وكيف تربطك منصتنا بالحرفيين الموثوقين.",
       faq1Q: "ما هو afus؟",
       faq1A: "أفوس عبارة عن منصة تسوق تربط الصناع التقليديين المغاربة الموثوقين بالزبناء مباشرة. نحرص على إبراز التراث الحرفي الإقليمي ونوفر خدمة الدفع عند الاستلام بشكل آمن.",
       faq2Q: "كيف تعمل خدمة الدفع عند الاستلام (COD)؟",
@@ -62,6 +67,23 @@ export default function FAQSection({ lang }: { lang: string }) {
       faq5A: "يتم تغليف المنتجات بعناية من قبل الحرفي ويتم شحنها عبر شبكة أمانة الوطنية لبريد المغرب.",
       faq6Q: "هل يمكنني البيع على أفوس؟",
       faq6A: "نعم، يمكن للحرفيين المغاربة الأصليين التقديم ليصبحوا تجاراً. نقوم بالتحقق من ملفك في سجل الصناعة التقليدية قبل الموافقة.",
+    },
+
+    tz: {
+      faqTitle: "ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ",
+      faqSub: "ⵉⵙ ⵖⵓⵔⴽ ⵉⵙⵇⵙⵉⵜⵏ? ⴰⴼ ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ ⴰⴷ ⵜⴼⵀⵎⴷ ⴰⴼⵓⵙ ⴷ ⵎⴰⵎⵏⴽ ⴰⵔ ⵜⵙⵎⵓⵏ ⵉⵎⵙⴽⴰⵔⵏ ⴷ ⵉⵎⵙⴰⵖⵏ.",
+      faq1Q: "ⵎⴰ ⵉⴳⴰⵏ ⴰⴼⵓⵙ?",
+      faq1A: "ⴰⴼⵓⵙ ⵉⴳⴰ ⵢⴰⵜ ⵜⴰⵙⵓⵇⵜ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⴰⴷ ⵜⵙⵎⵓⵏ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⴷ ⵉⵎⵙⴰⵖⵏ ⵙ ⵓⵙⵔⵉⴷ. ⵏⵙⵙⵎⵖⵓⵔ ⵜⴰⴳⴰⵡⵜ ⵜⴰⴷⵖⴰⵔⴰⵏⵜ ⴷ ⵏⵙⵙⵓⴷⵙ ⴰⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ ⵙ ⵜⵏⴼⵔⵓⵜ.",
+      faq2Q: "ⵎⴰⵎⵏⴽ ⵉⵜⵜⵡⵓⵔⵉ ⵓⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ (COD)?",
+      faq2A: "ⵍⵉⵖ ⵜⵙⵔⵙⴷ ⵜⴰⵏⴱⴰⴹⵜ, ⴰⵎⵙⴽⴰⵔ ⵉⵜⵜⵓⵅⴱⴰⵔ ⴰⴷ ⵉⵙⵡⵊⴷ ⵜⴰⴳⴰⵡⵜ ⵏⵏⴽ. ⵜⵜⴰⵣⴰⵏ ⵙ ⵜⵏⴼⵔⵓⵜ ⵙ ⴰⵎⴰⵏⴰ. ⴰⵔ ⵜⵙⵖⵏⴷ ⵉ ⵓⵎⴰⵣⴰⵏ ⵙ ⵉⴷⵔⵉⵎⵏ ⵖⴰⵙ ⵍⵉⵖ ⵉⵍⴽⵎ ⵓⵇⵔⴰⴱ ⵖⵔ ⵜⴰⴳⴳⵓⵔⵜ ⵏⵏⴽ.",
+      faq3Q: "ⵉⵙ ⵜⵜⵓⵙⵏⵉⴷⵏ ⵉⵎⵣⵣⵏⵣⴰⵏ?",
+      faq3A: "ⵢⴰⵀ. ⴰⴽⴽⵯ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵣⵣⵓⵍⴰⵏⵏ ⴳ ⴰⴼⵓⵙ ⴰⵔ ⵜⵜⵓⵙⵏⵉⴷⵏ, ⴷⵉⴳⵙⵏ ⴰⵙⵏⵉⴷ ⵏ ⵓⵎⵓⵖⵍⵉ ⵏⵏⵙⵏ ⴳ ⵓⵎⵎⴰⵙ ⴰⵏⴰⵎⵓⵔ ⵏ ⵉⵎⵙⴽⴰⵔⵏ, ⴰⴷⵖⴰⵔ, ⴷ ⵓⵟⵟⵓⵏ ⵏ ⵓⵣⵎⵎⴻⵎ ⴰⵣⵔⴼⴰⵏ ICE.",
+      faq4Q: "ⵎⴰ ⵉⴳⴰⵏ ⵜⴰⵙⵔⵜⵉⵜ ⵏ ⵓⵙⵓⵖⴰⵍ?",
+      faq4A: "ⵉⵎⵙⴽⴰⵔⵏ ⴰⵔ ⵇⴱⴱⵍⵏ ⴰⵙⵓⵖⴰⵍ ⴳ 7 ⵓⵙⵙⴰⵏ ⴷⴼⴼⵉⵔ ⵓⵙⵉⵡⴹ. ⵜⴰⴳⴰⵡⵜ ⵉⵇⵇⴰⵏ ⴰⴷ ⵓⵔ ⵜⵜⵓⵙⵎⵔⵙ ⴷ ⴰⴷ ⵜⵉⵍⵉ ⴳ ⵓⵇⵔⴰⴱ ⵏⵏⵙ ⴰⵎⵣⵡⴰⵔⵓ. ⴰⵙⵓⵖⴰⵍ ⴰⵔ ⵉⵜⵜⵓⵙⴽⴰⵔ ⵙ ⵓⵙⵔⵉⴷ ⴷ ⵓⵎⵣⵣⵏⵣⵉ.",
+      faq5Q: "ⵎⴰⵎⵏⴽ ⴰⵔ ⵜⵜⴰⵣⴰⵏⵏ ⵜⵉⴳⴰⵡⵉⵏ?",
+      faq5A: "ⵜⵉⴳⴰⵡⵉⵏ ⴰⵔ ⵜⵜⵓⵙⵡⵊⴰⴷⵏⵜ ⵙ ⵜⵏⴼⵔⵓⵜ ⵙⴳ ⵉⵎⵙⴽⴰⵔⵏ ⴷ ⴰⵔ ⵜⵜⴰⵣⴰⵏⵏⵜ ⵙ ⵜⴰⵥⵟⵟⴰ ⵜⴰⵏⴰⵎⵓⵔⵜ ⵏ ⴰⵎⴰⵏⴰ ⴰⵍ ⴱⴰⵔⵉⴷ ⴱⴰⵏⴽ.",
+      faq6Q: "ⵉⵙ ⵎⵓⵎⴽⵉⵏ ⴰⴷ ⵣⵣⵏⵣⵖ ⴳ ⴰⴼⵓⵙ?",
+      faq6A: "ⵢⴰⵀ, ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵉⵎⴰⴷⴷⴰⵏⵏ ⵎⵓⵎⴽⵉⵏ ⴰⴷ ⵣⵎⵎⴻⵎⵏ ⴰⴷ ⴳⵉⵏ ⵉⵎⵣⵣⵏⵣⴰⵏ. ⴰⵔ ⵏⵙⵙⵏⵉⴷ ⴰⵎⵓⵖⵍⵉ ⵏⵏⴽ ⴳ ⵓⵎⵎⴰⵙ ⵏ ⵉⵎⵙⴽⴰⵔⵏ ⵓⵔⵜⴰ ⵏⵇⴱⵍ.",
     }
   };
 
@@ -92,13 +114,13 @@ export default function FAQSection({ lang }: { lang: string }) {
               <img src="/faq-girl.png" alt="FAQ" className="w-full h-auto object-contain" />
             </div>
             <p className="text-sm text-neutral-600 leading-relaxed pt-2">
-              Have questions? Find helpful answers to understand Afus and how our platform connects you with authentic artisans.
+              {t.faqSub}
             </p>
           </div>
 
           <div className="w-full md:w-2/3 lg:w-3/4 flex flex-col">
-            <h2 className="text-3xl md:text-5xl font-bold text-left !text-black mb-8">
-              FAQ
+            <h2 className="text-3xl md:text-5xl font-bold text-start !text-black mb-8">
+              {t.faqTitle}
             </h2>
             <Accordion type="single" collapsible defaultValue="item-1" className="w-full">
               <AccordionItem value="item-1">

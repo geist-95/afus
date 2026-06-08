@@ -7,23 +7,23 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export const isPlaceholder = supabaseUrl.includes('placeholder');
 
 export const staticCategories = [
-  { id: 'cat_jewelry', slug: 'jewelry', name: { en: 'Jewelry', fr: 'Bijoux', ar: 'مجوهرات' } },
-  { id: 'cat_clothing', slug: 'clothing', name: { en: 'Clothing', fr: 'Vêtements', ar: 'ملابس' } },
-  { id: 'cat_home_living', slug: 'home-living', name: { en: 'Home & Living', fr: 'Maison & Vie', ar: 'المنزل والمعيشة' } },
-  { id: 'cat_art_collectibles', slug: 'art-collectibles', name: { en: 'Art & Collectibles', fr: 'Art & Objets de Collection', ar: 'الفن والمقتنيات' } },
-  { id: 'cat_craft_supplies', slug: 'craft-supplies', name: { en: 'Craft Supplies & Tools', fr: 'Fournitures d\'Artisanat', ar: 'مستلزمات الحرف والأدوات' } },
-  { id: 'cat_accessories', slug: 'accessories', name: { en: 'Accessories', fr: 'Accessoires', ar: 'إكسسوارات' } },
-  { id: 'cat_bags_purses', slug: 'bags-purses', name: { en: 'Bags & Purses', fr: 'Sacs & Porte-Monnaie', ar: 'الحقائب والمحافظ' } },
-  { id: 'cat_bath_beauty', slug: 'bath-beauty', name: { en: 'Bath & Beauty', fr: 'Bain & Beauté', ar: 'الاستحمام والتجميل' } },
-  { id: 'cat_weddings', slug: 'weddings', name: { en: 'Weddings', fr: 'Mariages', ar: 'حفلات الزفاف' } },
-  { id: 'cat_toys_games', slug: 'toys-games', name: { en: 'Toys & Games', fr: 'Jouets & Jeux', ar: 'الألعاب والدمى' } },
-  { id: 'cat_kids_baby', slug: 'kids-baby', name: { en: 'Kids & Baby', fr: 'Enfants & Bébés', ar: 'الأطفال والرضع' } },
-  { id: 'cat_paper_party', slug: 'paper-party', name: { en: 'Paper & Party Supplies', fr: 'Papier & Fournitures de Fête', ar: 'الورق ومستلزمات الحفلات' } },
-  { id: 'cat_electronics', slug: 'electronics', name: { en: 'Electronics & Accessories', fr: 'Électronique & Accessoires', ar: 'الإلكترونيات وملحقاتها' } },
-  { id: 'cat_pet_supplies', slug: 'pet-supplies', name: { en: 'Pet Supplies', fr: 'Fournitures pour Animaux', ar: 'مستلزمات الحيوانات الأليفة' } },
-  { id: 'cat_shoes', slug: 'shoes', name: { en: 'Shoes', fr: 'Chaussures', ar: 'الأحذية' } },
-  { id: 'cat_books_media', slug: 'books-media', name: { en: 'Books, Movies & Music', fr: 'Livres, Films & Musique', ar: 'الكتب والأفلام والموسيقى' } },
-  { id: 'cat_gifts', slug: 'gifts', name: { en: 'Gifts', fr: 'Cadeaux', ar: 'الهدايا' } }
+  { id: 'cat_jewelry', slug: 'jewelry', name: { en: 'Jewelry', fr: 'Bijoux', ar: 'مجوهرات', tz: 'ⵜⵉⵣⴱⴳⴰⵏ' } },
+  { id: 'cat_clothing', slug: 'clothing', name: { en: 'Clothing', fr: 'Vêtements', ar: 'ملابس', tz: 'ⵉⵀⴷⵓⵎⵏ' } },
+  { id: 'cat_home_living', slug: 'home-living', name: { en: 'Home & Living', fr: 'Maison & Vie', ar: 'المنزل والمعيشة', tz: 'ⵜⴰⴷⴷⴰⵔⵜ' } },
+  { id: 'cat_art_collectibles', slug: 'art-collectibles', name: { en: 'Art & Collectibles', fr: 'Art & Objets de Collection', ar: 'الفن والمقتنيات', tz: 'ⵜⴰⵥⵓⵕⵉ' } },
+  { id: 'cat_craft_supplies', slug: 'craft-supplies', name: { en: 'Craft Supplies & Tools', fr: 'Fournitures d\'Artisanat', ar: 'مستلزمات الحرف والأدوات', tz: 'ⵜⵉⵙⵖⴰⵏ ⵏ ⵜⵥⵓⵕⵉ' } },
+  { id: 'cat_accessories', slug: 'accessories', name: { en: 'Accessories', fr: 'Accessoires', ar: 'إكسسوارات', tz: 'ⵉⵙⵎⴰⵎⵓⵜⵏ' } },
+  { id: 'cat_bags_purses', slug: 'bags-purses', name: { en: 'Bags & Purses', fr: 'Sacs & Porte-Monnaie', ar: 'الحقائب والمحافظ', tz: 'ⵉⵇⵕⴰⴱⵏ' } },
+  { id: 'cat_bath_beauty', slug: 'bath-beauty', name: { en: 'Bath & Beauty', fr: 'Bain & Beauté', ar: 'الاستحمام والتجميل', tz: 'ⴰⴼⴰⵍⴽⴰⵢ' } },
+  { id: 'cat_weddings', slug: 'weddings', name: { en: 'Weddings', fr: 'Mariages', ar: 'حفلات الزفاف', tz: 'ⵜⵉⵎⵖⵔⵉⵡⵉⵏ' } },
+  { id: 'cat_toys_games', slug: 'toys-games', name: { en: 'Toys & Games', fr: 'Jouets & Jeux', ar: 'الألعاب والدمى', tz: 'ⵉⵓⵔⴰⵔⵏ' } },
+  { id: 'cat_kids_baby', slug: 'kids-baby', name: { en: 'Kids & Baby', fr: 'Enfants & Bébés', ar: 'الأطفال والرضع', tz: 'ⵉⵎⵥⵥⵢⴰⵏⵏ ⴷ ⵉⵣⴳⵣⴰⵡⵏ' } },
+  { id: 'cat_paper_party', slug: 'paper-party', name: { en: 'Paper & Party Supplies', fr: 'Papier & Fournitures de Fête', ar: 'الورق ومستلزمات الحفلات', tz: 'ⵜⴰⵏⴼⵓⵍⵜ ⴷ ⵜⵉⴼⴼⵓⴳⵍⵉⵡⵉⵏ' } },
+  { id: 'cat_electronics', slug: 'electronics', name: { en: 'Electronics & Accessories', fr: 'Électronique & Accessoires', ar: 'الإلكترونيات وملحقاتها', tz: 'ⵜⵉⵍⵉⴽⵜⵕⵓⵏⵉⵏ' } },
+  { id: 'cat_pet_supplies', slug: 'pet-supplies', name: { en: 'Pet Supplies', fr: 'Fournitures pour Animaux', ar: 'مستلزمات الحيوانات الأليفة', tz: 'ⵉⵎⵓⴷⴰⵔ ⵏ ⵜⴰⴷⴷⴰⵔⵜ' } },
+  { id: 'cat_shoes', slug: 'shoes', name: { en: 'Shoes', fr: 'Chaussures', ar: 'الأحذية', tz: 'ⵉⴷⵓⴽⴰⵏ' } },
+  { id: 'cat_books_media', slug: 'books-media', name: { en: 'Books, Movies & Music', fr: 'Livres, Films & Musique', ar: 'الكتب والأفلام والموسيقى', tz: 'ⵉⴷⵍⵉⵙⵏ, ⵉⵙⵓⵔⴰ, ⴷ ⵓⵥⴰⵡⴰⵏ' } },
+  { id: 'cat_gifts', slug: 'gifts', name: { en: 'Gifts', fr: 'Cadeaux', ar: 'الهدايا', tz: 'ⵜⵉⵙⵎⵖⵓⵔⵉⵏ' } }
 ];
 
 export const legacyCategoryMapping: Record<string, string> = {

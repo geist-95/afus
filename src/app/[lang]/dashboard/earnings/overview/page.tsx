@@ -1,9 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { use } from 'react';
 import { IconWallet, IconArrowUpRight, IconClock, IconBuildingBank, IconTrendingUp, IconDownload } from '@tabler/icons-react';
+import { getDictionary } from '@/lib/i18n';
 
-export default function EarningsOverviewPage() {
+export default function EarningsOverviewPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = use(params);
+  const t = getDictionary(lang).earningsOverview;
   const transactions = [
     { id: '#TRX-091', date: 'Today, 14:30', item: 'Atlas Moroccan Rug', amount: '+4,500 MAD', status: 'Cleared' },
     { id: '#TRX-090', date: 'Yesterday', item: 'Copper Tea Tray', amount: '+850 MAD', status: 'Cleared' },
@@ -16,12 +19,12 @@ export default function EarningsOverviewPage() {
     <div className="min-h-[calc(100vh-64px)] bg-[#F9F9F9] flex flex-col font-sans p-6 md:p-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Earnings Overview</h1>
-          <p className="text-sm text-neutral-500 mt-1">Track your shop's performance and revenue.</p>
+          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{t.title}</h1>
+          <p className="text-sm text-neutral-500 mt-1">{t.subtitle}</p>
         </div>
         <button className="inline-flex items-center gap-2 bg-white border border-neutral-200 text-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-neutral-50 transition-colors">
           <IconDownload className="w-4 h-4" />
-          Export Report
+          {t.exportReport}
         </button>
       </div>
 
@@ -34,7 +37,7 @@ export default function EarningsOverviewPage() {
             </div>
             <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+12.5% this month</span>
           </div>
-          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">Net Revenue (30 Days)</p>
+          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.netRevenue}</p>
           <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">18,450.00 <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
 
@@ -45,7 +48,7 @@ export default function EarningsOverviewPage() {
               <IconWallet className="w-5 h-5" strokeWidth={2} />
             </div>
           </div>
-          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">Available for Payout</p>
+          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.availablePayout}</p>
           <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">12,200.00 <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
 
@@ -56,7 +59,7 @@ export default function EarningsOverviewPage() {
               <IconClock className="w-5 h-5" strokeWidth={2} />
             </div>
           </div>
-          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">Pending Clearance</p>
+          <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.pendingClearance}</p>
           <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">1,520.00 <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
       </div>
@@ -64,11 +67,11 @@ export default function EarningsOverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chart Placeholder */}
         <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-6 flex flex-col">
-          <h3 className="text-lg font-bold text-neutral-900 mb-6">Revenue Over Time</h3>
+          <h3 className="text-lg font-bold text-neutral-900 mb-6">{t.revenueOverTime}</h3>
           <div className="flex-1 flex items-center justify-center bg-neutral-50 rounded-lg border border-neutral-100 border-dashed min-h-[300px]">
             <div className="text-center">
               <IconTrendingUp className="w-8 h-8 text-neutral-300 mx-auto mb-2" />
-              <p className="text-sm font-medium text-neutral-400">Chart rendering placeholder</p>
+              <p className="text-sm font-medium text-neutral-400">{t.chartPlaceholder}</p>
             </div>
           </div>
         </div>
@@ -76,8 +79,8 @@ export default function EarningsOverviewPage() {
         {/* Recent Transactions */}
         <div className="bg-white border border-neutral-200 rounded-xl p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-neutral-900">Recent Transactions</h3>
-            <button className="text-sm font-semibold text-primary hover:text-primary/80">View All</button>
+            <h3 className="text-lg font-bold text-neutral-900">{t.recentTransactions}</h3>
+            <button className="text-sm font-semibold text-primary hover:text-primary/80">{t.viewAll}</button>
           </div>
           <div className="space-y-5 flex-1">
             {transactions.map((trx, idx) => (

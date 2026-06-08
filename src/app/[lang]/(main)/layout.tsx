@@ -1,6 +1,7 @@
 import NavBar from "@/components/ui/NavBar";
 import Footer from "@/components/ui/Footer";
 import FAQSection from "@/components/ui/FAQSection";
+import HomeBlogSection from "@/components/ui/HomeBlogSection";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -45,6 +46,7 @@ export default async function MainLayout({ children, params }: MainLayoutProps) 
       </main>
 
       <FAQSection lang={lang} />
+      <HomeBlogSection lang={lang} />
       {/* Flat Footer */}
       <Footer lang={lang} />
     </>

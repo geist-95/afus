@@ -2,20 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
-  { label: "Jewelry",     href: "/categories/jewelry",     img: "/categories/jewelry.png" },
-  { label: "Art",         href: "/categories/art",         img: "/categories/11.png"      },
-  { label: "Beauty",      href: "/categories/beauty",      img: "/categories/beauty.png"  },
-  { label: "Clothing",    href: "/categories/clothing",    img: "/categories/clothing.png"},
-  { label: "Bags",        href: "/categories/bags",        img: "/categories/bags.png"    },
-  { label: "Home Living", href: "/categories/home-living", img: "/categories/home.png"    },
-  { label: "Baby",        href: "/categories/baby",        img: "/categories/baby.png"    },
+  { label: "Jewelry",     labels: { en: "Jewelry", fr: "Bijoux", ar: "مجوهرات", tz: "ⵜⵉⵣⴱⴳⴰⵏ" },     href: "/categories/jewelry",     img: "/categories/jewelry.png" },
+  { label: "Art",         labels: { en: "Art", fr: "Art", ar: "فن", tz: "ⵜⴰⵥⵓⵕⵉ" },         href: "/categories/art",         img: "/categories/11.png"      },
+  { label: "Beauty",      labels: { en: "Beauty", fr: "Beauté", ar: "جمال", tz: "ⴰⴼⴰⵍⴽⴰⵢ" },      href: "/categories/beauty",      img: "/categories/beauty.png"  },
+  { label: "Clothing",    labels: { en: "Clothing", fr: "Vêtements", ar: "ملابس", tz: "ⵉⵀⴷⵓⵎⵏ" },    href: "/categories/clothing",    img: "/categories/clothing.png"},
+  { label: "Bags",        labels: { en: "Bags", fr: "Sacs", ar: "حقائب", tz: "ⵉⵇⵕⴰⴱⵏ" },        href: "/categories/bags",        img: "/categories/bags.png"    },
+  { label: "Home Living", labels: { en: "Home Living", fr: "Maison", ar: "المنزل", tz: "ⵜⴰⴷⴷⴰⵔⵜ" }, href: "/categories/home-living", img: "/categories/home.png"    },
+  { label: "Baby",        labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" },        href: "/categories/baby",        img: "/categories/baby.png"    },
 ];
 
 export default function BrowseByCategory({ lang }: { lang: string }) {
   const titles: Record<string, string> = {
     en: "Browse By Category",
     fr: "Parcourir par catégorie",
-    ar: "تصفح حسب الفئة"
+    ar: "تصفح حسب الفئة",
+    tz: "ⵔⵣⵓ ⵙ ⵜⴰⴳⴳⴰⵢⵜ"
   };
   const title = titles[lang] || titles.en;
 
@@ -42,7 +43,7 @@ export default function BrowseByCategory({ lang }: { lang: string }) {
                 />
               </div>
               <span className="text-xs font-medium text-neutral-900 text-center whitespace-nowrap">
-                {cat.label}
+                {cat.labels[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.label}
               </span>
             </Link>
           ))}
@@ -67,7 +68,7 @@ export default function BrowseByCategory({ lang }: { lang: string }) {
               />
             </div>
             <span className="text-xs md:text-sm font-medium text-neutral-900 text-center whitespace-nowrap">
-              {cat.label}
+              {cat.labels[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.label}
             </span>
           </Link>
         ))}

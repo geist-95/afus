@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getActiveSession } from '@/lib/auth';
+import { getDictionary } from '@/lib/i18n';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 import { Package, Plus } from 'lucide-react';
 
@@ -13,6 +14,7 @@ interface PageProps {
 
 export default function ProductsManagerPage({ params }: PageProps) {
   const { lang } = use(params);
+  const t = getDictionary(lang).upload;
   const router = useRouter();
 
   // Auth States
@@ -51,10 +53,10 @@ export default function ProductsManagerPage({ params }: PageProps) {
       <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-neutral-800">
-            Products
+            {t.title}
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Manage your store's listings and inventory
+            {t.subtitle}
           </p>
         </div>
         <div className="flex gap-3">
@@ -65,7 +67,7 @@ export default function ProductsManagerPage({ params }: PageProps) {
           </Link>
           <Link href={`/${lang}/dashboard/upload/new`}>
             <button className="h-10 px-4 bg-black hover:bg-neutral-800 text-white font-semibold text-sm rounded-lg transition-colors flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Create New Listing
+              <Plus className="w-4 h-4" /> {t.newProduct}
             </button>
           </Link>
         </div>
@@ -76,13 +78,13 @@ export default function ProductsManagerPage({ params }: PageProps) {
         {shopProducts.length === 0 ? (
           <div className="bg-white rounded-xl border border-dashed border-neutral-300 p-12 text-center flex flex-col items-center">
             <Package className="w-12 h-12 text-neutral-300 mb-4" />
-            <h3 className="text-lg font-bold text-neutral-800">No listings yet</h3>
+            <h3 className="text-lg font-bold text-neutral-800">{t.noProducts}</h3>
             <p className="text-neutral-500 text-sm mt-1 max-w-sm mb-6">
-              You haven't added any products to your store yet. Create your first listing to start selling!
+              {t.createFirst}
             </p>
             <Link href={`/${lang}/dashboard/upload/new`}>
               <button className="px-6 py-2.5 bg-black hover:bg-neutral-800 text-white font-semibold text-sm rounded-lg transition-colors">
-                Create First Listing
+                {t.newProduct}
               </button>
             </Link>
           </div>

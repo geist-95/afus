@@ -58,7 +58,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-ariom: 'Ariom', sans-serif;
+  --font-ariom: 'Ariom', var(--font-readex-pro), sans-serif;
   --font-tifinagh: 'Noto Sans Tifinagh', sans-serif;
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
@@ -101,7 +101,7 @@
 }
 
 @utility arabic-frame {
-  -webkit-mask-image: 
+  -webkit-mask-image:
     radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
     radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
     radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
@@ -109,7 +109,7 @@
   -webkit-mask-position: top left, top right, bottom left, bottom right;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 51% 51%;
-  mask-image: 
+  mask-image:
     radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
     radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
     radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
@@ -120,7 +120,7 @@
 }
 
 @utility arabic-frame-sm {
-  -webkit-mask-image: 
+  -webkit-mask-image:
     radial-gradient(circle at 0 0, transparent 8px, black 8.5px),
     radial-gradient(circle at 100% 0, transparent 8px, black 8.5px),
     radial-gradient(circle at 0 100%, transparent 8px, black 8.5px),
@@ -128,7 +128,7 @@
   -webkit-mask-position: top left, top right, bottom left, bottom right;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 51% 51%;
-  mask-image: 
+  mask-image:
     radial-gradient(circle at 0 0, transparent 8px, black 8.5px),
     radial-gradient(circle at 100% 0, transparent 8px, black 8.5px),
     radial-gradient(circle at 0 100%, transparent 8px, black 8.5px),
@@ -139,7 +139,7 @@
 }
 
 @utility arabic-frame-top {
-  -webkit-mask-image: 
+  -webkit-mask-image:
     radial-gradient(circle at 0 0, transparent 24px, black 24.5px),
     radial-gradient(circle at 100% 0, transparent 24px, black 24.5px),
     linear-gradient(black, black),
@@ -147,7 +147,7 @@
   -webkit-mask-position: top left, top right, bottom left, bottom right;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 51% 51%;
-  mask-image: 
+  mask-image:
     radial-gradient(circle at 0 0, transparent 24px, black 24.5px),
     radial-gradient(circle at 100% 0, transparent 24px, black 24.5px),
     linear-gradient(black, black),
@@ -158,7 +158,7 @@
 }
 
 @utility arabic-frame-bottom {
-  -webkit-mask-image: 
+  -webkit-mask-image:
     linear-gradient(black, black),
     linear-gradient(black, black),
     radial-gradient(circle at 0 100%, transparent 24px, black 24.5px),
@@ -166,7 +166,7 @@
   -webkit-mask-position: top left, top right, bottom left, bottom right;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 51% 51%;
-  mask-image: 
+  mask-image:
     linear-gradient(black, black),
     linear-gradient(black, black),
     radial-gradient(circle at 0 100%, transparent 24px, black 24.5px),
@@ -208,7 +208,12 @@ textarea {
 }
 
 /* Ensure headers use main font */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-sans);
   font-weight: 700;
   color: #000000;
@@ -222,11 +227,17 @@ h1, h2, h3, h4, h5, h6 {
 /* RTL layout fixes */
 [dir="rtl"] {
   text-align: right;
+  --font-sans: 'Instrument Sans', var(--font-readex-pro), system-ui, -apple-system, sans-serif;
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {
@@ -271,9 +282,11 @@ h1, h2, h3, h4, h5, h6 {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }

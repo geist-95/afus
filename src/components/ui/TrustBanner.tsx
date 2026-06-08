@@ -48,6 +48,20 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       delivery: "توصيل وطني",
       deliveryDesc: "عبر شبكة أمانة",
       secure: "شبكة الدفع عند الاستلام الآمنة",
+    },
+    tz: {
+      whyChoose: "ⵎⴰⵅⴼ ⴰⴷ ⵜⵙⵜⵉⴷ ⴰⴼⵓⵙ",
+      title: "ⴰⵡⵙ ⵉⵎⵙⴽⴰⵔⵏ\nⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵉⴷⵖⴰⵔⴰⵏⵏ.",
+      cta: "ⴰⴼ",
+      cod: "ⴰⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ",
+      codDesc: "ⵙⵖⵏ ⵍⵉⵖ ⵜⴰⵎⵥⴷ",
+      authentic: "100% ⴰⵎⴰⴷⴷⴰⵏ",
+      authenticDesc: "ⵉⵎⵙⴽⴰⵔⵏ ⵜⵜⵓⵙⵏⵉⴷⵏ",
+      direct: "ⵙ ⵓⵙⵔⵉⴷ ⵙⴳ ⵉⵎⵙⴽⴰⵔⵏ",
+      directDesc: "ⵜⴰⵙⴱⴱⴰⴱⵜ ⵜⴰⵣⵔⴼⴰⵏⵜ ⵜⵜⵓⵏⴼⵔ",
+      delivery: "ⴰⵙⵉⵡⴹ ⴰⵏⴰⵎⵓⵔ",
+      deliveryDesc: "ⵙ ⴰⵎⴰⵏⴰ",
+      secure: "ⵜⴰⵥⵟⵟⴰ ⵏ ⵓⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ ⵉⵏⴼⵔⵏ",
     }
   }[lang] || {
     whyChoose: "Why choose afus",
@@ -74,11 +88,11 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-4 md:mb-[30px]">
-        <h2 className="text-xl md:text-3xl font-bold text-left !text-black">{t.whyChoose}</h2>
+        <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.whyChoose}</h2>
       </div>
       {/* Main Banner */}
       <div 
-        className="w-full h-[160px] pl-10 pr-0 md:pl-16 flex flex-row items-center justify-between relative overflow-hidden"
+        className="w-full h-[160px] ps-10 pe-0 md:ps-16 flex flex-row items-center justify-between relative overflow-hidden"
         style={{
           background: `
             radial-gradient(circle at top left, transparent 12px, #11061c 13px) top left,
@@ -91,22 +105,22 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
         }}
       >
         {/* Text */}
-        <div className="z-10 flex flex-col justify-center text-left min-w-max">
+        <div className="z-10 flex flex-col justify-center text-start min-w-max">
           <h2 className="text-xl md:text-2xl lg:text-3xl !font-ariom font-medium tracking-tight leading-[1.1] !text-[#F5EAFB] whitespace-pre-line">
             {t.title}
           </h2>
         </div>
 
         {/* CTA Button */}
-        <div className="z-10 flex-shrink-0 flex items-center justify-center pl-6 md:pl-10">
+        <div className="z-10 flex-shrink-0 flex items-center justify-center ps-6 md:ps-10">
           <button className="border border-[#F5EAFB] text-[#F5EAFB] !font-ariom hover:bg-[#F5EAFB] hover:text-[#11061c] transition-all duration-300 rounded-full px-6 py-2.5 text-sm md:text-base whitespace-nowrap flex items-center gap-2">
             {t.cta}
-            <IconArrowRight className="w-4 h-4" />
+            <IconArrowRight className="w-4 h-4 rtl:rotate-180" />
           </button>
         </div>
 
         {/* People Image */}
-        <div className="z-10 h-full flex items-end justify-end pr-10 md:pr-16 lg:pr-20 ml-auto">
+        <div className="z-10 h-full flex items-end justify-end pe-10 md:pe-16 lg:pe-20 ms-auto">
           <img 
             src="/people.png" 
             alt="Moroccan Artisans" 

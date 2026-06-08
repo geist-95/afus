@@ -8,6 +8,7 @@ const cities = [
   {
     slug: "marrakech",
     name: "Marrakech",
+    names: { en: "Marrakech", fr: "Marrakech", ar: "مراكش", tz: "ⵎⵕⵕⴰⴽⵛ" },
     tifinagh: "ⵎⵕⵕⴰⴽⵛ",
     image: "/cities-2/marrakesh.avif",
     bg: "#2a0a1e",
@@ -16,6 +17,7 @@ const cities = [
   {
     slug: "fes",
     name: "Fès",
+    names: { en: "Fez", fr: "Fès", ar: "فاس", tz: "ⴼⴰⵙ" },
     tifinagh: "ⴼⴰⵙ",
     image: "/cities-2/fes.jpg",
     bg: "#0d1f2d",
@@ -24,6 +26,7 @@ const cities = [
   {
     slug: "meknes",
     name: "Meknès",
+    names: { en: "Meknes", fr: "Meknès", ar: "مكناس", tz: "ⵎⴽⵏⴰⵙ" },
     tifinagh: "ⵎⴽⵏⴰⵙ",
     image: "/cities-2/meknes-2.jpg",
     bg: "#1e0a2e",
@@ -32,6 +35,7 @@ const cities = [
   {
     slug: "rabat",
     name: "Rabat",
+    names: { en: "Rabat", fr: "Rabat", ar: "الرباط", tz: "ⵕⴱⴰⵟ" },
     tifinagh: "ⵕⴱⴰⵟ",
     image: "/cities-2/rabat.jpg",
     bg: "#0a1a0e",
@@ -40,6 +44,7 @@ const cities = [
   {
     slug: "tetouan",
     name: "Tétouan",
+    names: { en: "Tetouan", fr: "Tétouan", ar: "تطوان", tz: "ⵟⵉⵟⵡⴰⵏ" },
     tifinagh: "ⵟⵉⵟⵡⴰⵏ",
     image: "/cities-2/hamama.jpg",
     bg: "#1a1200",
@@ -48,6 +53,7 @@ const cities = [
   {
     slug: "casablanca",
     name: "Casablanca",
+    names: { en: "Casablanca", fr: "Casablanca", ar: "الدار البيضاء", tz: "ⴰⵏⴼⴰ" },
     tifinagh: "ⴰⵏⴼⴰ",
     image: "/cities-2/casablanca.jpg",
     bg: "#0f172a",
@@ -56,6 +62,7 @@ const cities = [
   {
     slug: "tangier",
     name: "Tangier",
+    names: { en: "Tangier", fr: "Tanger", ar: "طنجة", tz: "ⵟⴰⵏⵊⴰ" },
     tifinagh: "ⵟⴰⵏⵊⴰ",
     image: "/cities-2/tangier.jpg",
     bg: "#1e3a8a",
@@ -64,6 +71,7 @@ const cities = [
   {
     slug: "agadir",
     name: "Agadir",
+    names: { en: "Agadir", fr: "Agadir", ar: "أكادير", tz: "ⴰⴳⴰⴷⵉⵔ" },
     tifinagh: "ⴰⴳⴰⴷⵉⵔ",
     image: "/cities-2/agadir.jpg",
     bg: "#451a03",
@@ -80,11 +88,19 @@ export default function CitiesSection({ lang }: { lang: string }) {
     scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
+  const titles: Record<string, string> = {
+    en: "Discover wonders from cities",
+    fr: "Découvrez les merveilles des villes",
+    ar: "اكتشف عجائب المدن",
+    tz: "ⴰⴼ ⵉⴷⵖⴰⵔⵏ ⵙⴳ ⵜⵉⵖⵔⵎⵉⵏ"
+  };
+  const title = titles[lang] || titles.en;
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between mb-4 md:mb-[30px]">
-        <h2 className="text-xl md:text-3xl font-bold text-left !text-black">Discover wonders from cities</h2>
-        <div className="flex items-center gap-2 hidden sm:flex">
+        <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{title}</h2>
+        <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
           <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
           </button>
@@ -119,18 +135,20 @@ export default function CitiesSection({ lang }: { lang: string }) {
                   className="text-xl md:text-2xl lg:text-3xl font-bold !font-ariom leading-tight"
                   style={{ color: city.textColor }}
                 >
-                  {city.name}
+                  {city.names[lang as 'en' | 'fr' | 'ar' | 'tz'] || city.name}
                 </span>
-                <span
-                  className="text-sm md:text-base lg:text-lg leading-none"
-                  style={{
-                    color: city.textColor,
-                    fontFamily: "'Noto Sans Tifinagh', sans-serif",
-                    opacity: 0.75,
-                  }}
-                >
-                  {city.tifinagh}
-                </span>
+                {lang !== 'tz' && (
+                  <span
+                    className="text-sm md:text-base lg:text-lg leading-none"
+                    style={{
+                      color: city.textColor,
+                      fontFamily: "'Noto Sans Tifinagh', sans-serif",
+                      opacity: 0.75,
+                    }}
+                  >
+                    {city.tifinagh}
+                  </span>
+                )}
               </div>
             </div>
           </Link>

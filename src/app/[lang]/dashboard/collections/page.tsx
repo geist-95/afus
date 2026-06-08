@@ -24,6 +24,7 @@ interface Collection {
 
 export default function CollectionsPage({ params }: PageProps) {
   const { lang } = use(params);
+  const t = getDictionary(lang).collections;
   const router = useRouter();
 
   // Auth States
@@ -176,13 +177,11 @@ export default function CollectionsPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
-      <div className="border-b border-neutral-200 bg-white px-6 py-4 shrink-0">
-        <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
-          Manage Collections
-        </h1>
-        <p className="text-xs text-neutral-500 mt-0.5">
-          Group your products into custom merchant collections to showcase on your store page
-        </p>
+      <div className="border-b border-neutral-200 bg-white px-6 py-4 shrink-0 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{t.title}</h1>
+          <p className="text-sm text-neutral-500 mt-1">{t.subtitle}</p>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-5xl flex-1 space-y-8">
@@ -198,7 +197,7 @@ export default function CollectionsPage({ params }: PageProps) {
         <div className="lg:col-span-7 space-y-6">
           <form onSubmit={handleCreateCollection} className="bg-white rounded-xl border border-neutral-200 p-6 space-y-6">
             <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 text-sm flex items-center gap-2 capitalize">
-              <Plus className="w-5 h-5" /> Create New Collection
+              <Plus className="w-5 h-5" /> {t.newCollection}
             </span>
 
             {/* Trilingual Title Translations */}
@@ -285,7 +284,7 @@ export default function CollectionsPage({ params }: PageProps) {
               type="submit"
               className="w-full bg-black text-white hover:bg-neutral-800 text-sm py-4 rounded-lg uppercase tracking-wider transition-colors font-bold mt-2"
             >
-              Create Collection
+              {t.newCollection}
             </button>
           </form>
         </div>
@@ -294,12 +293,12 @@ export default function CollectionsPage({ params }: PageProps) {
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-xl border border-neutral-200 p-6 space-y-5">
             <span className="font-bold border-b border-neutral-200 pb-2 block text-sm text-neutral-800 flex items-center gap-2 capitalize">
-              <FolderClosed className="w-5 h-5" /> Active Collections ({collections.length})
+              <FolderClosed className="w-5 h-5" /> {t.activeCollections} ({collections.length})
             </span>
 
             {collections.length === 0 ? (
               <div className="border border-dashed border-neutral-200 rounded-lg p-8 text-center text-neutral-500 bg-neutral-50/50 text-sm">
-                No collections created yet.
+                {t.noCollections}
               </div>
             ) : (
               <div className="space-y-4">

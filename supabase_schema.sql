@@ -14,6 +14,8 @@ CREATE TABLE profiles (
     role user_role NOT NULL DEFAULT 'buyer',
     phone_number TEXT NOT NULL, -- Mandatory for Moroccan COD confirmation codes
     preferred_language VARCHAR(5) DEFAULT 'en',
+    email_notifications_orders BOOLEAN DEFAULT true,
+    email_notifications_messages BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 

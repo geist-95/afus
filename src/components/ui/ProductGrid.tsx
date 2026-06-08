@@ -17,7 +17,7 @@ interface ProductGridProps {
 export function SimpleProductCard({ product, lang, shop, className }: { product: any; lang: string; shop?: any; className?: string }) {
   const [isHovered, setIsHovered] = useState(false);
   const title =
-    product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] ||
+    product?.title_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] ||
     product?.title_translations?.en ||
     'Artisan product';
   const price = product?.base_price_mad;
@@ -25,7 +25,7 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
   const imgHover = product?.media_gallery?.[1];
   const numId = product?.numeric_id;
   const slug =
-    product?.slug_translations?.[lang as 'en' | 'fr' | 'ar'] ||
+    product?.slug_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] ||
     product?.slug_translations?.en ||
     'product';
   const shopName = shop?.name || 'Artisan';
@@ -75,10 +75,10 @@ export function ProductCard({
   const [isHovered, setIsHovered] = useState(false);
   const { addItem } = useCart();
 
-  const title = product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] || product?.title_translations?.en || 'artisan craft';
+  const title = product?.title_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] || product?.title_translations?.en || 'artisan craft';
   const isSaleActive = product.sale_price_mad !== null && product.sale_price_mad !== undefined &&
     (!product.sale_expires_at || new Date(product.sale_expires_at) > new Date());
-  const prodSlug = product?.slug_translations?.[lang as 'en' | 'fr' | 'ar'] || product?.slug_translations?.en || 'product';
+  const prodSlug = product?.slug_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] || product?.slug_translations?.en || 'product';
   const destinationUrl = `/${lang}/listing/${product.numeric_id}/${prodSlug}`;
 
   const firstMedia = product.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { logoutUser } from '@/lib/auth';
+import { getDictionary } from '@/lib/i18n';
 import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap, Tag, MessageSquare } from 'lucide-react';
 import { IconBuildingStore, IconMessage2, IconWallet, IconUser, IconShoppingBag, IconPackage, IconFolder, IconTag, IconSettings, IconLogout, IconChevronDown } from '@tabler/icons-react';
 
@@ -24,20 +25,22 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
   const [openGroups, setOpenGroups] = useState({ store: true, earnings: false, account: false });
   const [currentBanner, setCurrentBanner] = useState(0);
 
+  const t = getDictionary(lang).dashboard;
+
   const banners = [
     {
-      message: "Boost your shop visibility with our new artisan features",
-      buttonText: "Upgrade Shop",
+      message: t.banners.boost,
+      buttonText: t.banners.upgrade,
       icon: <Zap className="w-3.5 h-3.5 fill-green-400" />
     },
     {
-      message: "Get early access to the exclusive Summer Collection",
-      buttonText: "Learn More",
+      message: t.banners.summer,
+      buttonText: t.banners.learnMore,
       icon: <span className="text-[12px] leading-none">✨</span>
     },
     {
-      message: "Enjoy seamless multi-channel selling and workflows",
-      buttonText: "Try Premium",
+      message: t.banners.seamless,
+      buttonText: t.banners.tryPremium,
       icon: <Zap className="w-3.5 h-3.5 fill-green-400" />
     }
   ];
@@ -75,7 +78,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
       <div className="h-[100dvh] overflow-hidden bg-[#2A1C2C] flex items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin mb-4" />
-          <span className="text-white/60 font-medium">Loading Dashboard...</span>
+          <span className="text-white/60 font-medium">{t.loading}</span>
         </div>
       </div>
     );
@@ -158,35 +161,35 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
               <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>
                   <LayoutDashboard className="w-[18px] h-[18px]" />
-                  <span>Dashboard</span>
+                  <span>{t.overview}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>
                   <Package className="w-[18px] h-[18px]" />
-                  <span>Products</span>
+                  <span>{t.products}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>
                   <ShoppingBag className="w-[18px] h-[18px]" />
-                  <span>Orders</span>
+                  <span>{t.orders}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>
                   <FolderClosed className="w-[18px] h-[18px]" />
-                  <span>Collections</span>
+                  <span>{t.collections}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>
                   <Tag className="w-[18px] h-[18px]" />
-                  <span>Promotions</span>
+                  <span>{t.promotions}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/messages`))} href={`/${lang}/dashboard/messages`}>
                   <MessageSquare className="w-[18px] h-[18px]" />
-                  <span>Messages</span>
+                  <span>{t.messages}</span>
                 </Link>
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>
                   <Settings className="w-[18px] h-[18px]" />
-                  <span>Settings</span>
+                  <span>{t.settings}</span>
                 </Link>
                 <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-red-500 hover:text-red-700 hover:border-red-200">
                   <LogOut className="w-[18px] h-[18px]" />
-                  <span>Logout</span>
+                  <span>{t.logout}</span>
                 </button>
               </div>
             </div>
@@ -202,24 +205,24 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <button onClick={() => toggleGroup('store')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
                       <IconBuildingStore className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
-                      <span>My Store</span>
+                      <span>{t.myStore}</span>
                     </div>
                     <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.store ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.store ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>Dashboard</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>Products</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>Orders</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>Collections</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>Promotions</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>{t.overview}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>{t.products}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>{t.orders}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>{t.collections}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>{t.promotions}</Link>
                     </div>
                   </div>
                 </div>
 
                 <Link href={`/${lang}/dashboard/messages`} className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-semibold rounded-lg transition-colors ${isActive(`/${lang}/dashboard/messages`) ? 'bg-primary/10 text-primary' : 'text-neutral-800 hover:bg-neutral-100'}`}>
                   <IconMessage2 className={`w-5 h-5 ${isActive(`/${lang}/dashboard/messages`) ? 'text-primary' : 'text-neutral-500'}`} strokeWidth={1.8} />
-                  <span>Messages</span>
+                  <span>{t.messages}</span>
                 </Link>
 
                 {/* Earnings Group */}
@@ -227,14 +230,14 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <button onClick={() => toggleGroup('earnings')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
                       <IconWallet className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
-                      <span>Earnings</span>
+                      <span>{t.earnings}</span>
                     </div>
                     <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.earnings ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.earnings ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/overview`))} href={`/${lang}/dashboard/earnings/overview`}>Overview</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/credits`))} href={`/${lang}/dashboard/earnings/credits`}>Payouts / Credits</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/overview`))} href={`/${lang}/dashboard/earnings/overview`}>{t.overview}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/earnings/credits`))} href={`/${lang}/dashboard/earnings/credits`}>{t.payouts}</Link>
                     </div>
                   </div>
                 </div>
@@ -244,14 +247,14 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <button onClick={() => toggleGroup('account')} className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-800 rounded-lg hover:bg-neutral-100 transition-colors group outline-none focus-visible:ring-2 focus-visible:ring-primary/20">
                     <div className="flex items-center gap-3 relative">
                       <IconUser className="w-[20px] h-[20px] text-neutral-500 group-hover:text-neutral-800 transition-colors relative z-10" strokeWidth={1.8} />
-                      <span>Account</span>
+                      <span>{t.account}</span>
                     </div>
                     <IconChevronDown className={`w-[18px] h-[18px] text-neutral-400 group-hover:text-neutral-600 transition-transform duration-200 ${openGroups.account ? 'rotate-0' : '-rotate-90'}`} />
                   </button>
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.account ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>Settings</Link>
-                      <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-[13px] transition-colors rounded-md text-red-600 hover:bg-red-50 font-medium">Logout</button>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>{t.settings}</Link>
+                      <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-[13px] transition-colors rounded-md text-red-600 hover:bg-red-50 font-medium">{t.logout}</button>
                     </div>
                   </div>
                 </div>
@@ -261,7 +264,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
               <div className="p-4 border-t border-neutral-200 mt-auto">
                 <Link className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-neutral-600 hover:text-black transition-colors rounded-lg hover:bg-neutral-100" href={`/${lang}`}>
                   <ArrowLeft className="w-[18px] h-[18px]" />
-                  <span>Back to App</span>
+                  <span>{t.backToApp}</span>
                 </Link>
               </div>
             </div>

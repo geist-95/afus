@@ -59,31 +59,39 @@ export default function LanguageModal({ currentLang }: LanguageModalProps) {
           {[
             { code: 'en', label: 'English', native: 'English' },
             { code: 'fr', label: 'French', native: 'Français' },
-            { code: 'ar', label: 'Arabic', native: 'العربية' }
+            { code: 'ar', label: 'Arabic', native: 'العربية' },
+            { code: 'tz', label: 'Tamazight', native: 'ⵜⴰⵎⴰⵣⵉⵖⵜ' }
           ].map((lang) => (
-            <label 
-              key={lang.code}
-              className={`flex items-center justify-between p-3 cursor-pointer border-2 transition-colors ${selectedLang === lang.code ? 'border-[#532e70] bg-[#532e70]/5' : 'border-neutral-200 hover:border-neutral-300'}`}
-              style={{
-                 borderRadius: '12px'
-              }}
-            >
-              <input 
-                type="radio" 
-                name="language" 
-                value={lang.code} 
-                checked={selectedLang === lang.code} 
-                onChange={() => setSelectedLang(lang.code)} 
-                className="sr-only" 
-              />
-              <div className="flex items-center gap-3">
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedLang === lang.code ? 'border-[#532e70]' : 'border-neutral-300'}`}>
-                  {selectedLang === lang.code && <div className="w-2.5 h-2.5 bg-[#532e70] rounded-full" />}
+            <div key={lang.code} className="flex flex-col gap-3">
+              {lang.code === 'tz' && <hr className="border-neutral-200 my-1" />}
+              <label 
+                className={`flex items-center justify-between p-3 cursor-pointer border-2 transition-colors ${selectedLang === lang.code ? 'border-[#532e70] bg-[#532e70]/5' : 'border-neutral-200 hover:border-neutral-300'}`}
+                style={{
+                   borderRadius: '12px'
+                }}
+              >
+                <input 
+                  type="radio" 
+                  name="language" 
+                  value={lang.code} 
+                  checked={selectedLang === lang.code} 
+                  onChange={() => setSelectedLang(lang.code)} 
+                  className="sr-only" 
+                />
+                <div className="flex items-center gap-3">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedLang === lang.code ? 'border-[#532e70]' : 'border-neutral-300'}`}>
+                    {selectedLang === lang.code && <div className="w-2.5 h-2.5 bg-[#532e70] rounded-full" />}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-black text-sm">{lang.native}</span>
+                    {lang.code === 'tz' && (
+                      <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold">in progress</span>
+                    )}
+                  </div>
                 </div>
-                <span className="font-semibold text-black text-sm">{lang.native}</span>
-              </div>
-              <span className="text-xs text-neutral-400">{lang.label}</span>
-            </label>
+                <span className="text-xs text-neutral-400">{lang.label}</span>
+              </label>
+            </div>
           ))}
         </div>
 

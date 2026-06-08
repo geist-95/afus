@@ -221,6 +221,30 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       faq3A: "نعم. يخضع جميع الحرفيين المهنيين في المنصة لعملية تدقيق تشمل التحقق من بطاقات الصانع التقليدي الخاصة بهم ومواقعهم وأرقام التعريف الموحدة للمقاولات (ICE).",
       faq4Q: "ما هي سياسة الإرجاع؟",
       faq4A: "يقبل الحرفيون الإرجاع في غضون 7 أيام من استلام الطرد. يجب أن يكون المنتج غير مستخدم وفي تغليفه الأصلي. ويتم تنسيق عملية الإرجاع مباشرة مع البائع.",
+    },
+    tz: {
+      newItems: "ⵉⵎⴰⵢⵏⵓⵜⵏ ⵏ ⴷⵖⵉ",
+      newItemsSub: "ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ ⵙⴳ ⴰⵎⵓⵔ ⴰⴽⴽⵯ ⵏ ⵍⵎⵖⵔⵉⴱ",
+      yourCity: "ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵜⵖⵔⵎⵜ ⵏⵏⴽ",
+      yourCitySub: "ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵥⵍⴰⵢⵉⵏ ⵙⴳ ⵉⵎⵙⴽⴰⵔⵏ ⵉⴷⵖⴰⵔⴰⵏⵏ ⴳ",
+      recentlyViewed: "ⵅⴼ ⵎⴰⵢⴷ ⵜⵔⵉⴷ",
+      recentlyViewedSub: "ⵜⵉⵙⵖⴰⵏ ⵏ ⵓⴼⵓⵙ ⵙⴳ ⵜⴰⴳⴳⴰⵢⵉⵏ ⵏⵏⴰ ⵜⵥⵕⵉⴷ",
+      exploreCities: "ⵔⵣⵓ ⵅⴼ ⵜⵉⵖⵔⵎⵉⵏ ⵏ ⵜⴳⴰⵡⵉⵏ",
+      exploreCitiesSub: "ⴽⵍⵉⴽⵉ ⵅⴼ ⵢⴰⵜ ⵜⵖⵔⵎⵜ ⴰⴷ ⵜⴰⴼⴷ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⵙ ⵜⵉⵎⵣⵔⴰⵢⵉⵏ",
+      newestStores: "ⵙⵙⵏ ⵜⵉⵃⴰⵏⵓⵜⵉⵏ ⵏⵏⵖ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ",
+      newestStoresSub: "ⴰⵡⵙ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵉⵙⵉⵎⴰⵏⵏ ⵉⵎⴰⵢⵏⵓⵜⵏ",
+      mad: "ⴷⵔⵀⵎ",
+      emptyProducts: "ⵓⵔ ⵍⵍⵉⵏⵜ ⵜⴳⴰⵡⵉⵏ ⴳ ⵓⴷⵖⴰⵔ ⴰ.",
+      visitShop: "ⵔⵣⴼ ⵜⴰⵃⴰⵏⵓⵜ",
+      faqTitle: "ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ",
+      faq1Q: "ⵎⴰ ⵉⴳⴰⵏ ⴰⴼⵓⵙ?",
+      faq1A: "ⴰⴼⵓⵙ ⵉⴳⴰ ⵢⴰⵜ ⵜⴰⵙⵓⵇⵜ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⴰⴷ ⵜⵙⵎⵓⵏ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⴷ ⵉⵎⵙⴰⵖⵏ ⵙ ⵓⵙⵔⵉⴷ. ⵏⵙⵙⵎⵖⵓⵔ ⵜⴰⴳⴰⵡⵜ ⵜⴰⴷⵖⴰⵔⴰⵏⵜ ⴷ ⵏⵙⵙⵓⴷⵙ ⴰⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ ⵙ ⵜⵏⴼⵔⵓⵜ.",
+      faq2Q: "ⵎⴰⵎⵏⴽ ⵉⵜⵜⵡⵓⵔⵉ ⵓⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ (COD)?",
+      faq2A: "ⵍⵉⵖ ⵜⵙⵔⵙⴷ ⵜⴰⵏⴱⴰⴹⵜ, ⴰⵎⵙⴽⴰⵔ ⵉⵜⵜⵓⵅⴱⴰⵔ ⴰⴷ ⵉⵙⵡⵊⴷ ⵜⴰⴳⴰⵡⵜ ⵏⵏⴽ. ⵜⵜⴰⵣⴰⵏ ⵙ ⵜⵏⴼⵔⵓⵜ ⵙ ⴰⵎⴰⵏⴰ. ⴰⵔ ⵜⵙⵖⵏⴷ ⵉ ⵓⵎⴰⵣⴰⵏ ⵙ ⵉⴷⵔⵉⵎⵏ ⵖⴰⵙ ⵍⵉⵖ ⵉⵍⴽⵎ ⵓⵇⵔⴰⴱ ⵖⵔ ⵜⴰⴳⴳⵓⵔⵜ ⵏⵏⴽ.",
+      faq3Q: "ⵉⵙ ⵜⵜⵓⵙⵏⵉⴷⵏ ⵉⵎⵣⵣⵏⵣⴰⵏ?",
+      faq3A: "ⵢⴰⵀ. ⴰⴽⴽⵯ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵣⵣⵓⵍⴰⵏⵏ ⴳ ⴰⴼⵓⵙ ⴰⵔ ⵜⵜⵓⵙⵏⵉⴷⵏ, ⴷⵉⴳⵙⵏ ⴰⵙⵏⵉⴷ ⵏ ⵓⵎⵓⵖⵍⵉ ⵏⵏⵙⵏ ⴳ ⵓⵎⵎⴰⵙ ⴰⵏⴰⵎⵓⵔ ⵏ ⵉⵎⵙⴽⴰⵔⵏ, ⴰⴷⵖⴰⵔ, ⴷ ⵓⵟⵟⵓⵏ ⵏ ⵓⵣⵎⵎⴻⵎ ⴰⵣⵔⴼⴰⵏ ICE.",
+      faq4Q: "ⵎⴰ ⵉⴳⴰⵏ ⵜⴰⵙⵔⵜⵉⵜ ⵏ ⵓⵙⵓⵖⴰⵍ?",
+      faq4A: "ⵉⵎⵙⴽⴰⵔⵏ ⴰⵔ ⵇⴱⴱⵍⵏ ⴰⵙⵓⵖⴰⵍ ⴳ 7 ⵓⵙⵙⴰⵏ ⴷⴼⴼⵉⵔ ⵓⵙⵉⵡⴹ. ⵜⴰⴳⴰⵡⵜ ⵉⵇⵇⴰⵏ ⴰⴷ ⵓⵔ ⵜⵜⵓⵙⵎⵔⵙ ⴷ ⴰⴷ ⵜⵉⵍⵉ ⴳ ⵓⵇⵔⴰⴱ ⵏⵏⵙ ⴰⵎⵣⵡⴰⵔⵓ. ⴰⵙⵓⵖⴰⵍ ⴰⵔ ⵉⵜⵜⵓⵙⴽⴰⵔ ⵙ ⵓⵙⵔⵉⴷ ⴷ ⵓⵎⵣⵣⵏⵣⵉ.",
     }
   };
 
@@ -230,7 +254,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const newProducts = [...allProducts].slice(0, 8);
 
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
-  const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar'] || matchedCategory?.name.en || "";
+  const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || matchedCategory?.name.en || "";
   const recentCategoryProducts = allProducts.filter((p) => {
     const isDirectMatch = p.category_id === recentCategoryId;
     const legacyMappedId = p.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
@@ -266,7 +290,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
             <h2 className="text-xl md:text-3xl font-bold !text-black">{t.newItems}</h2>
             <p className="text-xs text-neutral-500 mt-1">{t.newItemsSub}</p>
           </div>
-          <div className="flex items-center gap-2 hidden sm:flex">
+          <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
             <button onClick={() => scrollNewArrivals('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
             </button>
@@ -287,10 +311,10 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {recentCategoryName && recentCategoryProducts.length > 0 && (
         <section className="space-y-4">
           <div className="mb-4 md:mb-[30px]">
-            <h2 className="text-xl md:text-3xl font-bold text-left !text-black">
+            <h2 className="text-xl md:text-3xl font-bold text-start !text-black">
               {t.recentlyViewed} ({recentCategoryName})
             </h2>
-            <p className="text-xs text-neutral-500 mt-1 text-left">{t.recentlyViewedSub}</p>
+            <p className="text-xs text-neutral-500 mt-1 text-start">{t.recentlyViewedSub}</p>
           </div>
           <ScrollableTrail>
             {recentCategoryProducts.map((p) => {
@@ -304,8 +328,8 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
         <div className="mb-4 md:mb-[30px]">
-          <h2 className="text-xl md:text-3xl font-bold text-left !text-black">{t.newestStores}</h2>
-          <p className="text-xs text-neutral-500 mt-1 text-left">{t.newestStoresSub}</p>
+          <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.newestStores}</h2>
+          <p className="text-xs text-neutral-500 mt-1 text-start">{t.newestStoresSub}</p>
         </div>
         <ScrollableTrail>
           {newestStores.map((store) => (

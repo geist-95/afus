@@ -42,7 +42,7 @@ export default async function HomePage({ params }: PageProps) {
     <div className="space-y-16">
       {/* Editorial Hero Banner / Carousel — breaks out of main padding to go full-width */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-        <HomeCarousel />
+        <HomeCarousel lang={lang} />
       </div>
 
       {/* Browse by Category */}

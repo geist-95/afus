@@ -332,7 +332,7 @@ export default async function ShopPage({ params }: PageProps) {
                     
                     <div className="flex items-center gap-3 p-2 bg-neutral-50 rounded-lg max-w-sm">
                       <img src={review.product?.media_gallery?.[0] || bannerUrl} className="w-12 h-12 object-cover rounded-md" alt="Product" />
-                      <p className="text-xs text-neutral-600 line-clamp-2">{review.product?.title_translations?.[lang as 'en' | 'fr' | 'ar'] || review.product?.title_translations?.en || 'Product'}</p>
+                      <p className="text-xs text-neutral-600 line-clamp-2">{review.product?.title_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] || review.product?.title_translations?.en || 'Product'}</p>
                     </div>
                   </div>
                 </div>
@@ -353,8 +353,8 @@ export default async function ShopPage({ params }: PageProps) {
           <div className="flex-1 w-full space-y-4">
             {shop.faq_translations?.length > 0 ? shop.faq_translations.map((faq: any, idx: number) => (
               <div key={idx} className="border border-neutral-200 rounded-xl p-5">
-                <h3 className="font-bold text-black mb-2">{faq.q[lang as 'en' | 'fr' | 'ar'] || faq.q.en}</h3>
-                <p className="text-neutral-600 text-sm">{faq.a[lang as 'en' | 'fr' | 'ar'] || faq.a.en}</p>
+                <h3 className="font-bold text-black mb-2">{faq.q[lang as 'en' | 'fr' | 'ar' | 'tz'] || faq.q.en}</h3>
+                <p className="text-neutral-600 text-sm">{faq.a[lang as 'en' | 'fr' | 'ar' | 'tz'] || faq.a.en}</p>
               </div>
             )) : (
               <div className="border border-neutral-200 rounded-xl p-5">
@@ -392,7 +392,7 @@ export default async function ShopPage({ params }: PageProps) {
               
               {/* Bio / Description */}
               <p className="text-sm md:text-base leading-relaxed text-neutral-700 max-w-3xl whitespace-pre-wrap">
-                {shop.metadata?.description || shop.description_translations?.[lang as 'en' | 'fr' | 'ar'] || shop.description_translations?.en}
+                {shop.metadata?.description || shop.description_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] || shop.description_translations?.en}
               </p>
             </div>
           </section>

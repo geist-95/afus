@@ -10,8 +10,10 @@ import {
   IconChecks,
   IconPhone,
   IconVideo,
-  IconMessage2
+  IconMessage2,
+  IconEdit
 } from '@tabler/icons-react';
+import { getDictionary } from '@/lib/i18n';
 
 // Mock Data
 type Message = {
@@ -33,6 +35,10 @@ type Conversation = {
   online: boolean;
   messages: Message[];
 };
+
+interface MessagesClientProps {
+  lang: string;
+}
 
 const MOCK_CONVERSATIONS: Conversation[] = [
   {
@@ -81,10 +87,12 @@ const MOCK_CONVERSATIONS: Conversation[] = [
   }
 ];
 
-export default function MessagesClient({ lang }: { lang: string }) {
+export default function MessagesClient({ lang }: MessagesClientProps) {
+  const t = getDictionary(lang).messages;
   const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
   const [activeConvId, setActiveConvId] = useState(MOCK_CONVERSATIONS[0].id);
   const [inputText, setInputText] = useState('');
+  const [search, setSearch] = useState('');
 
   const activeConv = conversations.find(c => c.id === activeConvId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -136,14 +144,15 @@ export default function MessagesClient({ lang }: { lang: string }) {
         {/* Left Sidebar (Conversation List) */}
         <div className="w-full md:w-80 lg:w-96 border-r border-neutral-200 flex flex-col bg-neutral-50/50">
           {/* Header */}
-          <div className="p-4 border-b border-neutral-200 bg-white">
-            <h2 className="text-xl font-bold text-neutral-900 mb-4">Messages</h2>
-            <div className="relative">
+          <div className="p-4 border-b border-neutral-100 bg-neutral-50/50 rounded-t-xl">
+            <div className="relative max-w-md">
               <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <input
                 type="text"
-                placeholder="Search conversations..."
-                className="w-full bg-neutral-100 border-none rounded-full pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                placeholder={t.search}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
           </div>
@@ -189,7 +198,7 @@ export default function MessagesClient({ lang }: { lang: string }) {
         {activeConv ? (
           <div className="hidden md:flex flex-1 flex-col bg-white">
             {/* Chat Header */}
-            <div className="h-16 px-6 border-b border-neutral-200 flex items-center justify-between bg-white shrink-0">
+            <div className="h-auto p-6 border-b border-neutral-200 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white shrink-0">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <img src={activeConv.avatar} alt={activeConv.name} className="w-10 h-10 rounded-full object-cover" />
@@ -198,16 +207,14 @@ export default function MessagesClient({ lang }: { lang: string }) {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-neutral-900">{activeConv.name}</h3>
-                  <p className="text-xs text-green-500 font-medium">{activeConv.online ? 'Online' : 'Offline'}</p>
+                  <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{t.title}</h1>
+                  <p className="text-sm text-neutral-500 mt-1">{t.subtitle}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors">
-                  <IconPhone className="w-5 h-5" />
-                </button>
-                <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors">
-                  <IconVideo className="w-5 h-5" />
+                <button className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
+                  <IconEdit className="w-4 h-4" />
+                  {t.newMessage}
                 </button>
                 <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors">
                   <IconDotsVertical className="w-5 h-5" />
@@ -269,12 +276,11 @@ export default function MessagesClient({ lang }: { lang: string }) {
           </div>
         ) : (
           <div className="hidden md:flex flex-1 items-center justify-center bg-[#FAFAFA]">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <IconMessage2 className="w-8 h-8 text-neutral-400" />
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <div className="w-12 h-12 rounded-full bg-neutral-50 flex items-center justify-center mb-3 border border-neutral-100">
+                <IconMessage2 className="w-6 h-6 text-neutral-400" />
               </div>
-              <h3 className="text-lg font-bold text-neutral-900">Select a conversation</h3>
-              <p className="text-sm text-neutral-500">Choose a contact from the sidebar to start chatting</p>
+              <h4 className="text-neutral-900 font-bold mb-1">{t.noMessages}</h4>
             </div>
           </div>
         )}

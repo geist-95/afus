@@ -8,6 +8,8 @@ export interface UserSession {
   full_name: string;
   role: 'buyer' | 'seller' | 'admin';
   phone_number: string;
+  email_notifications_orders?: boolean;
+  email_notifications_messages?: boolean;
   shop?: any;
 }
 
@@ -43,6 +45,8 @@ export async function getActiveSession(): Promise<UserSession | null> {
           full_name: profile.full_name,
           role: profile.role,
           phone_number: profile.phone_number,
+          email_notifications_orders: profile.email_notifications_orders,
+          email_notifications_messages: profile.email_notifications_messages,
           shop,
         };
 
@@ -112,6 +116,8 @@ export async function loginUser(email: string, password: string): Promise<UserSe
       full_name: profile.full_name,
       role: profile.role,
       phone_number: profile.phone_number,
+      email_notifications_orders: profile.email_notifications_orders,
+      email_notifications_messages: profile.email_notifications_messages,
       shop,
     };
 

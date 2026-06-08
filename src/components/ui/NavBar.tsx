@@ -147,6 +147,8 @@ export default function NavBar({ lang }: NavBarProps) {
       myShop: 'My Shop',
       cart: 'Cart',
       manageStore: 'Store',
+      topStripMessage: 'Your place to buy & sell all things handmade',
+      faqHelp: 'FAQ & Help'
     },
     fr: {
       searchPlaceholder: 'Rechercher des objets artisanaux uniques...',
@@ -165,6 +167,8 @@ export default function NavBar({ lang }: NavBarProps) {
       myShop: 'Ma Boutique',
       cart: 'Panier',
       manageStore: 'Boutique',
+      topStripMessage: 'Votre espace pour acheter & vendre du fait main',
+      faqHelp: 'FAQ et Aide'
     },
     ar: {
       searchPlaceholder: 'ابحث عن مشغولات يدوية فريدة...',
@@ -183,6 +187,28 @@ export default function NavBar({ lang }: NavBarProps) {
       myShop: 'متجري',
       cart: 'السلة',
       manageStore: 'المتجر',
+      topStripMessage: 'مكانك لبيع وشراء كل ما هو مصنوع يدوياً',
+      faqHelp: 'الأسئلة الشائعة والمساعدة'
+    },
+    tz: {
+      searchPlaceholder: 'ⵔⵣⵓ ⵅⴼ ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵓⴼⵓⵙ...',
+      orders: 'ⵜⵉⵏⴱⴰⴹⵉⵏ',
+      messages: 'ⵉⵣⵏⴰⵏ',
+      login: 'ⴽⵛⵎ',
+      signup: 'ⵣⵎⵎⴻⵎ',
+      list: 'ⵙⵔⵙ ⵜⴰⵖⴰⵡⵙⴰ',
+      dashboard: 'ⵜⴰⴼⵉⵍⴰⵍⵜ ⵏ ⵓⵙⵏⵇⴷ',
+      profile: 'ⴰⵎⵓⵖⵍⵉ',
+      settings: 'ⵜⵉⵙⵖⴰⵍ',
+      logout: 'ⴼⴼⵖ',
+      seller: 'ⴰⵎⵣⵣⵏⵣⵉ',
+      buyer: 'ⴰⵎⵙⴰⵖ',
+      greeting: 'ⴰⵣⵓⵍ',
+      myShop: 'ⵜⴰⵃⴰⵏⵓⵜ ⵉⵏⵓ',
+      cart: 'ⵜⴰⵙⴽⵯⵜⵉⵜ',
+      manageStore: 'ⵜⴰⵃⴰⵏⵓⵜ',
+      topStripMessage: 'ⴰⴷⵖⴰⵔ ⵏⵏⴽ ⴰⴷ ⵜⵙⵖⵜ ⴷ ⴰⴷ ⵜⵣⵣⵏⵣⵜ ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵓⴼⵓⵙ',
+      faqHelp: 'ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ'
     },
   };
 
@@ -206,7 +232,7 @@ export default function NavBar({ lang }: NavBarProps) {
                   className="flex items-center gap-1.5 hover:opacity-80 transition-opacity cursor-pointer bg-transparent border-none"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
-                  <span>MA | {lang === 'en' ? 'English' : lang === 'fr' ? 'français' : 'العربية'}</span>
+                  <span>MA | {lang === 'en' ? 'English' : lang === 'fr' ? 'français' : lang === 'ar' ? 'العربية' : 'ⵜⴰⵎⴰⵣⵉⵖⵜ'}</span>
                 </button>
 
                 {langOpen && (
@@ -220,6 +246,9 @@ export default function NavBar({ lang }: NavBarProps) {
                     <Link href="/ar" onClick={() => setLangOpen(false)} className={`relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pl-8 pr-2 text-xs hover:bg-neutral-100 font-bold ${lang === 'ar' ? 'text-black' : 'text-neutral-600'}`}>
                       {lang === 'ar' && <span className="absolute left-2 text-[#673399]"><CheckIcon /></span>} AR
                     </Link>
+                    <Link href="/tz" onClick={() => setLangOpen(false)} className={`relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pl-8 pr-2 text-xs hover:bg-neutral-100 font-bold ${lang === 'tz' ? 'text-black' : 'text-neutral-600'}`}>
+                      {lang === 'tz' && <span className="absolute left-2 text-[#673399]"><CheckIcon /></span>} TZ
+                    </Link>
                   </div>
                 )}
               </div>
@@ -227,13 +256,13 @@ export default function NavBar({ lang }: NavBarProps) {
 
             {/* Center */}
             <div className="flex-1 text-center hidden md:block">
-              <span>Your place to buy & sell all things handmade</span>
+              <span>{t.topStripMessage}</span>
             </div>
 
             {/* Right */}
             <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer text-[13px]" href={`/${lang}#faq`}>
               <HelpIcon />
-              <span>FAQ & Help</span>
+              <span>{t.faqHelp}</span>
             </Link>
           </div>
         </div>
@@ -327,7 +356,7 @@ export default function NavBar({ lang }: NavBarProps) {
                             <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" className="w-10 h-10 object-cover rounded-md" />
                             <div className="flex-1 min-w-0">
                               <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
-                              <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'] || alert.title_translations?.en}</p>
+                              <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'|'tz'] || alert.title_translations?.en}</p>
                             </div>
                           </Link>
                         ))}
@@ -429,7 +458,7 @@ export default function NavBar({ lang }: NavBarProps) {
                 onClick={() => setOnboardingModalOpen(true)}
                 className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer"
               >
-                {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : 'Sell on afus'}
+                {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
               </button>
               <button
                 onClick={() => setLoginModalOpen(true)}
@@ -485,7 +514,7 @@ export default function NavBar({ lang }: NavBarProps) {
                 href={`/${lang}/category/${cat.slug}`}
                 className="hover:text-black/70 transition-colors whitespace-nowrap capitalize flex-shrink-0"
               >
-                {cat.name[lang as 'en' | 'fr' | 'ar'] || cat.name.en}
+                {cat.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.name.en}
               </Link>,
               index < staticCategories.length - 1 && (
                 <span key={`sep-${cat.slug}`} className="text-black/30 select-none text-[10px] flex-shrink-0">

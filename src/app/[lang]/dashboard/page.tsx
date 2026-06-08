@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
+import { getDictionary } from '@/lib/i18n';
 import Link from 'next/link';
 import { Plus, Package, MoreHorizontal, Wallet, Store } from 'lucide-react';
 
@@ -15,6 +16,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   const [ordersCount, setOrdersCount] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
   const [revenue, setRevenue] = useState(0);
+  const t = getDictionary(lang).dashboard;
 
   useEffect(() => {
     async function load() {
@@ -49,8 +51,8 @@ export default function DashboardPage({ params }: DashboardPageProps) {
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col animate-in fade-in duration-500 font-sans">
       <div className="border-b border-neutral-200 bg-white px-6 py-4 flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-800">Seller Dashboard</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Salam, {shopName}</p>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-800">{t.sellerDashboard}</h1>
+          <p className="text-xs text-neutral-500 mt-0.5">{t.salam} {shopName}</p>
         </div>
       </div>
 
@@ -65,7 +67,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-1">
                   <div className="text-3xl font-bold tracking-tight leading-none mb-2">{revenue.toFixed(2)}</div>
-                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Total Revenue (MAD)</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">{t.totalRevenue}</div>
                 </div>
                 <div className="p-2 bg-neutral-50 rounded-lg">
                   <Wallet className="w-5 h-5 text-neutral-400" />
@@ -75,7 +77,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-1">
                   <div className="text-3xl font-bold tracking-tight leading-none mb-2">{ordersCount}</div>
-                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Active Orders</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">{t.activeOrders}</div>
                 </div>
                 <div className="p-2 bg-neutral-50 rounded-lg">
                   <Package className="w-5 h-5 text-neutral-400" />
@@ -85,7 +87,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex justify-between items-start">
                 <div className="flex flex-col gap-1">
                   <div className="text-3xl font-bold tracking-tight leading-none mb-2">{productsCount}</div>
-                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Total Products</div>
+                  <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">{t.totalProducts}</div>
                 </div>
                 <div className="p-2 bg-neutral-50 rounded-lg">
                   <Store className="w-5 h-5 text-neutral-400" />
@@ -96,16 +98,16 @@ export default function DashboardPage({ params }: DashboardPageProps) {
             {/* Your Products */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold tracking-tight">Your Products</h2>
+                <h2 className="text-lg font-bold tracking-tight">{t.yourProducts}</h2>
                 <Link href={`/${lang}/dashboard/upload`}>
-                  <button className="inline-flex items-center justify-center whitespace-nowrap text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 h-9 px-3 text-neutral-500 hover:text-black font-medium">View All</button>
+                  <button className="inline-flex items-center justify-center whitespace-nowrap text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 h-9 px-3 text-neutral-500 hover:text-black font-medium">{t.viewAll}</button>
                 </Link>
               </div>
               <div className="space-y-3">
                 <Link className="block" href={`/${lang}/dashboard/upload`}>
                   <div className="w-full rounded-lg border-2 border-dashed border-neutral-300 p-4 flex items-center justify-center text-neutral-500 hover:text-black hover:border-neutral-400 hover:bg-neutral-50 transition-colors cursor-pointer group gap-2">
                     <Plus className="w-[20px] h-[20px]" />
-                    <span className="text-sm font-semibold tracking-wide">Add New Product</span>
+                    <span className="text-sm font-semibold tracking-wide">{t.addNewProduct}</span>
                   </div>
                 </Link>
 
@@ -117,12 +119,12 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                         <Package className="w-[20px] h-[20px] text-neutral-400" />
                       </div>
                       <div>
-                        <div className="font-semibold text-sm text-neutral-800">Draft Product #{num}</div>
-                        <div className="text-xs text-neutral-500 mt-0.5">Physical Item • 0.00 MAD</div>
+                        <div className="font-semibold text-sm text-neutral-800">{t.draftProduct} #{num}</div>
+                        <div className="text-xs text-neutral-500 mt-0.5">{t.physicalItem} • 0.00 MAD</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">Draft</span>
+                      <span className="px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">{t.draft}</span>
                       <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 hover:text-black h-8 w-8 text-neutral-400">
                         <MoreHorizontal className="w-[18px] h-[18px]" />
                       </button>
@@ -154,15 +156,15 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               <div className="w-full grid grid-cols-3 gap-2 z-10">
                 <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
                   <span className="text-lg font-bold text-neutral-800 mb-0.5">{productsCount}</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Products</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.products}</span>
                 </div>
                 <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
                   <span className="text-lg font-bold text-neutral-800 mb-0.5">{ordersCount}</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Sales</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.sales}</span>
                 </div>
                 <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
                   <span className="text-lg font-bold text-neutral-800 mb-0.5">4.9</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Stars</span>
+                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.stars}</span>
                 </div>
               </div>
             </div>

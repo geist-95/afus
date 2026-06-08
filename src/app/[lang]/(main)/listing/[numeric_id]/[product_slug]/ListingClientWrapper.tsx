@@ -174,7 +174,7 @@ export default function ListingClientWrapper({
         setAllProductsList(allProducts);
         setAllShopsList(mockShops);
         const product = allProducts.find(
-          (p) => Number(p.numeric_id) === Number(numericId) || p.slug_translations?.[lang as 'en' | 'fr' | 'ar'] === productSlug
+          (p) => Number(p.numeric_id) === Number(numericId) || p.slug_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] === productSlug
         );
 
         if (product) {

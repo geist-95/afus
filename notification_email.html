@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afus Notification</title>
+    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+    <style>
+        /* Base Reset */
+        body, table, td, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        table, td {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        img {
+            -ms-interpolation-mode: bicubic;
+        }
+
+        /* Typography */
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+            background-color: #FAF9F6;
+            color: #1a1a1a;
+        }
+
+        /* Container */
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #FAF9F6;
+            padding: 40px 0;
+        }
+
+        .main-table {
+            background-color: #ffffff;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            border-spacing: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            /* Inverted corners (arabic-frame) */
+            -webkit-mask-image:
+                radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
+                radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
+                radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
+                radial-gradient(circle at 100% 100%, transparent 16px, black 16.5px);
+            -webkit-mask-position: top left, top right, bottom left, bottom right;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-size: 51% 51%;
+            mask-image:
+                radial-gradient(circle at 0 0, transparent 16px, black 16.5px),
+                radial-gradient(circle at 100% 0, transparent 16px, black 16.5px),
+                radial-gradient(circle at 0 100%, transparent 16px, black 16.5px),
+                radial-gradient(circle at 100% 100%, transparent 16px, black 16.5px);
+            mask-position: top left, top right, bottom left, bottom right;
+            mask-repeat: no-repeat;
+            mask-size: 51% 51%;
+        }
+
+        /* Header */
+        .header {
+            padding: 40px 40px 20px 40px;
+            text-align: center;
+        }
+        .header img {
+            max-width: 60px;
+            height: auto;
+        }
+
+        /* Content */
+        .content {
+            padding: 0 40px 40px 40px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+        .text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4a4a4a;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* Highlight Box (for order details or message preview) */
+        .highlight-box {
+            background-color: #fafafa;
+            border: 1px solid #eeeeee;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .highlight-text {
+            font-size: 15px;
+            color: #2a2a2a;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Button */
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #663399;
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 16px 36px;
+            border-radius: 9999px;
+            box-shadow: 0 4px 12px rgba(102, 51, 153, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 30px 40px 40px 40px;
+            text-align: center;
+            background-color: #fcfcfc;
+            border-top: 1px solid #f0f0f0;
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #888888;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        @media screen and (max-width: 600px) {
+            .header, .content, .footer {
+                padding-left: 24px !important;
+                padding-right: 24px !important;
+            }
+            .title {
+                font-size: 22px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table class="main-table" align="center" role="presentation">
+            <tr>
+                <td class="header">
+                    <img src="https://afus.ma/logo/logo.png" alt="Afus Logo">
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <h1 class="title">{{NOTIFICATION_TITLE}}</h1>
+                    
+                    <p class="text">
+                        Salam {{USER_NAME}},<br>
+                        {{NOTIFICATION_SUBTITLE}}
+                    </p>
+                    
+                    <div class="highlight-box">
+                        <p class="highlight-text">
+                            {{NOTIFICATION_CONTENT_HTML}}
+                        </p>
+                    </div>
+
+                    <div class="btn-container">
+                        <a href="{{ACTION_URL}}" class="btn">{{ACTION_TEXT}}</a>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    <p class="footer-text">
+                        <strong>The Afus Team</strong>
+                    </p>
+                    <p class="footer-text" style="margin-top: 24px; font-size: 12px; color: #aaaaaa;">
+                        You received this email based on your notification preferences.<br>
+                        You can manage your email alerts in your <a href="https://afus.ma/dashboard/settings" style="color: #663399; text-decoration: underline;">account settings</a>.
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

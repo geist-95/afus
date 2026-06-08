@@ -3,7 +3,8 @@
 import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
-import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload } from 'lucide-react';
+import { getDictionary } from '@/lib/i18n';
+import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload, Bell } from 'lucide-react';
 import Link from 'next/link';
 
 interface SettingsPageProps {
@@ -35,35 +36,25 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   const [instagram, setInstagram] = useState('');
   const [facebook, setFacebook] = useState('');
 
+  // Notification State
+  const [emailOrders, setEmailOrders] = useState(true);
+  const [emailMessages, setEmailMessages] = useState(true);
+
   // UI State
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
-  const labels: Record<string, Record<string, string>> = {
-    en: {
-      title: "Customize Store",
-      saveChanges: "Save Changes",
-      saving: "Saving...",
-    },
-    fr: {
-      title: "Personnaliser la Boutique",
-      saveChanges: "Enregistrer",
-      saving: "Enregistrement...",
-    },
-    ar: {
-      title: "تخصيص المتجر",
-      saveChanges: "حفظ التغييرات",
-      saving: "جاري الحفظ...",
-    }
-  };
-
-  const t = labels[lang] || labels.en;
+  const t = getDictionary(lang).settings;
 
   useEffect(() => {
     async function load() {
       const user = await getActiveSession();
       setSession(user);
+      if (user) {
+        if (user.email_notifications_orders !== undefined) setEmailOrders(user.email_notifications_orders);
+        if (user.email_notifications_messages !== undefined) setEmailMessages(user.email_notifications_messages);
+      }
       if (user?.shop) {
         setShopName(user.shop.name || '');
         setShopSlug(user.shop.slug || '');
@@ -107,6 +98,17 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         instagram,
         facebook
       };
+
+      // Update profiles (notifications)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({
+          email_notifications_orders: emailOrders,
+          email_notifications_messages: emailMessages,
+        })
+        .eq('id', session.id);
+
+      if (profileError) throw profileError;
 
       if (session.shop) {
         // Update existing shop
@@ -152,7 +154,24 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         setSuccess('Store created successfully! Please refresh.');
         
         // Update local session mock
-        const updatedSession = { ...session, role: 'seller', shop: newShop };
+        const updatedSession = { 
+          ...session, 
+          role: 'seller', 
+          shop: newShop,
+          email_notifications_orders: emailOrders,
+          email_notifications_messages: emailMessages
+        };
+        localStorage.setItem('afus_session_user', JSON.stringify(updatedSession));
+        setSession(updatedSession as UserSession);
+      }
+      
+      // Update session locally for the existing shop case if we were already in one
+      if (session.shop) {
+        const updatedSession = {
+          ...session,
+          email_notifications_orders: emailOrders,
+          email_notifications_messages: emailMessages
+        };
         localStorage.setItem('afus_session_user', JSON.stringify(updatedSession));
         setSession(updatedSession as UserSession);
       }
@@ -173,14 +192,14 @@ export default function SettingsPage({ params }: SettingsPageProps) {
       <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
         <div>
           <h1 className="text-xl font-bold text-neutral-800 capitalize tracking-tight">{t.title}</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Manage your store information and pickup details</p>
+          <p className="text-xs text-neutral-500 mt-0.5">{t.subtitle}</p>
         </div>
         <button
           onClick={handleSave}
           disabled={loading}
           className="bg-[#9c7a97] hover:bg-[#866581] text-white px-6 py-2.5 font-semibold rounded-lg text-sm transition-colors disabled:opacity-50"
         >
-          {loading ? t.saving : t.saveChanges}
+          {loading ? '...' : t.save}
         </button>
       </div>
 
@@ -209,6 +228,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'contact' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
             <Phone className="w-4 h-4" /> Contact
+          </button>
+          <button 
+            onClick={() => setActiveTab('notifications')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'notifications' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
+          >
+            <Bell className="w-4 h-4" /> Notifications
           </button>
           <button 
             onClick={() => setActiveTab('collections')}
@@ -379,6 +404,35 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                   placeholder="username or full URL"
                   className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Notifications Tab */}
+          {activeTab === 'notifications' && (
+            <div className="space-y-6">
+              <h3 className="font-bold text-neutral-800 text-lg mb-4">Email Notifications</h3>
+              
+              <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg bg-white">
+                <div>
+                  <div className="font-semibold text-neutral-800 text-sm">Order Updates</div>
+                  <div className="text-xs text-neutral-500 mt-1">Receive emails when your order status changes (e.g. shipped, delivered).</div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" checked={emailOrders} onChange={(e) => setEmailOrders(e.target.checked)} />
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#663399]"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg bg-white">
+                <div>
+                  <div className="font-semibold text-neutral-800 text-sm">New Messages</div>
+                  <div className="text-xs text-neutral-500 mt-1">Receive emails when someone sends you a direct message.</div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" checked={emailMessages} onChange={(e) => setEmailMessages(e.target.checked)} />
+                  <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#663399]"></div>
+                </label>
               </div>
             </div>
           )}
