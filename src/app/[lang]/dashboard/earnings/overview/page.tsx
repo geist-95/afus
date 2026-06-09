@@ -1,19 +1,44 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { IconWallet, IconArrowUpRight, IconClock, IconBuildingBank, IconTrendingUp, IconDownload } from '@tabler/icons-react';
 import { getDictionary } from '@/lib/i18n';
+import { getActiveSession } from '@/lib/auth';
+import { fetchOrders } from '@/lib/supabase';
 
 export default function EarningsOverviewPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = use(params);
   const t = getDictionary(lang).earningsOverview;
-  const transactions = [
-    { id: '#TRX-091', date: 'Today, 14:30', item: 'Atlas Moroccan Rug', amount: '+4,500 MAD', status: 'Cleared' },
-    { id: '#TRX-090', date: 'Yesterday', item: 'Copper Tea Tray', amount: '+850 MAD', status: 'Cleared' },
-    { id: '#TRX-089', date: 'Yesterday', item: 'Handwoven Basket Set', amount: '+320 MAD', status: 'Pending' },
-    { id: '#TRX-088', date: 'May 12, 2026', item: 'Ceramic Serving Bowl', amount: '+180 MAD', status: 'Cleared' },
-    { id: '#TRX-087', date: 'May 10, 2026', item: 'Vintage Leather Pouf', amount: '+1,200 MAD', status: 'Pending' },
-  ];
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      const session = await getActiveSession();
+      if (session?.shop?.id) {
+        try {
+          const fetchedOrders = await fetchOrders(session.shop.id);
+          setOrders(fetchedOrders);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  const netRevenue = orders.reduce((acc, o) => acc + (o.subtotal_mad || 0), 0);
+  const availablePayout = orders.filter(o => ['delivered', 'confirmed'].includes(o.order_status)).reduce((acc, o) => acc + (o.subtotal_mad || 0), 0);
+  const pendingClearance = orders.filter(o => ['pending', 'shipped'].includes(o.order_status)).reduce((acc, o) => acc + (o.subtotal_mad || 0), 0);
+
+  const transactions = orders.map(o => ({
+    id: o.id,
+    date: new Date(o.created_at).toLocaleDateString(),
+    item: o.items?.[0]?.title || 'Order Item',
+    amount: `+${o.subtotal_mad} MAD`,
+    status: ['delivered', 'confirmed'].includes(o.order_status) ? 'Cleared' : 'Pending'
+  })).slice(0, 5);
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#F9F9F9] flex flex-col font-sans p-6 md:p-8">
@@ -38,7 +63,7 @@ export default function EarningsOverviewPage({ params }: { params: Promise<{ lan
             <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-md">+12.5% this month</span>
           </div>
           <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.netRevenue}</p>
-          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">18,450.00 <span className="text-lg text-neutral-400">MAD</span></h2>
+          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">{netRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
 
         {/* Available for Payout */}
@@ -49,7 +74,7 @@ export default function EarningsOverviewPage({ params }: { params: Promise<{ lan
             </div>
           </div>
           <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.availablePayout}</p>
-          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">12,200.00 <span className="text-lg text-neutral-400">MAD</span></h2>
+          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">{availablePayout.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
 
         {/* Pending Clearance */}
@@ -60,7 +85,7 @@ export default function EarningsOverviewPage({ params }: { params: Promise<{ lan
             </div>
           </div>
           <p className="text-sm font-semibold text-neutral-500 mb-1 relative z-10">{t.pendingClearance}</p>
-          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">1,520.00 <span className="text-lg text-neutral-400">MAD</span></h2>
+          <h2 className="text-3xl font-bold text-neutral-900 tracking-tight relative z-10">{pendingClearance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-lg text-neutral-400">MAD</span></h2>
         </div>
       </div>
 

@@ -9,9 +9,46 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ lang: string }> | { lang: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const lang = resolvedParams?.lang || "en";
+
+  const translations = {
+    en: {
+      titlePlain: "Blog & Artisan Journals - Stories from Moroccan Medinas",
+      description: "Discover the rich history, master techniques, and stories behind Moroccan rugs, zellige tilework, spice souks, and leather tanneries.",
+      keywords: "Moroccan culture, Fez tanneries, Berber rug stories, Moroccan zellige, spice guide Morocco"
+    },
+    fr: {
+      titlePlain: "Blog & Carnets d'Artisans - Histoires des Médinas Marocaines",
+      description: "Découvrez l'histoire riche, les techniques et les récits derrière les tapis marocains, le zellige, les souks d'épices et les tanneries.",
+      keywords: "culture marocaine, tannerie de fes, histoire tapis berbere, zellige marocain, guide epices maroc"
+    },
+    ar: {
+      titlePlain: "المدونة ويوميات الحرفي - قصص من المدن المغربية العتيقة",
+      description: "اكتشف التاريخ الغني والتقنيات والقصص الكامنة وراء السجاد المغربي والزليج وأسواق التوابل ومدابغ الجلود.",
+      keywords: "الثقافة المغربية, مدابغ فاس, قصص السجاد الأمازيغي, زليج مغربي, دليل التوابل المغرب"
+    },
+    tz: {
+      titlePlain: "ⴰⴱⵍⵓⴳ - ⵜⵉⵏⵇⵇⵉⵙⵉⵏ ⵏ ⵉⵎⴳⵓⵔⵉⵢⵏ",
+      description: "ⴰⴼ ⴷ ⵥⵕ ⵜⵉⵏⵇⵇⵉⵙⵉⵏ ⴷ ⵜⴰⵡⵓⵔⵉ ⵏ ⵉⵏⴰⵥⵓⵕⵏ ⵉⵎⵖⵔِⵉⴱⵉⵢⵏ.",
+      keywords: "ⵉⵎⴳⵓⵔⵉⵢⵏ, ⵉⵥⵕⴱⴰⵢ, ⵣⵣⵍⵍⵉⵊ, ⵜⴰⵎⴳⵓⵔⵉ"
+    }
+  };
+
+  const t = translations[lang as keyof typeof translations] || translations.en;
+
+  return {
+    title: t.titlePlain,
+    description: t.description,
+    keywords: t.keywords,
+  };
 }
 
 const MOCK_POSTS = [
@@ -144,19 +181,19 @@ const MOCK_POSTS = [
   {
     id: 8,
     slug: "refresh-home-spring-handcrafted-decor",
-    image: "/cities-2/meknes-2.jpg",
+    image: "/blog/3-ways.png",
     date: "2026-06-03",
     title: {
-      en: "3 Ways to Refresh Your Home for Spring with Handcrafted Decor",
-      fr: "3 façons de rafraîchir votre maison pour le printemps avec de la déco faite main",
-      ar: "3 طرق لتجديد منزلك في الربيع بديكور مصنوع يدويًا",
-      tz: "3 ⵜⵖⴰⵔⴰⵙⵉⵏ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵉ ⵜⴰⴼⵙⵓⵜ ⵙ ⵓⵙⵎⵙⴰⵙⴰ ⵏ ⵓⴼⵓⵙ"
+      en: "3 Ways to Refresh Your Home for Summer with Handcrafted Decor",
+      fr: "3 façons de rafraîchir votre maison pour l'été avec de la déco faite main",
+      ar: "3 طرق لتجديد منزلك في الصيف بديكور مصنوع يدويًا",
+      tz: "3 ⵜⵖⴰⵔⴰⵙⵉⵏ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵉ ⵓⵏⴱⴷⵓ ⵙ ⵓⵙⵎⵙⴰⵙⴰ ⵏ ⵓⴼⵓⵙ"
     },
     excerpt: {
-      en: "Welcome the season of renewal by incorporating vibrant, hand-woven textiles and ceramics into your living space.",
-      fr: "Accueillez la saison du renouveau en intégrant des textiles tissés à la main et des céramiques vibrantes dans votre espace de vie.",
-      ar: "استقبل موسم التجديد بدمج المنسوجات والسيراميك النابضة بالحياة والمنسوجة يدويًا في مساحة معيشتك.",
-      tz: "ⵙⵏⵓⴱⴳ ⴰⵙⴳⴳⵯⴰⵙ ⵏ ⵓⵙⵎⴰⵢⵏⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⵉⵥⵕⴱⴰⵢ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ ⴷ ⵉⴽⵯⵍⴰⵏ ⵉⴼⴰⵡⵏ ⴳ ⵓⴷⵖⴰⵔ ⵏⵏⴽ."
+      en: "Welcome the sunny season by incorporating vibrant, breathable hand-woven textiles, cooling ceramics, and natural textures into your living space.",
+      fr: "Accueillez la saison estivale en intégrant des textiles tissés à la main respirants, des céramiques rafraîchissantes et des textures naturelles.",
+      ar: "استقبل الموسم المشمس بدمج المنسوجات المنسوجة يدويًا القابلة للتنفس، والسيراميك المنعش، والأنسجة الطبيعية في مساحة معيشتك.",
+      tz: "ⵙⵏⵓⴱⴳ ⴰⵏⴱⴷⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⵉⵥⵕⴱⴰⵢ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ, ⵍⵅⵣⴼ, ⴷ ⵜⵖⴰⵔⴰⵙⵉⵏ ⵜⵉⴳⴰⵎⴰⵏⵉⵏ ⴳ ⵓⴷⵖⴰⵔ ⵏⵏⴽ."
     }
   }
 ];
@@ -225,7 +262,7 @@ export default async function BlogPage({ params }: PageProps) {
               <div className="relative h-60 w-full overflow-hidden">
                 <Image 
                   src={post.image} 
-                  alt={post.title} 
+                  alt={(post.title as any)[lang] || post.title.en} 
                   fill 
                   className="object-cover group-hover:scale-105 transition-transform duration-500" 
                 />

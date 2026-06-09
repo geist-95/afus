@@ -78,6 +78,39 @@ const CITIES: Record<string, {
   },
 };
 
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const lang = resolvedParams?.lang || "en";
+  const slug = resolvedParams?.slug;
+
+  const city = CITIES[slug as keyof typeof CITIES];
+  if (!city) {
+    return {
+      title: "City Not Found",
+    };
+  }
+
+  const desc = city.description[lang as keyof typeof city.description] ?? city.description.en;
+
+  const keywordsMap: Record<string, string> = {
+    marrakech: "Marrakech artisans, Marrakech souks, handcrafted items Marrakech, moroccan carpet Marrakech, geo optimized",
+    fes: "Fez leather, Chouara tanneries Fez, Fez zellige tiles, traditional crafts Fez, geo optimized",
+    meknes: "Meknes ironwork, Meknes embroidery, Meknes pottery, handcrafted Meknes, geo optimized",
+    rabat: "Rabat carpet weaving, Rabat pottery, UNESCO heritage crafts Rabat, geo optimized",
+    tetouan: "Tetouan textiles, Andalusian crafts Tetouan, white dove medina crafts, geo optimized"
+  };
+
+  const keywords = keywordsMap[slug] || "moroccan artisan city, medina crafts, morocco, geo optimized";
+
+  return {
+    title: `${city.name} Artisanal Heritage`,
+    description: desc,
+    keywords,
+  };
+}
+
 export default async function CityPage({ params }: PageProps) {
   const { lang, slug } = await params;
   const city = CITIES[slug];

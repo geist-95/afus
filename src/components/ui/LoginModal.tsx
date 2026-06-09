@@ -69,19 +69,19 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
   if (!isOpen) return null;
 
   const t = {
-    login: lang === 'fr' ? 'Connexion' : lang === 'ar' ? 'تسجيل الدخول' : 'Sign in',
-    register: lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : 'Register',
-    email: lang === 'fr' ? 'Adresse email' : lang === 'ar' ? 'البريد الإلكتروني' : 'Email address',
-    password: lang === 'fr' ? 'Mot de passe' : lang === 'ar' ? 'كلمة المرور' : 'Password',
-    stayConnected: lang === 'fr' ? 'Rester connecté' : lang === 'ar' ? 'البقاء متصلاً' : 'Stay signed in',
-    forgotPassword: lang === 'fr' ? 'Mot de passe oublié ?' : lang === 'ar' ? 'هل نسيت كلمة المرور؟' : 'Forgot password?',
-    signInBtn: lang === 'fr' ? 'Se connecter' : lang === 'ar' ? 'تسجيل الدخول' : 'Sign in',
-    registerBtn: lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : 'Register',
-    trouble: lang === 'fr' ? "Vous n'arrivez pas à vous connecter ?" : lang === 'ar' ? 'هل تواجه مشكلة في تسجيل الدخول؟' : 'Trouble signing in?',
-    or: lang === 'fr' ? 'OU' : lang === 'ar' ? 'أو' : 'OR',
-    fullName: lang === 'fr' ? 'Nom complet' : lang === 'ar' ? 'الاسم الكامل' : 'Full name',
-    continueGoogle: lang === 'fr' ? 'Continuer avec Google' : lang === 'ar' ? 'المتابعة باستخدام Google' : 'Continue with Google',
-    terms: lang === 'fr' ? "En cliquant sur Se connecter ou Continuer avec Google, vous acceptez de respecter les Conditions d'utilisation et le Règlement concernant la confidentialité." : lang === 'ar' ? "بالنقر على تسجيل الدخول أو المتابعة باستخدام Google، فإنك توافق على شروط الاستخدام وسياسة الخصوصية." : "By clicking Sign in or Continue with Google, you agree to our Terms of Use and Privacy Policy.",
+    login: lang === 'fr' ? 'Connexion' : lang === 'ar' ? 'تسجيل الدخول' : lang === 'tz' ? 'ⴽⵛⵎ' : 'Sign in',
+    register: lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : lang === 'tz' ? 'ⵣⵎⵎⴻⵎ' : 'Register',
+    email: lang === 'fr' ? 'Adresse email' : lang === 'ar' ? 'البريد الإلكتروني' : lang === 'tz' ? 'ⵉⵎⵉⵍ' : 'Email address',
+    password: lang === 'fr' ? 'Mot de passe' : lang === 'ar' ? 'كلمة المرور' : lang === 'tz' ? 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⵉ' : 'Password',
+    stayConnected: lang === 'fr' ? 'Rester connecté' : lang === 'ar' ? 'البقاء متصلاً' : lang === 'tz' ? 'ⵇⵇⵉⵎ ⵉⵣⴷⵉⵏ' : 'Stay signed in',
+    forgotPassword: lang === 'fr' ? 'Mot de passe oublié ?' : lang === 'ar' ? 'هل نسيت كلمة المرور؟' : lang === 'tz' ? 'ⵜⴻⵜⵜⵓⴷ ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⵉ?' : 'Forgot password?',
+    signInBtn: lang === 'fr' ? 'Se connecter' : lang === 'ar' ? 'تسجيل الدخول' : lang === 'tz' ? 'ⴽⵛⵎ' : 'Sign in',
+    registerBtn: lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : lang === 'tz' ? 'ⵣⵎⵎⴻⵎ' : 'Register',
+    trouble: lang === 'fr' ? "Vous n'arrivez pas à vous connecter ?" : lang === 'ar' ? 'هل تواجه مشكلة في تسجيل الدخول؟' : lang === 'tz' ? 'ⵜⵎⵓⴽⵔⵉⵙⵜ ⵏ ⵓⴽⵛⵓⵎ?' : 'Trouble signing in?',
+    or: lang === 'fr' ? 'OU' : lang === 'ar' ? 'أو' : lang === 'tz' ? 'ⵏⵖ' : 'OR',
+    fullName: lang === 'fr' ? 'Nom complet' : lang === 'ar' ? 'الاسم الكامل' : lang === 'tz' ? 'ⵉⵙⵎ ⴰⴽⴰⵎⵍ' : 'Full name',
+    continueGoogle: lang === 'fr' ? 'Continuer avec Google' : lang === 'ar' ? 'المتابعة باستخدام Google' : lang === 'tz' ? 'ⵎⵓⴷⴷⵓ ⵙ Google' : 'Continue with Google',
+    terms: lang === 'fr' ? "En cliquant sur Se connecter ou Continuer avec Google, vous acceptez de respecter les Conditions d'utilisation et le Règlement concernant la confidentialité." : lang === 'ar' ? "بالنقر على تسجيل الدخول أو المتابعة باستخدام Google، فإنك توافق على شروط الاستخدام وسياسة الخصوصية." : lang === 'tz' ? "ⵙ ⵓⴽⵍⵉⴽ ⴼ ⴽⵛⵎ ⵏⵖ ⵎⵓⴷⴷⵓ ⵙ Google, ⴰⵔ ⵜⵇⴱⵍⴷ ⵜⵉⵙⵖⴰⵍ ⵏ ⵓⵙⵎⵔⵙ." : "By clicking Sign in or Continue with Google, you agree to our Terms of Use and Privacy Policy.",
   };
 
   return (
@@ -97,7 +97,7 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
           </svg>
         </button>
 
-        <div className="bg-white arabic-frame w-full p-6 shadow-xl overflow-y-auto max-h-[90vh]">
+        <div className={`bg-white arabic-frame w-full p-6 shadow-xl overflow-y-auto max-h-[90vh] ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6 pr-4">
           <h2 className="text-2xl font-bold text-black">

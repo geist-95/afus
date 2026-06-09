@@ -1003,3 +1003,27 @@ export async function submitReview(payload: {
     return { id: 'r_mock', ...payload, created_at: new Date().toISOString() };
   }
 }
+
+export async function submitBetaReport(payload: {
+  page: string;
+  problem: string;
+  user_id?: string;
+  user_name?: string;
+  user_email?: string;
+  role?: string;
+}) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase.from('beta_reports').insert([payload]).select().single();
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err) {
+    console.warn('Failed to insert beta report to Supabase, falling back to local storage', err);
+    if (typeof window !== 'undefined') {
+      const existingReports = JSON.parse(localStorage.getItem('afus_beta_reports') || '[]');
+      existingReports.push({ ...payload, created_at: new Date().toISOString(), id: Math.random().toString(36).substring(2, 9) });
+      localStorage.setItem('afus_beta_reports', JSON.stringify(existingReports));
+    }
+    return { success: true, fallback: true };
+  }
+}

@@ -2,9 +2,35 @@ import Link from "next/link";
 import { fetchProducts, fetchShopBySlug, fetchProfile, fetchShopReviews } from "@/lib/supabase";
 import ShopCatalogClient from "./ShopCatalogClient";
 import ShopActionButtons from "./ShopActionButtons";
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ lang: string; slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang, slug } = await params;
+  const shop = await fetchShopBySlug(slug);
+  if (!shop) {
+    return {
+      title: "Shop Not Found"
+    };
+  }
+
+  const desc = shop.metadata?.description || shop.description_translations?.[lang as 'en'|'fr'|'ar'] || shop.description_translations?.en || `Visit ${shop.name} to view their unique handcrafted Moroccan collection.`;
+
+  return {
+    title: shop.name,
+    description: desc,
+    keywords: `${shop.name}, moroccan shop, authentic artisan ${shop.name}, moroccan crafts, geo optimized`,
+    openGraph: {
+      title: `${shop.name} - afus`,
+      description: desc,
+      url: `https://afus.ma/${lang}/shop/${slug}`,
+      type: "website",
+      images: shop.metadata?.cover_url ? [{ url: shop.metadata.cover_url, alt: shop.name }] : []
+    }
+  };
 }
 
 export default async function ShopPage({ params }: PageProps) {
@@ -100,6 +126,28 @@ export default async function ShopPage({ params }: PageProps) {
 
   return (
     <div className="w-full pb-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Store",
+            "name": shop.name,
+            "image": logoUrl || "https://afus.ma/icon.png",
+            "description": shop.metadata?.description || shop.description_translations?.en || `Visit ${shop.name} to view their unique handcrafted Moroccan collection.`,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": shop.merchant_city || "Marrakech",
+              "addressCountry": "MA"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": shop.average_rating || "5.0",
+              "reviewCount": reviews.length || "1"
+            }
+          })
+        }}
+      />
       {/* Shop Banner with Info */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div 

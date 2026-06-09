@@ -1,9 +1,32 @@
 import Link from "next/link";
 import { fetchProducts, fetchShops, staticCategories } from "@/lib/supabase";
 import ProductGrid from "@/components/ui/ProductGrid";
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ lang: string; slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang, slug } = await params;
+  const activeCategory = staticCategories.find((c) => c.slug === slug);
+  const categoryName = activeCategory
+    ? activeCategory.name[lang as 'en'|'fr'|'ar'] || activeCategory.name.en
+    : slug;
+
+  const descriptions = {
+    en: `Explore authentic, handmade ${categoryName} from Moroccan master artisans. Direct shipping and secure Cash on Delivery logistics via Amana.`,
+    fr: `Découvrez des articles de ${categoryName} authentiques et faits main par des maîtres artisans marocains. Livraison directe et paiement à la livraison via Amana.`,
+    ar: `اكتشف ${categoryName} الأصيلة والمصنوعة يدويًا من قبل كبار الحرفيين المغاربة. شحن مباشر ودفع آمن عند الاستلام مع أمانة.`
+  };
+
+  const desc = (descriptions as any)[lang] || descriptions.en;
+
+  return {
+    title: categoryName,
+    description: desc,
+    keywords: `${categoryName}, moroccan ${categoryName}, handmade ${categoryName}, afus category`,
+  };
 }
 
 export default async function CategoryPage({ params }: PageProps) {

@@ -101,6 +101,9 @@ export default function NavBar({ lang }: NavBarProps) {
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
     async function loadSession() {
       const active = await getActiveSession();
       setSession(active);
@@ -422,7 +425,7 @@ export default function NavBar({ lang }: NavBarProps) {
                     {session.role === 'seller' && (
                       <>
                         <Link
-                          href={`/${lang}/dashboard/upload`}
+                          href={`/${lang}/dashboard/products`}
                           className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
                           onClick={() => setMenuOpen(false)}
                         >

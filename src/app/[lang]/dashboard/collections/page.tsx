@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getActiveSession } from '@/lib/auth';
+import { getDictionary } from '@/lib/i18n';
 import { FolderClosed, Plus, Trash2, CheckSquare, Square } from 'lucide-react';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 

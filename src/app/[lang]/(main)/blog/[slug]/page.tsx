@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 
 const TwitterIcon = (props: any) => (
   <svg fill="currentColor" viewBox="0 0 24 24" {...props}><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
@@ -139,8 +140,8 @@ const MOCK_POSTS = {
     tags: ["Gift Guide", "Handmade"],
     color: "#2a0a1e",
     textColor: "#f5deb3",
-    content: (lang) => {
-      const texts = {
+    content: (lang: string) => {
+      const allTexts = {
         en: {
           intro: "Looking for a truly unique present that speaks volumes? In a world dominated by mass production, choosing a handmade gift means you are not just giving a physical item—you are sharing a rich story, supporting a lineage of master craftsmen, and preserving cultural heritage. Here is our ultimate, hand-picked guide to the best artisanal Moroccan finds that are guaranteed to delight anyone on your list.",
           artTitle: "The Art of Meaningful Gifting",
@@ -193,7 +194,8 @@ const MOCK_POSTS = {
           quote: "ⵜⴰⵔⵣⵉⴼⵜ ⵏ ⵓⴼⵓⵙ ⵜⴳⴰ ⴰⵎⵙⴰⵡⴰⵍ ⵉⵙⵙⵓⵙⵎⵏ ⴳⵔ ⵓⵎⴰⵙⵜⴰⵏ, ⵡⴰⵍⵍⵉ ⵉⵜⵜⴰⴽⴽⴰⵏ, ⴷ ⵡⴰⵍⵍⵉ ⵉⵜⵜⴰⵎⵥⵏ.",
           outro: "ⵔⵣⵓ ⴳ ⵜⴳⵔⵓⵎⵎⴰ ⵏⵏⵖ ⴰⴼⴰⴷ ⴰⴷ ⵜⴰⴼⴷ ⵓⴳⴳⴰⵔ ⵏ ⵉⴳⵔⵔⵓⵊⵏ ⵙⴳ ⵜⵖⵔⵎⵜ."
         }
-      }[lang] || texts.en;
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
       
       return (
         <>
@@ -248,8 +250,8 @@ const MOCK_POSTS = {
     tags: ["Creator Story", "Craftsmanship"],
     color: "#1e0a2e",
     textColor: "#e8d5f0",
-    content: (lang) => {
-      const texts = {
+    content: (lang: string) => {
+      const allTexts = {
         en: {
           intro: "Every beautiful piece on our platform begins with a spark of inspiration. Today, we're taking you into the labyrinthine alleys of the medina to explore the creative process of master artisan Youssef.",
           h1: "The Workspace: A Sensory Overload",
@@ -290,7 +292,8 @@ const MOCK_POSTS = {
           h3: "ⴰⵙⵓⵊⴷ ⵉ ⵉⵎⴰⵍ",
           p3: "ⵜⴰⵥⵓⵕⵉ ⴰⴷ ⵜⵣⵔⵉ ⴰⴼⴰⵍⴽⴰⵢ. ⵜⴳⴰ ⴰⵙⵏⴰⵍ ⵏ ⵜⴷⴰⵎⵙⴰ ⴷ ⵓⵙⵣⵔⵉ ⵏ ⵜⵎⵓⵣⴰⵢ."
         }
-      }[lang] || texts.en;
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
       
       return (
         <>
@@ -323,75 +326,71 @@ const MOCK_POSTS = {
   "refresh-home-spring-handcrafted-decor": {
     id: 8,
     title: {
-      en: "3 Ways to Refresh Your Home for Spring with Handcrafted Decor",
-      fr: "3 façons de rafraîchir votre maison pour le printemps avec de la déco faite main",
-      ar: "3 طرق لتجديد منزلك في الربيع بديكور مصنوع يدويًا",
-      tz: "3 ⵜⵖⴰⵔⴰⵙⵉⵏ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵉ ⵜⴰⴼⵙⵓⵜ ⵙ ⵓⵙⵎⵙⴰⵙⴰ ⵏ ⵓⴼⵓⵙ"
+      en: "3 Ways to Refresh Your Home for Summer with Handcrafted Decor",
+      fr: "3 façons de rafraîchir votre maison pour l'été avec de la déco faite main",
+      ar: "3 طرق لتجديد منزلك في الصيف بديكور مصنوع يدويًا",
+      tz: "3 ⵜⵖⴰⵔⴰⵙⵉⵏ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵉ ⵓⵏⴱⴷⵓ ⵙ ⵓⵙⵎⵙⴰⵙⴰ ⵏ ⵓⴼⵓⵙ"
     },
     excerpt: {
-      en: "Welcome the season of renewal by incorporating vibrant, hand-woven textiles and ceramics into your living space.",
-      fr: "Accueillez la saison du renouveau en intégrant des textiles tissés à la main et des céramiques vibrantes dans votre espace de vie.",
-      ar: "استقبل موسم التجديد بدمج المنسوجات والسيراميك النابضة بالحياة والمنسوجة يدويًا في مساحة معيشتك.",
-      tz: "ⵙⵏⵓⴱⴳ ⴰⵙⴳⴳⵯⴰⵙ ⵏ ⵓⵙⵎⴰⵢⵏⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⵉⵥⵕⴱⴰⵢ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ ⴷ ⵉⴽⵯⵍⴰⵏ ⵉⴼⴰⵡⵏ ⴳ ⵓⴷⵖⴰⵔ ⵏⵏⴽ."
+      en: "Welcome the sunny season by incorporating vibrant, breathable hand-woven textiles, cooling ceramics, and natural textures into your living space.",
+      fr: "Accueillez la saison estivale en intégrant des textiles tissés à la main respirants, des céramiques rafraîchissantes et des textures naturelles.",
+      ar: "استقبل الموسم المشمس بدمج المنسوجات المنسوجة يدويًا القابلة للتنفس، والسيراميك المنعش، والأنسجة الطبيعية في مساحة معيشتك.",
+      tz: "ⵙⵏⵓⴱⴳ ⴰⵏⴱⴷⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⵉⵥⵕⴱⴰⵢ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ, ⵍⵅⵣⴼ, ⴷ ⵜⵖⴰⵔⴰⵙⵉⵏ ⵜⵉⴳⴰⵎⴰⵏⵉⵏ ⴳ ⵓⴷⵖⴰⵔ ⵏⵏⴽ."
     },
-    image: "/cities-2/meknes-2.jpg",
+    image: "/blog/3-ways.png",
     date: "2026-06-03",
     author: "Salma Rizqi",
     tags: ["Home Decor", "Inspiration"],
     color: "#0a1a0e",
     textColor: "#c5e8cc",
-    content: (lang) => {
-      const texts = {
+    content: (lang: string) => {
+      const allTexts = {
         en: {
-          intro: "Spring is the ultimate season of renewal. It's the perfect time to breathe new life into your living space with handcrafted touches.",
-          h1: "1. Swap Out Heavy Textiles for Light Cottons",
-          p1: "Replace heavy wool with hand-loomed cotton blankets from Moroccan artisans.",
-          h2: "2. Introduce Artistic Ceramics",
-          p2: "Spring is about bringing color back into our lives. Hand-painted Moroccan ceramics are versatile pieces of art.",
-          h3: "3. Add Natural Texture with Woven Baskets",
-          p3: "Hand-woven baskets add a vital layer of organic texture that softens modern interiors.",
-          outro: "Embrace the spring by bringing the enduring beauty of handmade artistry into your environment."
+          intro: "Summer is the season of warmth, light, and vibrant energy. It's the perfect time to breathe new life into your living space with handcrafted touches that reflect the sunny days ahead. By introducing authentic, handmade pieces, you can easily transform your home into a serene and inviting summer sanctuary.",
+          h1: "1. Swap Out Heavy Textiles for Light, Breathable Cottons",
+          p1: "As the temperatures rise, it's essential to put away the heavy wool rugs and thick throws. Instead, replace them with hand-loomed cotton blankets and lightweight Sabra silk cushions from Moroccan artisans. These natural fibers not only feel cooler against the skin but also bring a relaxed, airy vibe to your living room and bedroom. Drape a bright, woven cotton throw over your sofa or bed to instantly uplift the room's mood while keeping things comfortable for the warmer months.",
+          h2: "2. Introduce Artistic and Cooling Ceramics",
+          p2: "Summer is all about bringing vibrant colors and refreshing elements back into our lives. Hand-painted Moroccan ceramics, with their intricate geometric patterns and striking blues and greens, are incredibly versatile pieces of art. Use large ceramic bowls as stunning centerpieces on your dining table, or serve refreshing summer salads and chilled fruits in beautifully crafted tagines. The cool touch of glazed pottery adds both visual interest and a subtle cooling effect to your home's aesthetic.",
+          h3: "3. Add Natural Texture with Woven Baskets and Rattan",
+          p3: "Nothing screams summer quite like natural, woven materials. Hand-woven baskets made from palm leaves or esparto grass add a vital layer of organic texture that softens modern interiors and brings a touch of the outdoors inside. You can use these sturdy, artisanal baskets as stylish planters for your indoor tropical plants, as practical storage for summer reading materials, or even hang them on the wall as a unique bohemian gallery. The earthy tones of woven materials effortlessly complement a bright, summer-ready home.",
+          outro: "Embrace the summer season by bringing the enduring beauty, cooling textures, and vibrant colors of handmade artistry into your everyday environment. A few thoughtful, handcrafted additions can make your home feel like a permanent holiday retreat."
         },
         fr: {
-          intro: "Le printemps est la saison du renouveau. C'est le moment idéal pour donner un nouveau souffle à votre espace de vie avec des touches artisanales.",
-          h1: "1. Échangez les textiles lourds contre du coton léger",
-          p1: "Remplacez la laine lourde par des couvertures en coton tissées à la main par des artisans marocains.",
-          h2: "2. Introduisez des céramiques artistiques",
-          p2: "Le printemps ramène la couleur dans nos vies. Les céramiques marocaines peintes à la main sont des pièces d'art polyvalentes.",
-          h3: "3. Ajoutez une texture naturelle avec des paniers tressés",
-          p3: "Les paniers tressés à la main ajoutent une touche organique qui adoucit les intérieurs modernes.",
-          outro: "Accueillez le printemps en apportant la beauté durable de l'artisanat dans votre environnement."
+          intro: "L'été est la saison de la chaleur, de la lumière et de l'énergie vibrante. C'est le moment idéal pour donner un nouveau souffle à votre espace de vie avec des touches artisanales qui reflètent les beaux jours à venir. En introduisant des pièces authentiques et faites à la main, vous pouvez transformer votre maison en un sanctuaire estival serein et accueillant.",
+          h1: "1. Échangez les textiles lourds contre des cotons légers et respirants",
+          p1: "À mesure que les températures augmentent, remplacez la laine lourde par des couvertures en coton tissées à la main et des coussins légers en soie Sabra d'artisans marocains. Ces fibres naturelles apportent une ambiance détendue et aérée à votre salon et à votre chambre tout en vous gardant au frais.",
+          h2: "2. Introduisez des céramiques artistiques et rafraîchissantes",
+          p2: "L'été ramène la couleur et des éléments rafraîchissants dans nos vies. Les céramiques marocaines peintes à la main sont des pièces d'art polyvalentes. Utilisez de grands bols en céramique comme centres de table éblouissants, ou servez des salades estivales et des fruits frais dans des tajines magnifiquement conçus.",
+          h3: "3. Ajoutez une texture naturelle avec des paniers tressés et du rotin",
+          p3: "Rien ne crie autant l'été que les matériaux naturels et tressés. Les paniers tressés à la main à partir de feuilles de palmier ajoutent une couche vitale de texture organique qui adoucit les intérieurs modernes et apporte une touche de nature à l'intérieur. Utilisez-les comme cache-pots élégants pour vos plantes tropicales ou comme rangement pratique.",
+          outro: "Accueillez la saison estivale en apportant la beauté durable, les textures rafraîchissantes et les couleurs vibrantes de l'artisanat dans votre environnement quotidien. Quelques ajouts réfléchis peuvent faire de votre maison un lieu de vacances permanent."
         },
         ar: {
-          intro: "الربيع هو موسم التجديد. إنه الوقت المثالي لبث حياة جديدة في مساحة معيشتك بلمسات مصنوعة يدويًا.",
-          h1: "1. استبدل المنسوجات الثقيلة بالقطن الخفيف",
-          p1: "استبدل الصوف الثقيل ببطانيات قطنية منسوجة يدويًا من قبل الحرفيين المغاربة.",
-          h2: "2. أضف السيراميك الفني",
-          p2: "الربيع يعيد الألوان إلى حياتنا. السيراميك المغربي المطلي يدويًا هو قطع فنية متعددة الاستخدامات.",
-          h3: "3. أضف ملمسًا طبيعيًا مع السلال المنسوجة",
-          p3: "تضيف السلال المنسوجة يدويًا لمسة عضوية تخفف من التصميمات الداخلية الحديثة.",
-          outro: "استقبل الربيع من خلال إدخال الجمال الدائم للحرف اليدوية في بيئتك."
+          intro: "الصيف هو موسم الدفء والضوء والطاقة النابضة بالحياة. إنه الوقت المثالي لبث حياة جديدة في مساحة معيشتك بلمسات مصنوعة يدويًا تعكس الأيام المشمسة القادمة. من خلال إدخال قطع أصلية ومصنوعة يدويًا، يمكنك بسهولة تحويل منزلك إلى ملاذ صيفي هادئ وجذاب.",
+          h1: "1. استبدل المنسوجات الثقيلة بقطنيات خفيفة ومسامية",
+          p1: "مع ارتفاع درجات الحرارة، استبدل الصوف الثقيل ببطانيات قطنية منسوجة يدويًا ووسائد خفيفة من حرير الصبار من قبل الحرفيين المغاربة. لا تبدو هذه الألياف الطبيعية أكثر برودة على البشرة فحسب، بل تجلب أيضًا أجواء مريحة ومتجددة الهواء لغرفة المعيشة وغرفة النوم.",
+          h2: "2. أدخل السيراميك الفني والمنعش",
+          p2: "الصيف يعيد الألوان النابضة بالحياة والعناصر المنعشة إلى حياتنا. السيراميك المغربي المطلي يدويًا هو قطع فنية متعددة الاستخدامات. استخدم أوعية خزفية كبيرة كقطع مركزية مذهلة على طاولة طعامك، أو قدم السلطات الصيفية والفواكه المبردة في طواجن مصممة بشكل جميل.",
+          h3: "3. أضف ملمسًا طبيعيًا مع السلال المنسوجة والروطان",
+          p3: "لا شيء يعبر عن الصيف مثل المواد الطبيعية المنسوجة. تضيف السلال المنسوجة يدويًا من أوراق النخيل طبقة حيوية من النسيج العضوي الذي يخفف من التصميمات الداخلية الحديثة ويجلب لمسة من الهواء الطلق إلى الداخل. يمكنك استخدامها كأحواض نباتات أنيقة أو كمساحة تخزين عملية.",
+          outro: "استقبل فصل الصيف من خلال جلب الجمال الدائم والأنسجة المنعشة والألوان النابضة بالحياة للحرف اليدوية إلى بيئتك اليومية. القليل من الإضافات المدروسة يمكن أن تجعل منزلك يبدو وكأنه ملاذ دائم للعطلات."
         },
         tz: {
-          intro: "ⵜⴰⴼⵙⵓⵜ ⵜⴳⴰ ⴰⵙⴳⴳⵯⴰⵙ ⵏ ⵓⵙⵎⴰⵢⵏⵓ. ⵉⴳⴰ ⴰⴽⵓⴷ ⵉⵖⵓⴷⴰⵏ ⴰⴼⴰⴷ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵙ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ.",
+          intro: "ⴰⵏⴱⴷⵓ ⵉⴳⴰ ⴰⵙⴳⴳⵯⴰⵙ ⵏ ⵜⴰⴼⵓⴽⵜ ⴷ ⵓⵥⵖⴰⵍ. ⵉⴳⴰ ⴰⴽⵓⴷ ⵉⵖⵓⴷⴰⵏ ⴰⴼⴰⴷ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵙ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ. ⵙ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⴰⴷ, ⵜⵥⴹⴰⵕⴷ ⴰⴷ ⵜⵙⴽⵔⴷ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⴰⵎ ⵢⴰⵏ ⵓⴷⵖⴰⵔ ⵏ ⵓⵙⵓⵏⴼⵓ.",
           h1: "1. ⵙⵏⴼⵍ ⵜⵉⵎⵍⵙⵉⵜ ⵉⵥⴰⵢⵢⵏ ⵙ ⵍⵇⵟⵏ ⵉⴼⵙⵙⵓⵙⵏ",
-          p1: "ⵙⵏⴼⵍ ⵜⴰⴹⵓⵜ ⵙ ⵉⴱⵔⴷⵉⵢⵏ ⵏ ⵍⵇⵟⵏ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ.",
+          p1: "ⵍⵍⵉⵖ ⵉⵖⵍⵉ ⵓⵥⵖⴰⵍ, ⵙⵏⴼⵍ ⵜⴰⴹⵓⵜ ⵙ ⵉⴱⵔⴷⵉⵢⵏ ⵏ ⵍⵇⵟⵏ ⴷ ⵜⵙⵓⵎⵔⵉⵏ ⵏ ⵍⵃⵔⵉⵔ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ. ⴰⵔ ⵜⴰⴽⴽⴰⵏⵜ ⵢⴰⵏ ⵓⵃⵙⵙⴰⵙ ⵏ ⵓⵙⵎⵎⵉⴹ ⴷ ⵜⵓⵏⴼⵉⵜ ⵉ ⵜⵅⵅⴰⵎⵜ ⵏⵏⴽ.",
           h2: "2. ⵙⴽⵛⵎ ⵍⵅⵣⴼ ⵏ ⵜⴰⵥⵓⵕⵉ",
-          p2: "ⵜⴰⴼⵙⵓⵜ ⴰⵔ ⴷ ⵜⵜⴰⵡⵉ ⵉⴽⵯⵍⴰⵏ. ⵍⵅⵣⴼ ⴰⵎⵖⵔⵉⴱⵉ ⵉⴳⴰ ⵜⴰⵥⵓⵕⵉ ⵉⵎⵢⴰⵏⴰⵡⵏ.",
+          p2: "ⴰⵏⴱⴷⵓ ⴰⵔ ⴷ ⵉⵜⵜⴰⵡⵉ ⵉⴽⵯⵍⴰⵏ ⵉⴼⴰⵡⵏ. ⵍⵅⵣⴼ ⴰⵎⵖⵔⵉⴱⵉ ⵉⴳⴰ ⵜⴰⵥⵓⵕⵉ ⵉⵎⵢⴰⵏⴰⵡⵏ. ⵙⵙⵎⵔⵙ ⵉⵇⵚⵕⵉⵢⵏ ⵎⵇⵇⵓⵕⵏⵉⵏ ⵉ ⵜⵉⵔⴰⵎ ⵏ ⵓⵏⴱⴷⵓ ⴷ ⵉⴳⵓⵎⴰ.",
           h3: "3. ⵔⵏⵓ ⵜⴰⵖⴰⵔⴰ ⵜⴰⴳⴰⵎⴰⵏⵜ ⵙ ⵉⵙⴽⴽⵉⵏⵏ",
-          p3: "ⵉⵙⴽⴽⵉⵏⵏ ⵉⵜⵜⵓⵥⴹⴰⵏ ⴰⵔ ⵔⵏⵏⵓⵏ ⵢⴰⵜ ⵜⵖⴰⵔⴰ ⵜⴰⴳⴰⵎⴰⵏⵜ ⵉ ⵜⴰⴷⴷⴰⵔⵜ.",
-          outro: "ⵙⵏⵓⴱⴳ ⵜⴰⴼⵙⵓⵜ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⴰⵥⵓⵕⵉ ⵏ ⵓⴼⵓⵙ ⴳ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ."
+          p3: "ⵉⵙⴽⴽⵉⵏⵏ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵜⵉⴼⵔⵉⵏ ⵏ ⵡⴰⴳⴳⴰⵔ ⴰⵔ ⵔⵏⵏⵓⵏ ⵢⴰⵜ ⵜⵖⴰⵔⴰ ⵜⴰⴳⴰⵎⴰⵏⵜ ⵉ ⵜⴰⴷⴷⴰⵔⵜ. ⵜⵥⴹⴰⵕⴷ ⴰⴷ ⵜⵏ ⵜⵙⵙⵎⵔⵙⴷ ⵉ ⵉⵎⵖⴰⵢⵏ ⵏⵖ ⴰⴼⴰⴷ ⴰⴷ ⴳⵉⵙⵏ ⵜⵃⵟⵟⵓⴷ ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵏⵏⴽ.",
+          outro: "ⵙⵏⵓⴱⴳ ⴰⵏⴱⴷⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⴰⵥⵓⵕⵉ ⵏ ⵓⴼⵓⵙ ⴳ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ. ⴽⵔⴰ ⵏ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵉⴼⴰⵡⵏ ⴰⵔ ⵜⵙⵙⵎⴰⵢⵏⵓⵏ ⵓⴷⵎ ⵏ ⵜⴰⴷⴷⴰⵔⵜ."
         }
-      }[lang] || texts.en;
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
       
       return (
         <>
           <p className="lead font-medium text-2xl text-[#0a1a0e] mb-8">{texts.intro}</p>
-          
-          <div className="my-10 w-full h-96 bg-neutral-200 arabic-frame overflow-hidden flex items-center justify-center relative">
-            <span className="text-neutral-500 absolute z-10 font-medium">Placeholder Image</span>
-            <div className="absolute inset-0 bg-neutral-300 opacity-20"></div>
-          </div>
           
           <h3>{texts.h1}</h3>
           <p>{texts.p1}</p>
@@ -402,17 +401,67 @@ const MOCK_POSTS = {
           <h3>{texts.h3}</h3>
           <p>{texts.p3}</p>
           
-          <div className="my-10 w-full h-96 bg-neutral-200 arabic-frame overflow-hidden flex items-center justify-center relative">
-            <span className="text-neutral-500 absolute z-10 font-medium">Placeholder Image</span>
-            <div className="absolute inset-0 bg-neutral-300 opacity-20"></div>
-          </div>
-          
           <p>{texts.outro}</p>
         </>
       );
     }
   },
 };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const lang = resolvedParams?.lang || "en";
+  const slug = resolvedParams?.slug;
+
+  const post = MOCK_POSTS[slug as keyof typeof MOCK_POSTS];
+  if (!post) {
+    return {
+      title: "Blog Post Not Found",
+    };
+  }
+
+  const titleText = (post.title as any)[lang] || post.title.en;
+  const descText = (post.excerpt as any)[lang] || post.excerpt.en;
+
+  const keywordsMap: Record<string, string> = {
+    "art-of-moroccan-zellige": "moroccan zellige, traditional tilework, fes clay tile, handmade ceramic, moroccan geometry, geo optimized",
+    "weaving-stories-berber-rugs": "berber rugs, handwoven rug, atlas mountains weaving, moroccan carpet, berber symbol, geo optimized",
+    "scent-of-the-medina-spices": "moroccan spices, guide to medina spices, ras el hanout, moroccan saffron, culinary heritage, geo optimized",
+    "leather-tanneries-fes": "fes tanneries, chouara tannery, moroccan leather, traditional tanning, handmade leather goods, geo optimized",
+    "andalusian-echoes-tetouan": "tetouan medina, andalusian heritage, white dove morocco, andalusian music, geo optimized",
+    "ultimate-gift-guide-artisanal-moroccan-finds": "moroccan gifts, handmade gift guide, artisanal finds, moroccan shopping, geo optimized",
+    "behind-the-brand-magic-in-medina": "artisan process, behind the brand, moroccan crafts design, master artisan, geo optimized",
+    "refresh-home-spring-handcrafted-decor": "spring home decor, handcrafted decor, moroccan interior, home refresh, geo optimized"
+  };
+
+  const keywords = keywordsMap[slug] || "moroccan crafts, artisanal, handmade, heritage";
+
+  return {
+    title: titleText,
+    description: descText,
+    keywords,
+    openGraph: {
+      title: `${titleText} - afus`,
+      description: descText,
+      url: `https://afus.ma/${lang}/blog/${slug}`,
+      type: "article",
+      publishedTime: post.date,
+      authors: [post.author],
+      images: [
+        {
+          url: post.image,
+          alt: titleText,
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${titleText} - afus`,
+      description: descText,
+      images: [post.image],
+    }
+  };
+}
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { lang, slug } = await params;
@@ -425,6 +474,32 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <article className="space-y-12 pb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": (post.title as any)[lang] || post.title.en,
+            "description": (post.excerpt as any)[lang] || post.excerpt.en,
+            "image": `https://afus.ma${post.image}`,
+            "datePublished": post.date,
+            "author": {
+              "@type": "Person",
+              "name": post.author
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "afus",
+              "logo": "https://afus.ma/icon.png"
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://afus.ma/${lang}/blog/${slug}`
+            }
+          })
+        }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-neutral-500 px-4 md:px-0">
         <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
@@ -445,8 +520,8 @@ export default async function BlogPostPage({ params }: PageProps) {
             {post.date} &bull; {post.author}
           </div>
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold !font-ariom leading-tight mb-6"
-            style={{ color: post.textColor }}
+            className="text-4xl md:text-5xl lg:text-6xl font-bold !font-ariom mb-6"
+            style={{ color: post.textColor, lineHeight: "100%" }}
           >
             {(post.title as any)[lang] || post.title.en}
           </h1>
@@ -459,7 +534,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         <div className="relative w-full md:w-[45%] h-[300px] md:h-auto flex-shrink-0">
           <Image
             src={post.image}
-            alt={post.title}
+            alt={(post.title as any)[lang] || post.title.en}
             fill
             className="object-cover banner-img"
             sizes="(max-width: 768px) 100vw, 45vw"
@@ -470,7 +545,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 md:px-0 prose prose-lg prose-neutral prose-headings:!font-ariom prose-a:text-[#2a0a1e] hover:prose-a:text-black prose-p:text-xl prose-p:text-neutral-600 prose-p:leading-relaxed">
+      <div className="max-w-3xl mx-auto px-4 md:px-0 prose prose-lg prose-neutral prose-headings:!font-ariom prose-a:text-[#2a0a1e] hover:prose-a:text-black prose-p:text-xl prose-p:text-neutral-600 prose-p:leading-relaxed [&_p]:mb-8 prose-p:mb-8">
         {/* @ts-ignore - dynamic content */}
         {post.content ? (typeof post.content === 'function' ? post.content(lang) : (post.content[lang as 'en'|'fr'|'ar'|'tz'] || post.content.en)) : (
           <>

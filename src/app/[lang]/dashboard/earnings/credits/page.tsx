@@ -1,9 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IconWallet, IconBuildingBank, IconCheck, IconClock, IconAlertCircle } from '@tabler/icons-react';
+import { getActiveSession } from '@/lib/auth';
+import { fetchOrders } from '@/lib/supabase';
 
 export default function EarningsCreditsPage() {
+  const [availablePayout, setAvailablePayout] = useState(0);
+
+  useEffect(() => {
+    async function loadData() {
+      const session = await getActiveSession();
+      if (session?.shop?.id) {
+        try {
+          const fetchedOrders = await fetchOrders(session.shop.id);
+          const available = fetchedOrders
+            .filter(o => ['delivered', 'confirmed'].includes(o.order_status))
+            .reduce((acc, o) => acc + (o.subtotal_mad || 0), 0);
+          setAvailablePayout(available);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    loadData();
+  }, []);
   const payouts = [
     { id: '#PO-1042', date: 'June 01, 2026', amount: '8,500.00 MAD', account: '•••• 4589', status: 'Completed' },
     { id: '#PO-1041', date: 'May 15, 2026', amount: '12,400.00 MAD', account: '•••• 4589', status: 'Completed' },
@@ -27,7 +48,7 @@ export default function EarningsCreditsPage() {
                 <IconWallet className="w-5 h-5 text-primary" strokeWidth={2} />
                 <p className="text-sm font-semibold text-neutral-500">Available to Withdraw</p>
               </div>
-              <h2 className="text-5xl font-bold text-neutral-900 tracking-tight">12,200.00 <span className="text-2xl text-neutral-400">MAD</span></h2>
+              <h2 className="text-5xl font-bold text-neutral-900 tracking-tight">{availablePayout.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-2xl text-neutral-400">MAD</span></h2>
               <p className="text-xs text-neutral-500 mt-3 flex items-center gap-1.5">
                 <IconAlertCircle className="w-4 h-4" />
                 Minimum payout amount is 500.00 MAD.

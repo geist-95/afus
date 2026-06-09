@@ -3,9 +3,41 @@ import Link from "next/link";
 import TrustBanner from "@/components/ui/TrustBanner";
 import FAQSection from "@/components/ui/FAQSection";
 import { IconHeartHandshake, IconTools, IconShieldCheck, IconTruckDelivery } from '@tabler/icons-react';
+import type { Metadata } from "next";
 
 interface PageProps {
   params: Promise<{ lang: string }> | { lang: string };
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const lang = resolvedParams?.lang || "en";
+
+  const translations = {
+    en: {
+      titlePlain: "About Us - Supporting Moroccan Crafts",
+      description: "Learn about the mission of afus: empowering traditional artisans across Marrakech, Fez, and Rabat, and preserving authentic Moroccan heritage.",
+    },
+    fr: {
+      titlePlain: "À propos de nous - Soutien de l'artisanat marocain",
+      description: "Découvrez la mission d'afus : valoriser les artisans traditionnels de Marrakech, Fès et Rabat, et préserver le patrimoine marocain.",
+    },
+    ar: {
+      titlePlain: "قصتنا - دعم الحرف اليدوية المغربية",
+      description: "تعرف على مهمة أفوس: تمكين الحرفيين التقليديين في مراكش وفاس والرباط، والحفاظ على التراث المغربي الأصيل.",
+    },
+    tz: {
+      titlePlain: "ⵖⴼ ⴰⴼⵓⵙ - ⵜⴰⵢⵙⵉ ⵜⴰⵎⵖⵔⵉⴱⵉⵜ",
+      description: "ⵙⵙⵏ ⵜⴰⵡⵓⵔⵉ ⵏ ⴰⴼⵓⵙ ⴳ ⵓⵃⵟⵟⵓ ⵏ ⵜⵎⴳⵓⵔⵉ ⵜⴰⵎⵖⵔⵉⴱِⵉⵜ.",
+    }
+  };
+
+  const t = translations[lang as keyof typeof translations] || translations.en;
+
+  return {
+    title: t.titlePlain,
+    description: t.description,
+  };
 }
 
 export default async function AboutPage({ params }: PageProps) {
@@ -192,7 +224,22 @@ export default async function AboutPage({ params }: PageProps) {
 
   return (
     <div className="space-y-12 pb-12 w-full">
-
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "AboutPage",
+            "name": t.breadcrumb,
+            "description": t.heroDesc,
+            "publisher": {
+              "@type": "Organization",
+              "name": "afus",
+              "logo": "https://afus.ma/icon.png"
+            }
+          })
+        }}
+      />
 
       {/* Hero (History) - Inspired by City Page */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">

@@ -109,8 +109,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
         {/* Logo */}
         <div className="flex-shrink-0 w-[200px]">
           <Link className="flex items-center gap-3 hover:opacity-80 transition-opacity" href={`/${lang}`}>
-            <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none invert" />
-            <img src="/logo/afus.svg" alt="afus" className="h-5 object-contain !rounded-none invert brightness-0" />
+            <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none" />
           </Link>
         </div>
 
@@ -163,7 +162,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <LayoutDashboard className="w-[18px] h-[18px]" />
                   <span>{t.overview}</span>
                 </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>
+                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/products`))} href={`/${lang}/dashboard/products`}>
                   <Package className="w-[18px] h-[18px]" />
                   <span>{t.products}</span>
                 </Link>
@@ -212,7 +211,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.store ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
                       <Link className={navItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>{t.overview}</Link>
-                      <Link className={navItemClass(isActive(`/${lang}/dashboard/upload`))} href={`/${lang}/dashboard/upload`}>{t.products}</Link>
+                      <Link className={navItemClass(isActive(`/${lang}/dashboard/products`))} href={`/${lang}/dashboard/products`}>{t.products}</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>{t.orders}</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>{t.collections}</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>{t.promotions}</Link>
