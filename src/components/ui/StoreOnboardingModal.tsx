@@ -62,6 +62,12 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'e.g. Atlas Artisanat',
     shopDesc: 'Short description (optional)',
     shopDescPlaceholder: 'Tell buyers what makes your shop unique...',
+    // Branding
+    brandingTitle: 'Brand your shop',
+    brandingSubtitle: 'Make your artisan profile stand out.',
+    shopLogo: 'Shop logo',
+    shopLogoHelp: 'Upload a profile picture for your shop (optional).',
+    upload: 'Upload',
     // Location
     locationTitle: 'Where are you based?',
     locationSubtitle: 'Help buyers discover your crafts and plan local pickups.',
@@ -69,6 +75,12 @@ const labels: Record<string, Record<string, string>> = {
     address: 'Pickup address',
     addressPlaceholder: 'e.g. 32 Derb Snan, Bab Doukkala',
     createShop: 'Open my shop',
+    // Summary
+    summaryTitle: 'Review details',
+    summarySubtitle: 'Make sure everything looks good before launching your shop.',
+    creating: 'Creating...',
+    selectCity: 'Select your city...',
+    defaultShopDesc: 'Your artisan shop on afus',
     // Success
     successTitle: 'Your shop is open!',
     successSubtitle: 'Congratulations! You are now a verified artisan on afus. Start adding your first products.',
@@ -107,12 +119,22 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'ex. Maison Artisanale',
     shopDesc: 'Description courte (optionnel)',
     shopDescPlaceholder: 'Dites aux acheteurs ce qui rend votre boutique unique...',
+    brandingTitle: 'Identité de votre boutique',
+    brandingSubtitle: 'Faites ressortir votre profil d\'artisan.',
+    shopLogo: 'Logo de la boutique',
+    shopLogoHelp: 'Téléchargez une photo de profil pour votre boutique (optionnel).',
+    upload: 'Télécharger',
     locationTitle: 'Où êtes-vous basé ?',
     locationSubtitle: 'Aidez les acheteurs à découvrir vos artisanats.',
     city: 'Ville',
     address: 'Adresse de retrait',
     addressPlaceholder: 'ex. 15 Derb El Mitar, Fès El Bali',
     createShop: 'Ouvrir ma boutique',
+    summaryTitle: 'Vérifier les détails',
+    summarySubtitle: 'Assurez-vous que tout est correct avant de lancer votre boutique.',
+    creating: 'Création...',
+    selectCity: 'Sélectionnez votre ville...',
+    defaultShopDesc: 'Votre boutique d\'artisan sur afus',
     successTitle: 'Votre boutique est ouverte !',
     successSubtitle: 'Félicitations ! Vous êtes maintenant un artisan certifié sur afus.',
     addProduct: 'Ajouter le premier produit',
@@ -149,12 +171,22 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'مثال: أطلس للحرف اليدوية',
     shopDesc: 'وصف قصير (اختياري)',
     shopDescPlaceholder: 'أخبر المشترين بما يميز متجرك...',
+    brandingTitle: 'تصميم هوية متجرك',
+    brandingSubtitle: 'اجعل ملفك الشخصي كحرفي مميزاً.',
+    shopLogo: 'شعار المتجر',
+    shopLogoHelp: 'تحميل صورة الملف الشخصي لمتجرك (اختياري).',
+    upload: 'تحميل',
     locationTitle: 'أين أنت موجود؟',
     locationSubtitle: 'ساعد المشترين في اكتشاف حرفك.',
     city: 'المدينة',
     address: 'عنوان الاستلام',
     addressPlaceholder: 'مثال: درب سنان، باب دكالة',
     createShop: 'افتح متجري',
+    summaryTitle: 'مراجعة التفاصيل',
+    summarySubtitle: 'تأكد من صحة كل شيء قبل إطلاق متجرك.',
+    creating: 'جاري الإنشاء...',
+    selectCity: 'اختر مدينتك...',
+    defaultShopDesc: 'متجرك الحرفي على أفوس',
     successTitle: 'متجرك مفتوح!',
     successSubtitle: 'تهانينا! أنت الآن حرفي موثق على أفوس.',
     addProduct: 'أضف أول منتج',
@@ -179,7 +211,7 @@ const labels: Record<string, Record<string, string>> = {
     alreadyHaveAccount: 'ⵉⵍⵍⴰ ⵖⵓⵔⴽ ⴰⵎⵉⴹⴰⵏ?',
     signIn: 'ⴽⵛⵎ',
     accountTitle: 'ⵙⵏⴼⵍ ⴰⵎⵉⴹⴰⵏ ⵏⵏⴽ',
-    accountSubtitle: 'ⵉⵏⵖⵎⵉⵙⵏ ⵏⵏⴽ ⵉ ⵓⴽⵛⵛⵓⵎ.',
+    accountSubtitle: 'ⵉⵏⵖ密ⵙⵏ ⵏⵏⴽ ⵉ ⵓⴽⵛⵛⵓⵎ.',
     fullName: 'ⵉⵙⵎ ⴰⵎⵖⵔⴰⴷ',
     email: 'ⴰⵏⵙⴰ ⵏ ⵓⵎⴰⵢⵍ',
     password: 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⴰⵢ',
@@ -191,12 +223,22 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'ⵎⴷⵢⴰ. ⴰⵟⵍⴰⵙ ⵉ ⵜⵉⴳⴰⵡⵉⵏ',
     shopDesc: 'ⴰⴳⵍⴰⵎ ⴰⴳⵣⵣⴰⵍ (ⴰⵙⵜⴰⵢ)',
     shopDescPlaceholder: 'ⵎⵎⵍ ⵉ ⵉⵎⵙⴰⵖⵏ ⵎⴰⵢⴷ ⵉⵥⵉⵍⵏ ⴳ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ...',
+    brandingTitle: 'ⵙⵏⴼⵍ ⵜⴰⵎⵙⵙⵓⴳⵓⵔⵜ ⵏ ⵜⵃⴰⵏⵓⵜ',
+    brandingSubtitle: 'ⵙⴽⵔ ⴰⵙⵡⵉⵔ ⵏ ⵓⵎⴳⵓⵔⵉ ⵏⵏⴽ ⴰⴷ ⵉⵥⵉⵍ.',
+    shopLogo: 'ⵜⴰⵎⵓⵍⵉ ⵏ ⵜⵃⴰⵏⵓⵜ',
+    shopLogoHelp: 'ⵙⵔⵙ ⵜⴰⵡⵍⴰⴼⵜ ⵏ ⵜⵃⴰⵏⵓⵜ ⵏⵏⴽ (ⴰⵙⵜⴰⵢ).',
+    upload: 'ⵙⵔⵙ',
     locationTitle: 'ⵎⴰⵏⵉ ⵖ ⵜⵍⵍⵉⴷ?',
     locationSubtitle: 'ⴰⵡⵙ ⵉⵎⵙⴰⵖⵏ ⴰⴷ ⴰⴼⵏ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⴽ.',
     city: 'ⵜⵉⵖⵔⵎⵜ',
     address: 'ⴰⵏⵙⴰ ⵏ ⵓⵎⵣⴰⵖ',
     addressPlaceholder: 'ⵎⴷⵢⴰ. ⴷⵔⴱ ⵙⵏⴰⵏ, ⴱⴰⴱ ⴷⵓⴽⴽⴰⵍⴰ',
     createShop: 'ⵕⵥⵎ ⵜⴰⵃⴰⵏⵓⵜ ⵉⵏⵓ',
+    summaryTitle: 'ⵙⵏⵇⴷ ⵉⵏⵖⵎⵉⵙⵏ',
+    summarySubtitle: 'ⵙⵏⵇⴷ ⵎⴰⴷ ⵉⵍⵍⴰⵏ ⵓⵔⵜⴰ ⵜⵕⵥⵎⴷ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ.',
+    creating: 'ⴰⵙⵏⴼⵍ...',
+    selectCity: 'ⵙⵜⵉ ⵜⵉⵖⵔⵎⵜ ⵏⵏⴽ...',
+    defaultShopDesc: 'ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ ⵜⴰⵎⴳⵓⵔⵉⵜ ⴳ ⴰⴼⵓⵙ',
     successTitle: 'ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ ⵜⵕⵥⵎ!',
     successSubtitle: 'ⴰⵢⵢⵓⵣ! ⵜⴳⵉⴷ ⴰⵎⴳⵓⵔⵉ ⵉⵜⵜⵓⵙⵉⵙⴽⵏ ⴳ ⴰⴼⵓⵙ.',
     addProduct: 'ⵔⵏⵓ ⵜⴰⵖⴰⵡⵙⴰ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ',
@@ -440,7 +482,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       <div className="relative z-10 w-full h-full flex flex-col md:flex-row overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
 
         {/* Left panel — form (visually on the left) */}
-        <div className="flex-1 bg-white flex flex-col overflow-hidden order-first md:order-first">
+        <div className={`flex-1 bg-white flex flex-col overflow-hidden order-first md:order-first ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
 
           {/* Unified header */}
           <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-14 md:py-8 border-b md:border-none border-neutral-100 bg-white z-20">
@@ -515,7 +557,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         className="flex items-center justify-center gap-1.5 text-sm text-neutral-500 hover:text-black mb-6 transition-colors mx-auto"
                       >
                         <IconArrowLeft className="w-4 h-4" strokeWidth={2} />
-                        <span>Back</span>
+                        <span>{t.back}</span>
                       </button>
                       <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.signIn}</h1>
                       <p className="text-neutral-500 mt-2 text-base">{t.alreadyHaveAccount}</p>
@@ -710,8 +752,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                 {step === 'branding' && (
                   <div className="space-y-6 text-center">
                     <div>
-                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">Brand your shop</h1>
-                      <p className="text-neutral-500 mt-2 text-base">Make your artisan profile stand out.</p>
+                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.brandingTitle}</h1>
+                      <p className="text-neutral-500 mt-2 text-base">{t.brandingSubtitle}</p>
                     </div>
 
                     <form onSubmit={handleBrandingNext} className="space-y-4 text-left">
@@ -731,7 +773,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             </span>
                           )}
                           <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-all">
-                            <span className="text-[10px] font-bold text-white uppercase tracking-wider text-center">Upload</span>
+                            <span className="text-[10px] font-bold text-white uppercase tracking-wider text-center">{t.upload}</span>
                           </div>
                           <input 
                             type="file" 
@@ -745,8 +787,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-sm font-semibold text-black block">Shop logo</label>
-                          <p className="text-xs text-neutral-500">Upload a profile picture for your shop (optional).</p>
+                          <label className="text-sm font-semibold text-black block">{t.shopLogo}</label>
+                          <p className="text-xs text-neutral-500">{t.shopLogoHelp}</p>
                         </div>
                       </div>
 
@@ -798,7 +840,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             onChange={(e) => setCity(e.target.value)}
                             className="w-full border border-neutral-200 rounded-xl pl-10 pr-10 py-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all bg-neutral-50 hover:bg-white appearance-none cursor-pointer"
                           >
-                            <option value="" disabled>Select your city...</option>
+                            <option value="" disabled>{t.selectCity}</option>
                             {MOROCCAN_CITIES.map((c) => (
                               <option key={c} value={c}>{c}</option>
                             ))}
@@ -839,8 +881,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                 {step === 'summary' && (
                   <div className="space-y-6 text-center">
                     <div>
-                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">Review details</h1>
-                      <p className="text-neutral-500 mt-2 text-base">Make sure everything looks good before launching your shop.</p>
+                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.summaryTitle}</h1>
+                      <p className="text-neutral-500 mt-2 text-base">{t.summarySubtitle}</p>
                     </div>
 
                     <form onSubmit={handleCreateShop} className="space-y-4">
@@ -863,7 +905,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             </div>
                             <div className="min-w-0">
                               <p className="font-bold text-black text-sm truncate">{shopName}</p>
-                              <p className="text-xs text-neutral-500 truncate">{shopDesc || 'Your artisan shop on afus'}</p>
+                              <p className="text-xs text-neutral-500 truncate">{shopDesc || t.defaultShopDesc}</p>
                             </div>
                           </div>
                         </div>
@@ -875,9 +917,9 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
                       >
                         {loading ? (
-                          <span className="flex items-center gap-2">
+                          <span className="flex items-center gap-2 justify-center w-full">
                             <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Creating...
+                            {t.creating}
                           </span>
                         ) : (
                           <>
@@ -915,7 +957,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
                     <div className="space-y-4">
                       <a
-                        href={`/${lang}/dashboard/upload`}
+                        href={`/${lang}/dashboard/products`}
                         className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all"
                         onClick={() => { onClose(); window.location.reload(); }}
                       >
