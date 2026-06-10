@@ -9,8 +9,6 @@ import Link from "next/link";
 import {
   ArrowRight,
   Download,
-  Facebook,
-  Twitter,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
