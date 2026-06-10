@@ -1,5 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import LandingPage from "@/components/LandingPage";
+import MainLayout from "./(main)/layout";
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { fetchProducts, fetchShops } from "@/lib/supabase";
@@ -53,6 +56,13 @@ export default async function HomePage({ params }: PageProps) {
   const resolvedParams = await params;
   const lang = resolvedParams?.lang || "en";
 
+  const cookieStore = await cookies();
+  const unlocked = cookieStore.get("afus_beta_unlocked")?.value === "true";
+
+  if (!unlocked) {
+    return <LandingPage lang={lang} />;
+  }
+
   const products = await fetchProducts();
   const shops = await fetchShops();
 
@@ -82,8 +92,9 @@ export default async function HomePage({ params }: PageProps) {
   }[lang] || "Buy handmade Moroccan rugs, ceramics, leather goods, and zellige tiles directly from Marrakech, Fez, and Rabat artisans. Secure Cash on Delivery (COD) shipping.";
 
   return (
-    <div className="space-y-16">
-      <script
+    <MainLayout params={params}>
+      <div className="space-y-16">
+        <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify([
@@ -136,6 +147,7 @@ export default async function HomePage({ params }: PageProps) {
       <div className="-mx-4 sm:-mx-6 lg:-mx-8">
         <TrustBanner lang={lang} />
       </div>
-    </div>
+      </div>
+    </MainLayout>
   );
 }

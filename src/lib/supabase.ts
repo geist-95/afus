@@ -1014,9 +1014,9 @@ export async function submitBetaReport(payload: {
 }) {
   try {
     if (isPlaceholder) throw new Error('placeholder');
-    const { data, error } = await supabase.from('beta_reports').insert([payload]).select().single();
+    const { error } = await supabase.from('beta_reports').insert([payload]);
     if (error) throw error;
-    return { success: true, data };
+    return { success: true };
   } catch (err) {
     console.warn('Failed to insert beta report to Supabase, falling back to local storage', err);
     if (typeof window !== 'undefined') {

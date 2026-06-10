@@ -580,3 +580,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Waitlist Table
+CREATE TABLE waitlist (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS for Waitlist
+ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
+-- Allow anonymous inserts to waitlist
+CREATE POLICY "Allow anonymous inserts to waitlist" ON waitlist FOR INSERT WITH CHECK (true);
+-- Restrict waitlist reads (only service role or admin can read)
+CREATE POLICY "Restrict waitlist reads" ON waitlist FOR SELECT USING (false);
+
+-- Beta Reports Table
+CREATE TABLE beta_reports (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    page TEXT NOT NULL,
+    problem TEXT NOT NULL,
+    user_id UUID,
+    user_name TEXT,
+    user_email TEXT,
+    role TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- RLS for Beta Reports
+ALTER TABLE beta_reports ENABLE ROW LEVEL SECURITY;
+-- Allow anonymous and authenticated inserts to beta_reports
+CREATE POLICY "Allow anonymous inserts to beta_reports" ON beta_reports FOR INSERT WITH CHECK (true);
+-- Restrict reads (only admin or service role can read)
+CREATE POLICY "Restrict beta_reports reads" ON beta_reports FOR SELECT USING (false);

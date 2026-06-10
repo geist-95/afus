@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import LanguageModal from "@/components/ui/LanguageModal";
 import BetaReportFab from "@/components/ui/BetaReportFab";
 import { Readex_Pro } from 'next/font/google';
+import { Toaster } from "sonner";
 import "../globals.css";
 
 const readexPro = Readex_Pro({
@@ -127,6 +128,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <LanguageModal currentLang={lang} />
           {children}
           <BetaReportFab />
+          <Toaster position="top-center" richColors />
           <SpeedInsights />
         </CartProvider>
         </WishlistProvider>

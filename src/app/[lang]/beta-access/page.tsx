@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   IconLock, 
   IconBuildingStore, 
@@ -17,6 +18,8 @@ interface PageProps {
   params: Promise<{ lang: string }>;
 }
 
+const targetDate = new Date('2026-06-10T20:00:00+01:00').getTime();
+
 export default function BetaAccessPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const lang = resolvedParams?.lang || "en";
@@ -25,13 +28,72 @@ export default function BetaAccessPage({ params }: PageProps) {
   const [password, setPassword] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [error, setError] = useState("");
+  
+  const [mounted, setMounted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isCountdownOver, setIsCountdownOver] = useState(false);
+
+  const [showIntro, setShowIntro] = useState(true);
+  const [introIndex, setIntroIndex] = useState(0);
+  
+  const introSequence = ["Welcome", "مرحباً", "Bienvenue", "ⴰⵏⵚⵓⴼ"];
+
+  // Use useMemo or static array outside component to prevent infinite effect triggers
+  useEffect(() => {
+    if (!showIntro) return;
+    
+    if (introIndex < introSequence.length - 1) {
+      const timer = setTimeout(() => {
+        setIntroIndex(prev => prev + 1);
+      }, 800);
+      return () => clearTimeout(timer);
+    } else {
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+      }, 1800);
+      return () => clearTimeout(timer);
+    }
+  }, [introIndex, showIntro]);
 
   useEffect(() => {
+    setMounted(true);
     const savedUnlock = localStorage.getItem("afus_beta_unlocked");
     if (savedUnlock === "true") {
       setIsUnlocked(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance <= 0) {
+        setIsCountdownOver(true);
+        return false;
+      }
+
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+      setIsCountdownOver(false);
+      return true;
+    };
+
+    const keepGoing = calculateTimeLeft();
+    if (!keepGoing) return;
+
+    const interval = setInterval(() => {
+      calculateTimeLeft();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [mounted]);
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +101,16 @@ export default function BetaAccessPage({ params }: PageProps) {
       setIsUnlocked(true);
       setError("");
       localStorage.setItem("afus_beta_unlocked", "true");
+      document.cookie = "afus_beta_unlocked=true; path=/; max-age=31536000";
     } else {
       setError(
         lang === "fr" 
           ? "Code incorrect. Veuillez vérifier votre invitation." 
           : lang === "ar" 
             ? "الرمز غير صحيح. يرجى التحقق من دعوتك." 
-            : "Incorrect code. Please check your invitation email."
+            : lang === "tz"
+              ? "ⵜⴰⵏⴳⴰⵍⵜ ⵓⵔ ⵜⵎⵓⵛⵛⴰ. ⵎⴽ ⵜⵓⴼⵉⴷ ⵥⵕ ⵜⴰⴱⵔⴰⵜ ⵏ ⵜⵖⵓⵔⵉ ⵏⵏⴽ."
+              : "Incorrect code. Please check your invitation email."
       );
     }
   };
@@ -53,6 +118,7 @@ export default function BetaAccessPage({ params }: PageProps) {
   const handleLock = () => {
     setIsUnlocked(false);
     localStorage.removeItem("afus_beta_unlocked");
+    document.cookie = "afus_beta_unlocked=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
   };
 
   const t = {
@@ -151,8 +217,40 @@ export default function BetaAccessPage({ params }: PageProps) {
           action: "إنشاء مجموعات"
         }
       }
+    },
+    tz: {
+      lockedTitle: "ⴰⴽⵛⵛⵓⵎ ⵙ ⴱⵉⵟⴰ",
+      lockedSubtitle: "ⴰⵏⵚⵓⴼ ⵢⵉⵡⵏ ⵙ ⴱⵉⵟⴰ ⵏ ⴰⴼⵓⵙ. ⵜⴻⵜⵜⵓⵙⵜⴰⵢⵎ ⴰⴼⴰⴷ ⴰⴷ ⴰⵖ ⵜⴰⵡⵙⵎ ⴳ ⵓⵙⴰⵔⵎ ⵏ ⵉⵎⴰⵍ ⵏ ⵜⵙⴱⴱⴰⴱⵜ ⵜⴰⵎⵖⵔⵉⴱⵉⵜ.",
+      passwordLabel: "ⵙⴽⵛⵎ ⵜⴰⵏⴳⴰⵍⵜ ⵏ ⵜⵖⵓⵔⵉ",
+      placeholder: "ⵙⴽⵛⵎ ⵜⴰⵏⴳⴰⵍⵜ...",
+      unlockBtn: "ⵙⵉⵙⵙⵏ ⵜⴰⵖⵓⵔⵉ",
+      unlockedTitle: "ⴰⵏⵚⵓⴼ ⵢⵉⵡⵏ ⵙ ⴱⵉⵟⴰ ⵏ ⴰⴼⵓⵙ",
+      unlockedSubtitle: "ⵜⴰⵏⵎⵎⵉⵔⵜ ⵏⵏⵡⵏ ⴰⵛⴽⵓ ⵜⴷⵔⴰⵎ ⴷⵉⵖ! ⵎⴽ ⵜⵓⴼⵉⴷ ⴰⵔⵎⵎ ⵜⵉⵡⵓⵔⵉⵡⵉⵏ ⴰⴷ ⴰⴼⴰⴷ ⴰⴷ ⵏⵥⵕ ⵉⵙ ⵜⵙⵡⵓⵔⵉ ⵜⵎⵙⵙⵉⵔⵜ ⵎⵣⵢⴰⵏ:",
+      logoutBtn: "ⵇⵇⵏ ⴰⴽⵛⵛⵓⵎ",
+      tasks: {
+        store: {
+          title: "1. ⵙⵏⴼⵍⵓⵍ ⴷ ⵙⵎⵓⵜⵜⴳ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ",
+          desc: "ⴷⴷⵓ ⵙ ⵜⴼⵉⵏⴰⵖ, ⵙⴽⵔ ⴰⵎⵓⵖ ⵏ ⵓⵎⵙⵏⵣⵉ, ⵙⵜⵉ ⵜⵉⵖⵔⵎⵜ ⵏⵏⴽ, ⴷ ⵙⵎⵓⵜⵜⴳ ⵜⴰⵏⵉⵜ ⵏ ⵜⵃⴰⵏⵓⵜ ⵏⵏⴽ.",
+          action: "ⵙⵎⵓⵜⵜⴳ ⵜⴰⵃⴰⵏⵓⵜ"
+        },
+        product: {
+          title: "2. ⵙⵏⴼⵍⵓⵍ ⴷ ⵙⵔⵙ ⴰⴼⴰⵔⵉⵙ",
+          desc: "ⵙⵔⵙ ⴰⴼⴰⵔⵉⵙ ⴰⵎⴰⵢⵏⵓ. ⵔⵏⵓ ⴰⵣⵡⵍ, ⴰⴳⵍⴰⵎ, ⴰⵜⵉⴳ ⵙ ⴷⵔⵀⵎ, ⴷ ⵜⵡⵍⴰⴼⵉⵏ ⵏ ⵓⴼⴰⵔⵉⵙ.",
+          action: "ⵙⵔⵙ ⴰⴼⴰⵔⵉⵙ"
+        },
+        order: {
+          title: "3. ⵙⵎⴷ ⵜⴰⵖⵜⵙⵜ ⵏ ⵜⵖⵔⴰⴷ",
+          desc: "ⵥⵕ ⵜⵉⵃⵓⵏⴰ ⵢⴰⴹⵏ, ⵔⵏⵓ ⵉⴼⴰⵔⵉⵙⵏ ⵙ ⵜⴽⵔⵔⵓⵙⵜ ⵏⵏⴽ, ⴷ ⵙⴽⵔ ⵜⴰⵖⵜⵙⵜ ⵏ ⵜⵖⵔⴰⴷ.",
+          action: "ⵥⵕ ⵉⴼⴰⵔⵉⵙⵏ"
+        },
+        collections: {
+          title: "4. ⵙⴽⵔ ⵜⵉⴳⵔⵓⵎⵎⴰⵡⵉⵏ",
+          desc: "ⵙⵎⵓⵏ ⵉⴼⴰⵔⵉⵙⵏ ⵏⵏⴽ ⴳ ⵜⴳⵔⵓⵎⵎⴰⵡⵉⵏ ⴰⴼⴰⴷ ⴰⴷ ⵜⵙⵎⵓⵜⵜⴳⴷ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ.",
+          action: "ⵙⴽⵔ ⵜⵉⴳⵔⵓⵎⵎⴰⵡⵉⵏ"
+        }
+      }
     }
-  }[lang as "en" | "fr" | "ar"] || {
+  }[lang as "en" | "fr" | "ar" | "tz"] || {
     lockedTitle: "Closed Beta Access",
     lockedSubtitle: "Welcome to the exclusive closed beta of afus. You have been selected to help us test the future of Moroccan artisanal commerce.",
     passwordLabel: "Enter Invitation Code",
@@ -185,12 +283,37 @@ export default function BetaAccessPage({ params }: PageProps) {
     }
   };
 
+
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#f3defd] to-[#fdf7eb] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <AnimatePresence>
+        {showIntro && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 z-50 flex items-center justify-center bg-[#200a2a]"
+          >
+            <AnimatePresence mode="wait">
+              <motion.h1
+                key={introIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="!text-white text-7xl md:text-[10rem] font-bold font-serif !font-ariom tracking-wider drop-shadow-md"
+              >
+                {introSequence[introIndex]}
+              </motion.h1>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {!isUnlocked ? (
         /* LOCKED STATE */
         <div className="w-full max-w-md bg-white border border-neutral-200 rounded-2xl shadow-xl overflow-hidden arabic-frame">
-          <div className="p-8 text-center bg-[#2a0a1e] relative">
+          <div className="p-8 text-center bg-[#200a2a] relative">
             <div className="mx-auto flex items-center justify-center mb-4">
               <img src="/logo/logo.png" alt="Afus Logo" className="w-12 h-12 object-contain" />
             </div>
@@ -202,34 +325,77 @@ export default function BetaAccessPage({ params }: PageProps) {
             </p>
           </div>
 
-          <form onSubmit={handleUnlock} className="p-8 space-y-6">
-            <div className="space-y-2">
-              <label className="text-neutral-700 font-bold text-sm block">
-                {t.passwordLabel}
-              </label>
-              <input
-                type="password"
-                required
-                placeholder={t.placeholder}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border border-neutral-300 p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#2a0a1e] rounded-lg text-center text-lg tracking-wider"
-              />
-              {error && (
-                <p className="text-red-600 text-xs font-semibold text-center mt-2">
-                  ⚠️ {error}
-                </p>
-              )}
-            </div>
+          <div className="p-8 space-y-6">
+            {!mounted ? (
+              <div className="flex justify-center items-center h-40">
+                <div className="w-8 h-8 border-4 border-[#23102f]/20 border-t-[#23102f] rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {!isCountdownOver ? (
+                  /* Countdown Timer - shown until target date */
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-4 gap-2 md:gap-4">
+                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.days.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
+                          {lang === 'fr' ? 'Jours' : lang === 'ar' ? 'أيام' : 'Days'}
+                        </span>
+                      </div>
+                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
+                          {lang === 'fr' ? 'Heures' : lang === 'ar' ? 'ساعات' : 'Hours'}
+                        </span>
+                      </div>
+                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
+                          {lang === 'fr' ? 'Min' : lang === 'ar' ? 'دقائق' : 'Mins'}
+                        </span>
+                      </div>
+                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
+                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
+                          {lang === 'fr' ? 'Sec' : lang === 'ar' ? 'ثواني' : 'Secs'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Password form - shown after countdown ends */
+                  <form onSubmit={handleUnlock} className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-neutral-700 font-bold text-sm block">
+                        {t.passwordLabel}
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        placeholder={t.placeholder}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full border border-neutral-300 p-3 bg-white focus:outline-none focus:ring-2 focus:ring-[#200a2a] rounded-lg text-center text-lg tracking-wider"
+                      />
+                      {error && (
+                        <p className="text-red-600 text-xs font-semibold text-center mt-2">
+                          ⚠️ {error}
+                        </p>
+                      )}
+                    </div>
 
-            <button
-              type="submit"
-              className="w-full bg-[#2a0a1e] hover:bg-[#3d0f2b] text-white text-sm py-3.5 rounded-full font-bold uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <IconUserCheck className="w-5 h-5" />
-              {t.unlockBtn}
-            </button>
-          </form>
+                    <button
+                      type="submit"
+                      className="w-full bg-[#200a2a] hover:bg-[#3d0f2b] text-white text-sm py-3.5 rounded-full font-bold uppercase tracking-wider transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <IconUserCheck className="w-5 h-5" />
+                      {t.unlockBtn}
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         /* UNLOCKED STATE */
@@ -238,7 +404,7 @@ export default function BetaAccessPage({ params }: PageProps) {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-100 pb-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-[#2a0a1e]">
+              <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-[#200a2a]">
                 {t.unlockedTitle}
               </h1>
               <p className="text-neutral-600 text-sm md:text-base mt-2 max-w-2xl leading-relaxed">
@@ -264,7 +430,7 @@ export default function BetaAccessPage({ params }: PageProps) {
                     <IconBuildingStore className="w-6 h-6" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-[#854d0e] bg-[#fcd34d]/20 px-2 py-0.5 rounded">
-                    {lang === "fr" ? "Vendeur" : lang === "ar" ? "بائع" : "Seller Setup"}
+                    {lang === "fr" ? "Vendeur" : lang === "ar" ? "بائع" : lang === "tz" ? "ⴰⵎⵙⵏⵣⵉ" : "Seller Setup"}
                   </span>
                 </div>
                 <h3 className="font-bold text-lg text-neutral-900 leading-tight">
@@ -284,7 +450,7 @@ export default function BetaAccessPage({ params }: PageProps) {
                     <IconPlus className="w-6 h-6" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-blue-800 bg-blue-100 px-2 py-0.5 rounded">
-                    {lang === "fr" ? "Inventaire" : lang === "ar" ? "مخزون" : "Inventory"}
+                    {lang === "fr" ? "Inventaire" : lang === "ar" ? "مخزون" : lang === "tz" ? "ⵜⴰⴳⴰⵍⴰ" : "Inventory"}
                   </span>
                 </div>
                 <h3 className="font-bold text-lg text-neutral-900 leading-tight">
@@ -304,7 +470,7 @@ export default function BetaAccessPage({ params }: PageProps) {
                     <IconShoppingCart className="w-6 h-6" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-green-800 bg-green-100 px-2 py-0.5 rounded">
-                    {lang === "fr" ? "Logistique" : lang === "ar" ? "لوجستيات" : "Logistics"}
+                    {lang === "fr" ? "Logistique" : lang === "ar" ? "لوجستيات" : lang === "tz" ? "ⵜⴰⵍⵓⵊⵉⵙⵜⵉⴽⵜ" : "Logistics"}
                   </span>
                 </div>
                 <h3 className="font-bold text-lg text-neutral-900 leading-tight">
@@ -324,7 +490,7 @@ export default function BetaAccessPage({ params }: PageProps) {
                     <IconFolder className="w-6 h-6" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-widest text-purple-800 bg-purple-100 px-2 py-0.5 rounded">
-                    {lang === "fr" ? "Collection" : lang === "ar" ? "مجموعات" : "Curation"}
+                    {lang === "fr" ? "Collection" : lang === "ar" ? "مجموعات" : lang === "tz" ? "ⴰⵙⵜⴰⵢ" : "Curation"}
                   </span>
                 </div>
                 <h3 className="font-bold text-lg text-neutral-900 leading-tight">
@@ -342,14 +508,16 @@ export default function BetaAccessPage({ params }: PageProps) {
           <div className="flex justify-center pt-4">
             <Link
               href={`/${lang}`}
-              className="px-10 py-4 bg-[#2a0a1e] hover:bg-[#3d0f2b] text-white text-sm rounded-full font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-3 cursor-pointer"
+              className="px-10 py-4 bg-[#200a2a] hover:bg-[#3d0f2b] text-white text-sm rounded-full font-bold uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-3 cursor-pointer"
             >
               <span>
                 {lang === "fr" 
                   ? "Accéder directement à l'application" 
                   : lang === "ar" 
                     ? "الدخول مباشرة إلى التطبيق" 
-                    : "Access the App Directly"}
+                    : lang === "tz"
+                      ? "ⴽⵛⵎ ⵙ ⵓⵙⵏⵙⵉ ⵙ ⵓⵙⵔⵉⴷ"
+                      : "Access the App Directly"}
               </span>
               <IconArrowRight className="w-5 h-5" />
             </Link>
