@@ -315,13 +315,24 @@ export default function NavBar({ lang }: NavBarProps) {
             <>
 
               {/* Shared Links (Icon-only) */}
-              <Link
-                href={`/${lang}/dashboard`}
-                className="hidden sm:flex items-center text-black hover:text-black/80 transition-colors"
-                title={t.manageStore}
-              >
-                <BriefcaseIcon />
-              </Link>
+              {session.shop ? (
+                <Link
+                  href={`/${lang}/dashboard`}
+                  className="hidden sm:flex items-center text-black hover:text-black/80 transition-colors"
+                  title={t.manageStore}
+                >
+                  <BriefcaseIcon />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setOnboardingModalOpen(true)}
+                  className="hidden sm:flex items-center text-black hover:text-black/80 transition-colors cursor-pointer bg-transparent border-none"
+                  title={t.manageStore}
+                >
+                  <BriefcaseIcon />
+                </button>
+              )}
 
               <Link href={`/${lang}/cart`} className="flex items-center text-black hover:text-black/80 relative" title={t.cart}>
                 <ShoppingCartIcon />
@@ -413,6 +424,14 @@ export default function NavBar({ lang }: NavBarProps) {
                     >
                       <HeartIcon />
                       <span>Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}</span>
+                    </Link>
+                    <Link
+                      href={`/${lang}/orders`}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      <ShoppingBagIcon />
+                      <span>{lang === 'fr' ? 'Mes achats' : lang === 'ar' ? 'مشترياتي' : lang === 'tz' ? 'ⵜⵉⵙⵖⵉⵏ ⵉⵏⵓ' : 'My purchases'}</span>
                     </Link>
                     <Link
                       href={`/${lang}/inbox`}

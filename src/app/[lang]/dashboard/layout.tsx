@@ -53,6 +53,9 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
       const user = await getActiveSession();
       if (!user) {
         router.push(`/${lang}/login`);
+      } else if (!user.shop) {
+        // Redirect to homepage if user does not have a registered store/shop
+        router.push(`/${lang}`);
       } else {
         setSession(user);
       }
@@ -130,10 +133,9 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   className={`absolute flex items-center gap-4 transition-all duration-500 ease-in-out ${idx === currentBanner ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
                 >
                   <span className="whitespace-nowrap">{banner.message}</span>
-                  <button className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-green-500/40 bg-neutral-800/50 text-green-400 hover:bg-neutral-800 transition-colors font-medium whitespace-nowrap">
-                    {banner.icon}
-                    {banner.buttonText}
-                  </button>
+                  <span className="flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-700 bg-neutral-800/40 text-neutral-400 font-medium whitespace-nowrap text-xs">
+                    {lang === 'fr' ? 'Bientôt disponible' : lang === 'ar' ? 'قريباً' : 'Coming Soon'}
+                  </span>
                 </div>
               ))}
             </div>
@@ -162,6 +164,15 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <LayoutDashboard className="w-[18px] h-[18px]" />
                   <span>{t.overview}</span>
                 </Link>
+                {session.shop && (
+                  <Link 
+                    className="flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-colors whitespace-nowrap border-transparent text-neutral-500 hover:text-black hover:border-gray-200 font-medium" 
+                    href={`/${lang}/shop/${session.shop.slug}`}
+                  >
+                    <Store className="w-[18px] h-[18px]" />
+                    <span>{lang === 'fr' ? 'Ma boutique ↗' : lang === 'ar' ? 'متجري ↗' : 'My Shop ↗'}</span>
+                  </Link>
+                )}
                 <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/products`))} href={`/${lang}/dashboard/products`}>
                   <Package className="w-[18px] h-[18px]" />
                   <span>{t.products}</span>
@@ -211,6 +222,14 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
                   <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openGroups.store ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="space-y-0.5 py-1 ml-[21px] border-l border-neutral-200 pl-2 mb-2">
                       <Link className={navItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>{t.overview}</Link>
+                      {session.shop && (
+                        <Link 
+                          className="block px-3 py-2 text-[13px] transition-colors rounded-md font-medium text-neutral-600 hover:text-black hover:bg-neutral-100" 
+                          href={`/${lang}/shop/${session.shop.slug}`}
+                        >
+                          {lang === 'fr' ? 'Ma boutique ↗' : lang === 'ar' ? 'متجري ↗' : 'My Shop ↗'}
+                        </Link>
+                      )}
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/products`))} href={`/${lang}/dashboard/products`}>{t.products}</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>{t.orders}</Link>
                       <Link className={navItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>{t.collections}</Link>

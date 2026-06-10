@@ -21,6 +21,16 @@ export default function UserProfilePage({ params }: PageProps) {
   const [reviewContext, setReviewContext] = useState<any>(null);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tab = searchParams.get('tab');
+      if (tab === 'purchases' || tab === 'activity') {
+        setActiveTab(tab);
+      }
+    }
+  }, [id]);
+
+  useEffect(() => {
     async function load() {
       try {
         const data = await fetchProfile(id);

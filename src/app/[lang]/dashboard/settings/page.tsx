@@ -28,6 +28,11 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   // Header State
   const [logoUrl, setLogoUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
+  const [bannerBgColor, setBannerBgColor] = useState('#2a0a1e');
+  const [announcement, setAnnouncement] = useState('');
+
+  // FAQ State
+  const [faqs, setFaqs] = useState<any[]>([]);
 
   // Contact State
   const [phone, setPhone] = useState('');
@@ -61,6 +66,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         setCity(user.shop.merchant_city || '');
         setAddress(user.shop.pickup_address_street || '');
         
+        setFaqs(user.shop.faq_translations || []);
+
         // Parse metadata if it exists
         try {
            const meta = user.shop.metadata || {};
@@ -72,6 +79,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
            setWhatsapp(meta.whatsapp || '');
            setInstagram(meta.instagram || '');
            setFacebook(meta.facebook || '');
+           setBannerBgColor(meta.banner_bg_color || '#2a0a1e');
+           setAnnouncement(meta.announcement || '');
         } catch(e) {
            // ignore
         }
@@ -96,7 +105,10 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         email,
         whatsapp,
         instagram,
-        facebook
+        facebook,
+        banner_bg_color: bannerBgColor,
+        announcement,
+        announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
       };
 
       // Update profiles (notifications)
@@ -119,6 +131,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             slug: shopSlug || session.shop.slug,
             merchant_city: city,
             pickup_address_street: address,
+            faq_translations: faqs,
             metadata
           })
           .eq('id', session.shop.id);
@@ -138,6 +151,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             pickup_address_street: address || 'TBD',
             ice_number: '123456789012345',
             is_verified: true,
+            faq_translations: faqs,
             metadata
           })
           .select()
@@ -169,6 +183,15 @@ export default function SettingsPage({ params }: SettingsPageProps) {
       if (session.shop) {
         const updatedSession = {
           ...session,
+          shop: {
+            ...session.shop,
+            name: shopName,
+            slug: shopSlug || session.shop.slug,
+            merchant_city: city,
+            pickup_address_street: address,
+            faq_translations: faqs,
+            metadata
+          },
           email_notifications_orders: emailOrders,
           email_notifications_messages: emailMessages
         };
@@ -228,6 +251,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'contact' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
             <Phone className="w-4 h-4" /> Contact
+          </button>
+          <button 
+            onClick={() => setActiveTab('faq')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'faq' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
+          >
+            <Settings className="w-4 h-4" /> FAQ
           </button>
           <button 
             onClick={() => setActiveTab('notifications')}
@@ -308,26 +337,32 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               <div className="space-y-3">
                 <div>
                   <h3 className="font-bold text-neutral-800 text-lg">Store logo</h3>
-                  <p className="text-sm text-neutral-500">Upload your store logo (recommended: square, 500x500px)</p>
+                  <p className="text-sm text-neutral-500">Provide your store logo URL (recommended: square, 500x500px)</p>
                 </div>
-                <div className="flex items-center gap-4">
-                  {logoUrl ? (
-                    <img src={logoUrl} alt="Logo" className="w-16 h-16 rounded-full object-cover border border-neutral-200" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center">
-                      <ImageIcon className="w-6 h-6 text-neutral-400" />
-                    </div>
-                  )}
-                  <button className="flex items-center gap-2 border border-neutral-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors">
-                    <Upload className="w-4 h-4" /> Upload Logo
-                  </button>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-4">
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Logo" className="w-16 h-16 rounded-full object-cover border border-neutral-200" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center">
+                        <ImageIcon className="w-6 h-6 text-neutral-400" />
+                      </div>
+                    )}
+                    <input
+                      type="text"
+                      placeholder="Paste Logo image URL (e.g. https://...)"
+                      value={logoUrl}
+                      onChange={(e) => setLogoUrl(e.target.value)}
+                      className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
               <div className="border-t border-neutral-100 pt-8 space-y-3">
                 <div>
                   <h3 className="font-bold text-neutral-800 text-lg">Store cover image</h3>
-                  <p className="text-sm text-neutral-500">Upload a cover image for your store (recommended: 1920x400px)</p>
+                  <p className="text-sm text-neutral-500">Provide a cover image URL for your store (recommended: 1920x400px)</p>
                 </div>
                 <div className="space-y-4">
                   {coverUrl ? (
@@ -335,13 +370,52 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                   ) : (
                     <div className="w-full h-32 rounded-lg bg-neutral-100 border border-neutral-200 border-dashed flex flex-col items-center justify-center gap-2 text-neutral-400">
                       <ImageIcon className="w-6 h-6" />
-                      <span className="text-sm">No cover image</span>
+                      <span className="text-sm">No cover image URL set</span>
                     </div>
                   )}
-                  <button className="flex items-center gap-2 border border-neutral-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors">
-                    <Upload className="w-4 h-4" /> Upload Cover
-                  </button>
+                  <input
+                    type="text"
+                    placeholder="Paste Cover image URL (e.g. https://...)"
+                    value={coverUrl}
+                    onChange={(e) => setCoverUrl(e.target.value)}
+                    className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
+                  />
                 </div>
+              </div>
+
+              <div className="border-t border-neutral-100 pt-8 space-y-3">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-lg">Banner Background Color</h3>
+                  <p className="text-sm text-neutral-500">Set the background color of the store header banner.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={bannerBgColor}
+                    onChange={(e) => setBannerBgColor(e.target.value)}
+                    className="w-12 h-10 border border-neutral-200 rounded-lg cursor-pointer bg-white"
+                  />
+                  <input
+                    type="text"
+                    value={bannerBgColor}
+                    onChange={(e) => setBannerBgColor(e.target.value)}
+                    className="border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm font-mono w-32"
+                  />
+                </div>
+                <p className="text-xs text-neutral-400">Please choose a dark/deep contrast color so the white banner text is readable.</p>
+              </div>
+
+              <div className="border-t border-neutral-100 pt-8 space-y-3">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-lg">Store Announcement</h3>
+                  <p className="text-sm text-neutral-500">Post a public notice or update (e.g., holiday delivery deadlines).</p>
+                </div>
+                <textarea
+                  value={announcement}
+                  onChange={(e) => setAnnouncement(e.target.value)}
+                  placeholder="E.g. **HOLIDAY DELIVERY DEADLINE** Orders must be placed before December 20..."
+                  className="w-full border border-neutral-200 p-3 bg-white focus:outline-none rounded-lg text-sm h-28"
+                />
               </div>
             </div>
           )}
@@ -404,6 +478,141 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                   placeholder="username or full URL"
                   className="w-full border border-neutral-200 p-3 bg-white focus:outline-none focus:border-neutral-400 rounded-lg text-sm transition-colors"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* FAQ Tab */}
+          {activeTab === 'faq' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-lg">Store FAQ</h3>
+                  <p className="text-sm text-neutral-500">Manage frequently asked questions for your store page.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFaqs(prev => [
+                      ...prev,
+                      {
+                        q: { en: '', fr: '', ar: '' },
+                        a: { en: '', fr: '', ar: '' }
+                      }
+                    ]);
+                  }}
+                  className="bg-neutral-800 hover:bg-black text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
+                >
+                  + Add FAQ
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {faqs.map((faq, index) => (
+                  <div key={index} className="border border-neutral-200 rounded-xl p-5 bg-neutral-50/50 space-y-4 relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFaqs(prev => prev.filter((_, idx) => idx !== index));
+                      }}
+                      className="absolute top-4 right-4 text-red-500 hover:text-red-700 font-semibold text-xs"
+                    >
+                      Delete
+                    </button>
+                    
+                    <h4 className="font-bold text-sm text-neutral-800">FAQ Item #{index + 1}</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Questions */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Question (EN)</label>
+                        <input
+                          type="text"
+                          value={faq.q.en || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].q.en = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
+                        />
+                      </div>
+                      {/* Answers */}
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Answer (EN)</label>
+                        <textarea
+                          value={faq.a.en || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].a.en = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm h-10"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Question (FR)</label>
+                        <input
+                          type="text"
+                          value={faq.q.fr || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].q.fr = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Answer (FR)</label>
+                        <textarea
+                          value={faq.a.fr || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].a.fr = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm h-10"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Question (AR)</label>
+                        <input
+                          type="text"
+                          value={faq.q.ar || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].q.ar = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm text-right"
+                          dir="rtl"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-neutral-500">Answer (AR)</label>
+                        <textarea
+                          value={faq.a.ar || ''}
+                          onChange={(e) => {
+                            const newFaqs = [...faqs];
+                            newFaqs[index].a.ar = e.target.value;
+                            setFaqs(newFaqs);
+                          }}
+                          className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm h-10 text-right"
+                          dir="rtl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {faqs.length === 0 && (
+                  <div className="text-center py-8 text-neutral-400 text-sm">
+                    No FAQs added yet. Click "+ Add FAQ" to create one.
+                  </div>
+                )}
               </div>
             </div>
           )}

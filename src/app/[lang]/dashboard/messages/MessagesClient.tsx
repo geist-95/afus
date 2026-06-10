@@ -40,57 +40,12 @@ interface MessagesClientProps {
   lang: string;
 }
 
-const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: 'c1',
-    userId: 'u1',
-    name: 'Sarah Jenkins',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
-    lastMessage: 'Thanks, I received the rug today! It looks amazing.',
-    lastMessageTime: '10:42 AM',
-    unreadCount: 2,
-    online: true,
-    messages: [
-      { id: 'm1', senderId: 'u1', text: 'Hi! Is the Atlas Rug still available in 2x3m?', timestamp: 'Yesterday, 09:00 AM', status: 'read' },
-      { id: 'm2', senderId: 'me', text: 'Yes, it is! I can ship it out by tomorrow if you place the order.', timestamp: 'Yesterday, 09:15 AM', status: 'read' },
-      { id: 'm3', senderId: 'u1', text: 'Perfect, I just placed the order.', timestamp: 'Yesterday, 09:30 AM', status: 'read' },
-      { id: 'm4', senderId: 'me', text: 'Thank you! Here is your tracking number: AMZ-123948192', timestamp: 'Yesterday, 02:00 PM', status: 'read' },
-      { id: 'm5', senderId: 'u1', text: 'Thanks, I received the rug today! It looks amazing.', timestamp: '10:42 AM', status: 'delivered' }
-    ]
-  },
-  {
-    id: 'c2',
-    userId: 'u2',
-    name: 'Mohammed Al-Fayed',
-    avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop',
-    lastMessage: 'Can you do a custom engraving on the tray?',
-    lastMessageTime: 'Yesterday',
-    unreadCount: 0,
-    online: false,
-    messages: [
-      { id: 'm1', senderId: 'u2', text: 'Hello, I love your copper trays.', timestamp: 'Monday, 11:00 AM', status: 'read' },
-      { id: 'm2', senderId: 'u2', text: 'Can you do a custom engraving on the tray?', timestamp: 'Monday, 11:05 AM', status: 'read' },
-    ]
-  },
-  {
-    id: 'c3',
-    userId: 'u3',
-    name: 'Emma Dubois',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
-    lastMessage: 'Do you ship to France?',
-    lastMessageTime: 'Tuesday',
-    unreadCount: 1,
-    online: true,
-    messages: [
-      { id: 'm1', senderId: 'u3', text: 'Do you ship to France?', timestamp: 'Tuesday, 04:20 PM', status: 'delivered' }
-    ]
-  }
-];
+const MOCK_CONVERSATIONS: Conversation[] = [];
 
 export default function MessagesClient({ lang }: MessagesClientProps) {
   const t = getDictionary(lang).messages;
   const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
-  const [activeConvId, setActiveConvId] = useState(MOCK_CONVERSATIONS[0].id);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
   const [search, setSearch] = useState('');
 

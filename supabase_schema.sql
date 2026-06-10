@@ -13,6 +13,7 @@ CREATE TABLE profiles (
     full_name TEXT NOT NULL,
     role user_role NOT NULL DEFAULT 'buyer',
     phone_number TEXT NOT NULL, -- Mandatory for Moroccan COD confirmation codes
+    avatar_url TEXT, -- Google or custom profile image URL
     preferred_language VARCHAR(5) DEFAULT 'en',
     email_notifications_orders BOOLEAN DEFAULT true,
     email_notifications_messages BOOLEAN DEFAULT true,
@@ -27,6 +28,32 @@ CREATE POLICY "Allow public read access to profiles" ON profiles
 
 CREATE POLICY "Allow users to update their own profiles" ON profiles
     FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Allow users to insert their own profiles" ON profiles
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- Trigger to automatically create profiles for new auth.users (e.g., Google OAuth users)
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS trigger AS $$
+BEGIN
+  INSERT INTO public.profiles (id, email, full_name, role, phone_number, avatar_url, preferred_language)
+  VALUES (
+    new.id,
+    new.email,
+    COALESCE(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'User'),
+    'buyer',
+    '',
+    COALESCE(new.raw_user_meta_data->>'avatar_url', new.raw_user_meta_data->>'picture', NULL),
+    'en'
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- 2. SHOPS Table
 CREATE TABLE shops (

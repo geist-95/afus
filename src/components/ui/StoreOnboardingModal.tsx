@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { registerUser, loginUser, getActiveSession } from '@/lib/auth';
+import { registerUser, loginUser, getActiveSession, createShopForExistingUser } from '@/lib/auth';
 import { checkShopSlugAvailable } from '@/lib/supabase';
 import {
   IconX,
@@ -447,15 +447,31 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     if (!city) { setError('Please select your city.'); return; }
     setLoading(true); setError('');
     try {
-      const result = await registerUser({
-        email,
-        password,
-        fullName,
-        phone: phone || '',
-        role: 'seller',
-        shopName,
-      });
-      setCreatedShopSlug(result.shop?.slug || '');
+      if (hasSession) {
+        const active = await getActiveSession();
+        if (!active) {
+          throw new Error('No active session found.');
+        }
+        const result = await createShopForExistingUser({
+          userId: active.id,
+          fullName: active.full_name,
+          phone: phone || active.phone_number || '',
+          shopName,
+          merchantCity: city,
+          pickupAddress: address,
+        });
+        setCreatedShopSlug(result.shop?.slug || '');
+      } else {
+        const result = await registerUser({
+          email,
+          password,
+          fullName,
+          phone: phone || '',
+          role: 'seller',
+          shopName,
+        });
+        setCreatedShopSlug(result.shop?.slug || '');
+      }
       setStep('success');
     } catch (err: any) {
       setError(err.message || 'Failed to create shop. Please try again.');
@@ -956,22 +972,28 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
 
                     <div className="space-y-4">
-                      <a
-                        href={`/${lang}/dashboard/products`}
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all"
-                        onClick={() => { onClose(); window.location.reload(); }}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          window.location.href = `/${lang}/dashboard/products`;
+                        }}
+                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all cursor-pointer"
                       >
                         <IconPackage className="w-5 h-5" strokeWidth={2} />
                         {t.addProduct}
-                      </a>
-                      <a
-                        href={`/${lang}/dashboard`}
-                        className="w-full flex items-center justify-center gap-2 border border-neutral-200 text-neutral-700 py-4 rounded-2xl font-bold text-base hover:bg-neutral-50 transition-all"
-                        onClick={() => { onClose(); window.location.reload(); }}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onClose();
+                          window.location.href = `/${lang}/dashboard`;
+                        }}
+                        className="w-full flex items-center justify-center gap-2 border border-neutral-200 text-neutral-700 py-4 rounded-2xl font-bold text-base hover:bg-neutral-50 transition-all cursor-pointer"
                       >
                         {t.goToDashboard}
                         <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                      </a>
+                      </button>
                     </div>
                   </div>
                 )}

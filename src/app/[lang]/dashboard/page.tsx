@@ -54,6 +54,13 @@ export default function DashboardPage({ params }: DashboardPageProps) {
           <h1 className="text-xl font-bold tracking-tight text-neutral-800">{t.sellerDashboard}</h1>
           <p className="text-xs text-neutral-500 mt-0.5">{t.salam} {shopName}</p>
         </div>
+        <Link
+          href={`/${lang}/shop/${session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}`}
+          className="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-[#663399] text-white text-xs font-bold rounded-lg hover:bg-[#663399]/90 transition-colors shadow-sm"
+        >
+          <Store className="w-3.5 h-3.5" />
+          <span>{lang === 'fr' ? 'Voir ma boutique' : lang === 'ar' ? 'عرض متجري' : 'View Store'}</span>
+        </Link>
       </div>
 
       <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-7xl flex-1">
@@ -167,6 +174,13 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.stars}</span>
                 </div>
               </div>
+
+              <Link
+                href={`/${lang}/shop/${session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}`}
+                className="w-full mt-6 z-10 py-2.5 px-4 bg-[#663399] hover:bg-[#663399]/90 text-white rounded-xl text-center text-xs font-bold transition-all shadow-sm"
+              >
+                {lang === 'fr' ? 'Voir ma boutique' : lang === 'ar' ? 'عرض متجري' : 'View Store'}
+              </Link>
             </div>
           </div>
 

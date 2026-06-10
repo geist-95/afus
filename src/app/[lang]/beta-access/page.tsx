@@ -11,7 +11,8 @@ import {
   IconShoppingCart, 
   IconFolder, 
   IconArrowRight, 
-  IconUserCheck 
+  IconUserCheck,
+  IconBrandInstagram
 } from "@tabler/icons-react";
 
 interface PageProps {
@@ -333,37 +334,30 @@ export default function BetaAccessPage({ params }: PageProps) {
             ) : (
               <div className="space-y-6">
                 {!isCountdownOver ? (
-                  /* Countdown Timer - shown until target date */
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-4 gap-2 md:gap-4">
-                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
-                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.days.toString().padStart(2, '0')}</span>
-                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
-                          {lang === 'fr' ? 'Jours' : lang === 'ar' ? 'أيام' : 'Days'}
-                        </span>
+                  <div className="space-y-6">
+                    <p className="text-center text-sm font-bold uppercase tracking-widest text-[#200a2a]">
+                      {lang === 'fr' ? 'Lancement dans' : lang === 'ar' ? 'الإنطلاق خلال' : lang === 'tz' ? 'ⴰⴱⴰⵔⵓⵢ ⴳ' : 'Launching in'}
+                    </p>
+                    <div className="grid grid-cols-4 gap-4 text-center">
+                      <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-100">
+                        <span className="block text-3xl font-extrabold text-[#200a2a]">{timeLeft.days}</span>
+                        <span className="text-[10px] uppercase font-bold text-neutral-400">{lang === 'fr' ? 'Jours' : lang === 'ar' ? 'أيام' : 'Days'}</span>
                       </div>
-                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
-                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.hours.toString().padStart(2, '0')}</span>
-                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
-                          {lang === 'fr' ? 'Heures' : lang === 'ar' ? 'ساعات' : 'Hours'}
-                        </span>
+                      <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-100">
+                        <span className="block text-3xl font-extrabold text-[#200a2a]">{timeLeft.hours}</span>
+                        <span className="text-[10px] uppercase font-bold text-neutral-400">{lang === 'fr' ? 'Heures' : lang === 'ar' ? 'ساعات' : 'Hours'}</span>
                       </div>
-                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
-                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
-                          {lang === 'fr' ? 'Min' : lang === 'ar' ? 'دقائق' : 'Mins'}
-                        </span>
+                      <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-100">
+                        <span className="block text-3xl font-extrabold text-[#200a2a]">{timeLeft.minutes}</span>
+                        <span className="text-[10px] uppercase font-bold text-neutral-400">{lang === 'fr' ? 'Min' : lang === 'ar' ? 'دقائق' : 'Min'}</span>
                       </div>
-                      <div className="bg-neutral-50 border border-neutral-200 rounded-xl p-3 flex flex-col items-center justify-center shadow-sm">
-                        <span className="text-2xl md:text-3xl font-bold font-serif text-[#200a2a]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-                        <span className="text-[10px] md:text-xs uppercase font-bold tracking-wider text-neutral-500 mt-1">
-                          {lang === 'fr' ? 'Sec' : lang === 'ar' ? 'ثواني' : 'Secs'}
-                        </span>
+                      <div className="bg-neutral-50 rounded-xl p-3 border border-neutral-100">
+                        <span className="block text-3xl font-extrabold text-[#200a2a]">{timeLeft.seconds}</span>
+                        <span className="text-[10px] uppercase font-bold text-neutral-400">{lang === 'fr' ? 'Sec' : lang === 'ar' ? 'ثواني' : 'Sec'}</span>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  /* Password form - shown after countdown ends */
                   <form onSubmit={handleUnlock} className="space-y-6">
                     <div className="space-y-2">
                       <label className="text-neutral-700 font-bold text-sm block">
@@ -525,6 +519,28 @@ export default function BetaAccessPage({ params }: PageProps) {
 
         </div>
       )}
+
+      {/* Instagram Promo Section */}
+      <div className="mt-8 text-center max-w-md mx-auto px-4 z-10">
+        <p className="text-neutral-500 text-[10px] sm:text-xs uppercase tracking-widest font-bold mb-2">
+          {lang === "fr" 
+            ? "Suivez notre aventure" 
+            : lang === "ar" 
+              ? "تابعوا رحلتنا" 
+              : lang === "tz"
+                ? "ⴷⴼⵔ ⵜⴰⵡⴰⴷⴰ ⵏⵏⵖ"
+                : "Follow our journey"}
+        </p>
+        <a 
+          href="https://instagram.com/afus_ma" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] hover:opacity-90 active:scale-95 text-white font-semibold text-sm px-6 py-2.5 rounded-full shadow-md transition-all duration-200 cursor-pointer"
+        >
+          <IconBrandInstagram className="w-5 h-5" />
+          <span>@afus_ma</span>
+        </a>
+      </div>
     </div>
   );
 }

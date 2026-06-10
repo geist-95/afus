@@ -324,8 +324,18 @@ export default function ProductGrid({
 
   if (products.length === 0) {
     return (
-      <div className="border border-primary/20 rounded-xl p-12 text-center text-primary/40 bg-white">
-        {t.empty}
+      <div className="flex flex-col items-center justify-center border border-dashed border-neutral-300 rounded-3xl p-16 text-center bg-white/40 backdrop-blur-sm max-w-xl mx-auto shadow-sm mt-8">
+        <div className="w-16 h-16 rounded-full bg-neutral-100/80 flex items-center justify-center mb-4 text-neutral-400">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-bold text-neutral-800 mb-1">
+          {lang === 'fr' ? 'Bientôt disponible' : lang === 'ar' ? 'قريباً' : 'Coming Soon'}
+        </h3>
+        <p className="text-sm text-neutral-500 max-w-xs">
+          {t.empty}
+        </p>
       </div>
     );
   }

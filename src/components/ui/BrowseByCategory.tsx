@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
-  { label: "Jewelry",     labels: { en: "Jewelry", fr: "Bijoux", ar: "مجوهرات", tz: "ⵜⵉⵣⴱⴳⴰⵏ" },     href: "/categories/jewelry",     img: "/categories/jewelry.png" },
-  { label: "Art",         labels: { en: "Art", fr: "Art", ar: "فن", tz: "ⵜⴰⵥⵓⵕⵉ" },         href: "/categories/art",         img: "/categories/11.png"      },
-  { label: "Beauty",      labels: { en: "Beauty", fr: "Beauté", ar: "جمال", tz: "ⴰⴼⴰⵍⴽⴰⵢ" },      href: "/categories/beauty",      img: "/categories/beauty.png"  },
-  { label: "Clothing",    labels: { en: "Clothing", fr: "Vêtements", ar: "ملابس", tz: "ⵉⵀⴷⵓⵎⵏ" },    href: "/categories/clothing",    img: "/categories/clothing.png"},
-  { label: "Bags",        labels: { en: "Bags", fr: "Sacs", ar: "حقائب", tz: "ⵉⵇⵕⴰⴱⵏ" },        href: "/categories/bags",        img: "/categories/bags.png"    },
-  { label: "Home Living", labels: { en: "Home Living", fr: "Maison", ar: "المنزل", tz: "ⵜⴰⴷⴷⴰⵔⵜ" }, href: "/categories/home-living", img: "/categories/home.png"    },
-  { label: "Baby",        labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" },        href: "/categories/baby",        img: "/categories/baby.png"    },
+  { label: "Jewelry",     labels: { en: "Jewelry", fr: "Bijoux", ar: "مجوهرات", tz: "ⵜⵉⵣⴱⴳⴰⵏ" },     href: "/category/jewelry",     img: "/categories/jewelry.png" },
+  { label: "Art",         labels: { en: "Art", fr: "Art", ar: "فن", tz: "ⵜⴰⵥⵓⵕⵉ" },         href: "/category/art-collectibles",         img: "/categories/11.png"      },
+  { label: "Beauty",      labels: { en: "Beauty", fr: "Beauté", ar: "جمال", tz: "ⴰⴼⴰⵍⴽⴰⵢ" },      href: "/category/bath-beauty",      img: "/categories/beauty.png"  },
+  { label: "Clothing",    labels: { en: "Clothing", fr: "Vêtements", ar: "ملابس", tz: "ⵉⵀⴷⵓⵎⵏ" },    href: "/category/clothing",    img: "/categories/clothing.png"},
+  { label: "Bags",        labels: { en: "Bags", fr: "Sacs", ar: "حقائب", tz: "ⵉⵇⵕⴰⴱⵏ" },        href: "/category/bags-purses",        img: "/categories/bags.png"    },
+  { label: "Home Living", labels: { en: "Home Living", fr: "Maison", ar: "المنزل", tz: "ⵜⴰⴷⴷⴰⵔⵜ" }, href: "/category/home-living", img: "/categories/home.png"    },
+  { label: "Baby",        labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" },        href: "/category/kids-baby",        img: "/categories/baby.png"    },
 ];
 
 export default function BrowseByCategory({ lang }: { lang: string }) {

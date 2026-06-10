@@ -2,21 +2,33 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { getActiveSession, UserSession } from "@/lib/auth";
 import StoreOnboardingModal from "./StoreOnboardingModal";
-
-
 
 interface HomeCarouselProps {
   lang: string;
 }
 
 export default function HomeCarousel({ lang }: HomeCarouselProps) {
+  const router = useRouter();
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [session, setSession] = useState<UserSession | null>(null);
+
+  useEffect(() => {
+    async function fetchSession() {
+      const active = await getActiveSession();
+      setSession(active);
+    }
+    fetchSession();
+  }, []);
 
   const t = {
     en: {
       openShop: "Open your shop",
+      manageShop: "Manage my shop",
       videoTitle: "Turn your craft into a thriving business",
       slides: [
         {
@@ -26,7 +38,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#F3E2F5]",
           btnText: "Become a seller now",
           image: "/seller.png",
-          openOnboarding: true,
+          action: "onboarding",
         },
         {
           bg: "bg-[#381932]",
@@ -35,7 +47,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#E8D5E8]",
           btnText: "Invite friends",
           image: "/carousel-3.png",
-          openOnboarding: false,
+          action: "copy_link",
         },
         {
           bg: "bg-[#1B2E35]",
@@ -44,12 +56,13 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#D0E3EA]",
           btnText: "Explore custom items",
           image: "/carousel-4.png",
-          openOnboarding: false,
+          action: "clothing",
         },
       ]
     },
     fr: {
       openShop: "Ouvrez votre boutique",
+      manageShop: "Gérer ma boutique",
       videoTitle: "Transformez votre art en une activité prospère",
       slides: [
         {
@@ -59,7 +72,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#F3E2F5]",
           btnText: "Devenir vendeur",
           image: "/seller.png",
-          openOnboarding: true,
+          action: "onboarding",
         },
         {
           bg: "bg-[#381932]",
@@ -68,7 +81,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#E8D5E8]",
           btnText: "Inviter des amis",
           image: "/carousel-3.png",
-          openOnboarding: false,
+          action: "copy_link",
         },
         {
           bg: "bg-[#1B2E35]",
@@ -77,12 +90,13 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#D0E3EA]",
           btnText: "Explorer le sur-mesure",
           image: "/carousel-4.png",
-          openOnboarding: false,
+          action: "clothing",
         },
       ]
     },
     ar: {
       openShop: "افتح متجرك",
+      manageShop: "إدارة متجري",
       videoTitle: "حوّل حرفتك إلى عمل مزدهر",
       slides: [
         {
@@ -92,7 +106,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#F3E2F5]",
           btnText: "كن بائعاً الآن",
           image: "/seller.png",
-          openOnboarding: true,
+          action: "onboarding",
         },
         {
           bg: "bg-[#381932]",
@@ -101,7 +115,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#E8D5E8]",
           btnText: "دعوة الأصدقاء",
           image: "/carousel-3.png",
-          openOnboarding: false,
+          action: "copy_link",
         },
         {
           bg: "bg-[#1B2E35]",
@@ -110,12 +124,13 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#D0E3EA]",
           btnText: "استكشف العناصر المخصصة",
           image: "/carousel-4.png",
-          openOnboarding: false,
+          action: "clothing",
         },
       ]
     },
     tz: {
       openShop: "ⵕⵥⵎ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ",
+      manageShop: "ⵙⵙⵓⴷⵓⵙ ⵜⴰⵃⴰⵏⵓⵜ ⵉⵏⵓ",
       videoTitle: "ⵙⵙⵏⴼⵍ ⵜⴰⵡⵓⵔⵉ ⵏⵏⴽ ⵖⵔ ⵜⴰⵎⵙⵙⵓⴳⵓⵔⵜ ⵉⵎⵓⵔⵙⵏ",
       slides: [
         {
@@ -125,16 +140,16 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#F3E2F5]",
           btnText: "ⵓⵖⴰⵍ ⴷ ⴰⵎⵣⵣⵏⵣⵉ ⴷⵖⵉ",
           image: "/seller.png",
-          openOnboarding: true,
+          action: "onboarding",
         },
         {
           bg: "bg-[#381932]",
-          title: "ⴱⴹⵓ ⵜⴰⵢⵔⵉ, ⴰⵎⵥ ⵜⵉⵙⵎⵖⵓⵔⵉⵏ",
+          title: "ⴱⴹⵓ ⵜⴰⵢⵔⵉ, ⴰⵎⵥ ⵜⵉⵙ密ⵖⵓⵔⵉⵏ",
           desc: "ⵖⵔ ⵉ ⵉⵎⴷⴷⵓⴽⴽⴰⵍ ⴰⴷ ⴰⴼⵉⵏ ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵓⴼⵓⵙ. ⵎⴽ ⵙⵖⴰⵏ, ⴰⴷ ⵜⴰⵎⵥⵎ ⵜⵉⵙⵎⵖⵓⵔⵉⵏ ⵉⵥⵍⵉⵏ!",
           descColor: "text-[#E8D5E8]",
           btnText: "ⵖⵔ ⵉ ⵉⵎⴷⴷⵓⴽⴽⴰⵍ",
           image: "/carousel-3.png",
-          openOnboarding: false,
+          action: "copy_link",
         },
         {
           bg: "bg-[#1B2E35]",
@@ -143,7 +158,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           descColor: "text-[#D0E3EA]",
           btnText: "ⵔⵣⵓ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⴽ",
           image: "/carousel-4.png",
-          openOnboarding: false,
+          action: "clothing",
         },
       ]
     }
@@ -156,7 +171,43 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
       setCurrentSlide((prev) => (prev + 1) % content.slides.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, []);
+  }, [content.slides.length]);
+
+  const handleSlideAction = (action?: string) => {
+    if (action === "onboarding") {
+      if (session?.shop) {
+        router.push(`/${lang}/dashboard`);
+      } else {
+        setOnboardingOpen(true);
+      }
+    } else if (action === "copy_link") {
+      navigator.clipboard.writeText("https://afus.ma").then(() => {
+        toast.success(
+          lang === "fr"
+            ? "Lien copié dans le presse-papiers !"
+            : lang === "ar"
+            ? "تم نسخ الرابط إلى الحافظة!"
+            : lang === "tz"
+            ? "ⵉⵜⵜⵓⵙⴰⵏⵙⵖ ⵓⵙⵖⵓⵏ!"
+            : "Link copied to clipboard!"
+        );
+      }).catch(() => {
+        toast.error("Failed to copy link");
+      });
+    } else if (action === "clothing") {
+      router.push(`/${lang}/category/clothing`);
+    }
+  };
+
+  const handleRightCTA = () => {
+    if (session?.shop) {
+      router.push(`/${lang}/dashboard`);
+    } else {
+      setOnboardingOpen(true);
+    }
+  };
+
+  const rightCtaText = session?.shop ? content.manageShop : content.openShop;
 
   return (
     <>
@@ -191,9 +242,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
                                   <div className="mt-10">
                                     <button
                                       type="button"
-                                      onClick={() => {
-                                        if (slide.openOnboarding) setOnboardingOpen(true);
-                                      }}
+                                      onClick={() => handleSlideAction(slide.action)}
                                       className="inline-flex items-center justify-center !rounded-full bg-white px-8 py-3 text-sm font-bold text-[#160a23] transition hover:opacity-95 active:opacity-90 sm:text-base"
                                     >
                                       {slide.btnText}
@@ -260,10 +309,10 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
                         <div className="pt-4 shrink-0 transform transition-all duration-500 ease-out opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto">
                           <button
                             type="button"
-                            onClick={() => setOnboardingOpen(true)}
+                            onClick={handleRightCTA}
                             className="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition-[opacity,transform] hover:opacity-95 active:opacity-90 shadow-lg"
                           >
-                            {content.openShop}
+                            {rightCtaText}
                           </button>
                         </div>
                       </div>
@@ -280,10 +329,10 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
       <div className="md:hidden bg-[#1b0f2b] py-10 px-6 text-center arabic-frame">
         <h2 className="text-2xl font-bold text-white !font-ariom">{content.videoTitle}</h2>
         <button
-          onClick={() => setOnboardingOpen(true)}
+          onClick={handleRightCTA}
           className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition hover:opacity-95"
         >
-          {content.openShop}
+          {rightCtaText}
         </button>
       </div>
 
