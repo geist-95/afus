@@ -172,7 +172,7 @@ export default function MarketingPage({ lang = 'en' }: { lang?: string }) {
     setIsSubmitting(true);
     const form = e.currentTarget;
     const formData = new FormData(form);
-    
+
     try {
       const result = await joinWaitlist(formData);
       if (result?.error) {

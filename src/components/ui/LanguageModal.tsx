@@ -16,9 +16,16 @@ export default function LanguageModal({ currentLang }: LanguageModalProps) {
   useEffect(() => {
     const hasChosen = localStorage.getItem('languageSelected');
     if (!hasChosen) {
-      setIsOpen(true);
+      if (pathname && pathname.includes('/beta-access')) {
+        const timer = setTimeout(() => {
+          setIsOpen(true);
+        }, 4500); // Delay to let the welcome intro animation pass (4.2s)
+        return () => clearTimeout(timer);
+      } else {
+        setIsOpen(true);
+      }
     }
-  }, []);
+  }, [pathname]);
 
   if (!isOpen) return null;
 
