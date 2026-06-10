@@ -62,7 +62,7 @@ export default function SignupPage({ params }: PageProps) {
 
     try {
       // Register via Supabase and insert profile & shop
-      await registerUser({
+      const sessionUser = await registerUser({
         email,
         password,
         fullName,
@@ -70,8 +70,16 @@ export default function SignupPage({ params }: PageProps) {
         shopName: shopName.trim() || undefined,
       });
 
-      // Redirect to login page upon success
-      router.push(`/${lang}/login?registered=true`);
+      // Automatically unlock beta access for logged in / registered users
+      document.cookie = "afus_beta_unlocked=true; path=/; max-age=31536000";
+      localStorage.setItem("afus_beta_unlocked", "true");
+
+      // Redirect directly to dashboard for sellers, or marketplace for buyers
+      if (sessionUser?.shop || sessionUser?.role === 'seller') {
+        window.location.href = `/${lang}/dashboard`;
+      } else {
+        window.location.href = `/${lang}`;
+      }
     } catch (err: any) {
       console.error('Registration error:', err);
       setError(err.message || 'registration failed');

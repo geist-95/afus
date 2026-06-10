@@ -38,10 +38,18 @@ export default function LoginPage({ params }: PageProps) {
     try {
       if (email && password.length >= 6) {
         // Perform live Supabase Auth and load profile
-        await loginUser(email, password);
+        const sessionUser = await loginUser(email, password);
+
+        // Automatically unlock beta access for logged in / registered users
+        document.cookie = "afus_beta_unlocked=true; path=/; max-age=31536000";
+        localStorage.setItem("afus_beta_unlocked", "true");
 
         // Determine redirect path target
         let redirectTarget = `/${lang}`;
+        if (sessionUser?.shop || sessionUser?.role === 'seller') {
+          redirectTarget = `/${lang}/dashboard`;
+        }
+
         if (typeof window !== 'undefined') {
           const urlParams = new URLSearchParams(window.location.search);
           const redirectParam = urlParams.get('redirect');
@@ -50,7 +58,7 @@ export default function LoginPage({ params }: PageProps) {
           }
         }
 
-        router.push(redirectTarget);
+        window.location.href = redirectTarget;
       } else {
         setError(
           lang === 'ar'

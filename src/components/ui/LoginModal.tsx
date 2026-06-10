@@ -57,8 +57,9 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
     setError('');
 
     try {
+      let sessionUser;
       if (isRegisterMode) {
-        await registerUser({
+        sessionUser = await registerUser({
           email,
           password,
           fullName,
@@ -66,10 +67,21 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
           role: 'buyer'
         });
       } else {
-        await loginUser(email, password);
+        sessionUser = await loginUser(email, password);
       }
+      
+      // Automatically unlock beta access for logged in / registered users
+      document.cookie = "afus_beta_unlocked=true; path=/; max-age=31536000";
+      localStorage.setItem("afus_beta_unlocked", "true");
+
       onClose();
-      window.location.reload(); // Reload to reflect the new session across the app
+      
+      // Redirect to the appropriate app view (dashboard for sellers, marketplace for buyers)
+      if (sessionUser?.shop || sessionUser?.role === 'seller') {
+        window.location.href = `/${lang}/dashboard`;
+      } else {
+        window.location.href = `/${lang}`;
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred during authentication.');
     } finally {
