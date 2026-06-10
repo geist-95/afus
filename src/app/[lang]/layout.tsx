@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import LanguageModal from "@/components/ui/LanguageModal";
 import BetaReportFab from "@/components/ui/BetaReportFab";
 import { Readex_Pro } from 'next/font/google';
@@ -130,6 +131,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <BetaReportFab />
           <Toaster position="top-center" richColors />
           <SpeedInsights />
+          <Analytics />
         </CartProvider>
         </WishlistProvider>
       </body>
