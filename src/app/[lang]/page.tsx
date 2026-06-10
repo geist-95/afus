@@ -56,12 +56,15 @@ export default async function HomePage({ params }: PageProps) {
   const resolvedParams = await params;
   const lang = resolvedParams?.lang || "en";
 
+  // Hide the landing page for the moment and make the app directly accessible
+  /*
   const cookieStore = await cookies();
   const unlocked = cookieStore.get("afus_beta_unlocked")?.value === "true";
 
   if (!unlocked) {
     return <LandingPage lang={lang} />;
   }
+  */
 
   const products = await fetchProducts();
   const shops = await fetchShops();
