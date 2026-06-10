@@ -172,9 +172,16 @@ export async function registerUser(payload: {
 }): Promise<UserSession> {
   try {
     // 1. Sign up user
+    const redirectTo = typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/callback`
+      : undefined;
+
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
+      options: {
+        emailRedirectTo: redirectTo,
+      },
     });
 
     if (signUpError) {
