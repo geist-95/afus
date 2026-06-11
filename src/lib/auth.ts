@@ -1,6 +1,6 @@
 'use client';
 
-import { supabase } from './supabase';
+import { supabase, isPlaceholder } from './supabase';
 
 export interface UserSession {
   id: string;
@@ -19,73 +19,87 @@ export async function getActiveSession(): Promise<UserSession | null> {
   if (typeof window === 'undefined') return null;
 
   // 1. Check real Supabase Auth
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      // Fetch profile role and phone
-      let { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-        
-      // If profile is missing (e.g., first Google login without trigger completed yet), create one on the fly
-      if (!profile) {
-        const fallbackName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User';
-        const fallbackAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null;
-        
-        const { data: newProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: session.user.id,
-            email: session.user.email!,
-            full_name: fallbackName,
-            role: 'buyer',
-            phone_number: '',
-            avatar_url: fallbackAvatar,
-            preferred_language: 'en',
-          })
-          .select()
-          .single();
-          
-        if (newProfile) {
-          profile = newProfile;
-        } else {
-          console.error('Failed to auto-create profile for user:', insertError);
-        }
-      }
-        
-      if (profile) {
-        let shop = null;
-        if (profile.role === 'seller') {
-          const { data: shopData } = await supabase
-            .from('shops')
+  if (!isPlaceholder) {
+    try {
+      const getSessionPromise = (async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // Fetch profile role and phone
+          let { data: profile } = await supabase
+            .from('profiles')
             .select('*')
-            .eq('owner_id', profile.id)
+            .eq('id', session.user.id)
             .single();
-          shop = shopData;
+            
+          // If profile is missing (e.g., first Google login without trigger completed yet), create one on the fly
+          if (!profile) {
+            const fallbackName = session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User';
+            const fallbackAvatar = session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || null;
+            
+            const { data: newProfile, error: insertError } = await supabase
+              .from('profiles')
+              .insert({
+                id: session.user.id,
+                email: session.user.email!,
+                full_name: fallbackName,
+                role: 'buyer',
+                phone_number: '',
+                avatar_url: fallbackAvatar,
+                preferred_language: 'en',
+              })
+              .select()
+              .single();
+              
+            if (newProfile) {
+              profile = newProfile;
+            } else {
+              console.error('Failed to auto-create profile for user:', insertError);
+            }
+          }
+            
+          if (profile) {
+            let shop = null;
+            if (profile.role === 'seller') {
+              const { data: shopData } = await supabase
+                .from('shops')
+                .select('*')
+                .eq('owner_id', profile.id)
+                .single();
+              shop = shopData;
+            }
+
+            const activeUser: UserSession = {
+              id: profile.id,
+              email: profile.email,
+              full_name: profile.full_name,
+              role: profile.role,
+              phone_number: profile.phone_number,
+              avatar_url: profile.avatar_url,
+              email_notifications_orders: profile.email_notifications_orders,
+              email_notifications_messages: profile.email_notifications_messages,
+              shop,
+            };
+
+            // Sync to local storage for instant offline context
+            localStorage.setItem('afus_session_user', JSON.stringify(activeUser));
+            return activeUser;
+          }
         }
+        return null;
+      })();
 
-        const activeUser: UserSession = {
-          id: profile.id,
-          email: profile.email,
-          full_name: profile.full_name,
-          role: profile.role,
-          phone_number: profile.phone_number,
-          avatar_url: profile.avatar_url,
-          email_notifications_orders: profile.email_notifications_orders,
-          email_notifications_messages: profile.email_notifications_messages,
-          shop,
-        };
+      const timeoutPromise = new Promise<null>((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase request timed out')), 1500)
+      );
 
-        // Sync to local storage for instant offline context
-        localStorage.setItem('afus_session_user', JSON.stringify(activeUser));
+      const activeUser = await Promise.race([getSessionPromise, timeoutPromise]);
+      if (activeUser) {
         return activeUser;
       }
+    } catch (err) {
+      // Supabase client error or offline state - fall back to mock check
+      console.warn('supabase auth check failed, falling back to simulated session:', err);
     }
-  } catch (err) {
-    // Supabase client error or offline state - fall back to mock check
-    console.warn('supabase auth check failed, falling back to simulated session:', err);
   }
 
   // 2. Fall back to mock localStorage session for local development
