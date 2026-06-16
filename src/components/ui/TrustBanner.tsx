@@ -124,6 +124,10 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
           <img 
             src="/people.png" 
             alt="Moroccan Artisans" 
+            width={300}
+            height={140}
+            loading="lazy"
+            decoding="async"
             className="h-[120px] md:h-[140px] object-contain object-bottom"
           />
         </div>
@@ -160,9 +164,9 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       <div className="mt-8 flex flex-col items-center">
         <h3 className="text-sm font-bold !text-[#532e71] mb-4">{t.secure}</h3>
         <div className="flex flex-wrap justify-center items-center gap-4 transition-all duration-300">
-          <img src="/logo/logo.png" alt="Afus" className="h-6 object-contain" />
+          <img src="/logo/logo.png" alt="Afus" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6 object-contain" />
           <div className="h-4 w-px bg-neutral-300"></div>
-          <img src="/amana.png" alt="Amana" className="h-6 object-contain" />
+          <img src="/amana.png" alt="Amana" width={60} height={24} loading="lazy" decoding="async" className="h-6 object-contain" />
         </div>
       </div>
     </div>

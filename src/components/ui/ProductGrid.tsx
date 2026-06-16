@@ -41,6 +41,10 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
         <img
           src={isHovered && imgHover ? imgHover : img}
           alt={title}
+          width={300}
+          height={300}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
       </div>
@@ -131,6 +135,10 @@ export function ProductCard({
               <img
                 src={secondMedia}
                 alt={title}
+                width={300}
+                height={288}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover rounded-2xl transition-opacity duration-300"
               />
             )
@@ -147,6 +155,10 @@ export function ProductCard({
             <img
               src={firstMedia}
               alt={title}
+              width={300}
+              height={288}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover rounded-2xl"
             />
           )}

@@ -216,7 +216,7 @@ export default function MessagesClient({ lang }: MessagesClientProps) {
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Type a message..."
+                  placeholder={lang === 'fr' ? 'Écrire un message...' : lang === 'ar' ? 'اكتب رسالة...' : 'Type a message...'}
                   className="flex-1 bg-transparent border-none focus:outline-none text-sm px-2 text-neutral-800 placeholder:text-neutral-400"
                 />
                 <button

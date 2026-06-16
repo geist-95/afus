@@ -389,30 +389,27 @@ export default function ListingClientWrapper({
 
             {/* Large Main Image */}
             <div 
-              className="flex-1 border border-primary/10 bg-primary/5 overflow-hidden relative rounded-2xl h-full cursor-pointer group"
+              className="flex-1 overflow-hidden relative rounded-2xl h-full cursor-pointer group flex items-center justify-center"
               onClick={() => setIsFullscreen(true)}
             >
               <img
                 src={activeImage}
                 alt={initialTitle}
-                className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                className="max-w-full max-h-full object-contain rounded-xl"
               />
-              <span className="absolute bottom-3 left-3 bg-primary text-white font-medium text-xs tracking-wider px-3 py-1 rounded-full shadow-md z-10">
-                {t.codEligible}
-              </span>
               
               {/* Prev/Next buttons on main image */}
               {fetchedProduct?.media_gallery && fetchedProduct.media_gallery.length > 1 && (
                 <>
                   <button 
                     onClick={handlePrevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md z-10"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                   </button>
                   <button 
                     onClick={handleNextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md z-10"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                   </button>
@@ -488,59 +485,7 @@ export default function ListingClientWrapper({
             </div>
           </div>
 
-          {/* Buyer Reviews */}
-          <div className="space-y-6 pt-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-medium text-black tracking-tight">Reviews & Rating</h2>
-              <button className="text-sm font-semibold text-black hover:underline flex items-center gap-1">
-                View All Reviews <span>→</span>
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              {/* Review 1 */}
-              <div className="arabic-frame bg-neutral-200 p-[1px]">
-                <div className="arabic-frame bg-white p-6 space-y-4 h-full">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <img src="https://i.pravatar.cc/150?img=47" alt="Aspen Siphron" className="w-10 h-10 rounded-full object-cover" />
-                      <div>
-                        <h4 className="font-semibold text-black text-sm">Aspen Siphron</h4>
-                        <p className="text-xs text-neutral-500">May 12, 2024</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-black">
-                      <span className="text-yellow-400">⭐</span> 4.9
-                    </div>
-                  </div>
-                  <p className="text-sm text-neutral-700 leading-relaxed">
-                    The LuxeBar Eleganza exceeded my expectations in every way. Not only does it look stunning in my kitchen, but it's also incredibly comfortable to sit in, even for extended periods. The plush cushioning and supportive backrest make it the perfect spot for enjoying my morning coffee or catching up with friends over cocktails. Plus, the sleek design adds a touch of elegance to my home decor. Highly recommend.
-                  </p>
-                </div>
-              </div>
 
-              {/* Review 2 */}
-              <div className="arabic-frame bg-neutral-200 p-[1px]">
-                <div className="arabic-frame bg-white p-6 space-y-4 h-full">
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <img src="https://i.pravatar.cc/150?img=32" alt="Kierra Calzoni" className="w-10 h-10 rounded-full object-cover" />
-                      <div>
-                        <h4 className="font-semibold text-black text-sm">Kierra Calzoni</h4>
-                        <p className="text-xs text-neutral-500">May 11, 2024</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-sm font-bold text-black">
-                      <span className="text-yellow-400">⭐</span> 4.9
-                    </div>
-                  </div>
-                  <p className="text-sm text-neutral-700 leading-relaxed">
-                    Absolutely love this product. It matches the description perfectly and the artisan was very communicative throughout the shipping process. The quality of the materials is top notch and you can really see the craftsmanship.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
 
         </div>
 
@@ -551,9 +496,6 @@ export default function ListingClientWrapper({
           <div className="space-y-6">
             <div className="flex items-start gap-3">
               <div className="flex-1 space-y-2">
-                <div className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full w-fit uppercase tracking-wider mb-1">
-                  {t.orderNow} {formatDate(delDateMin)} – {formatDate(delDateMax)}
-                </div>
                 <h1 className="text-2xl font-bold tracking-tight capitalize leading-tight text-black">
                   {fetchedProduct ? (fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en) : initialTitle}
                 </h1>
@@ -576,8 +518,9 @@ export default function ListingClientWrapper({
               <div className="flex flex-wrap items-baseline gap-3">
                 {isSaleActive ? (
                   <>
-                    <span className="text-3xl font-bold text-warning tracking-wider">
-                      Now at {fetchedProduct.sale_price_mad} DH
+                    <span className="text-3xl tracking-wider text-warning">
+                      <span className="font-normal">Now at </span>
+                      <span className="font-bold">{fetchedProduct.sale_price_mad} DH</span>
                     </span>
                     <span className="text-lg text-black/30 line-through tracking-wider lowercase">
                       {basePrice} {t.mad}
@@ -587,8 +530,9 @@ export default function ListingClientWrapper({
                     </span>
                   </>
                 ) : (
-                  <span className="text-3xl font-bold tracking-wider text-black">
-                    Now at {currentPrice} DH
+                  <span className="text-3xl tracking-wider text-black">
+                    <span className="font-normal">Now at </span>
+                    <span className="font-bold">{currentPrice} DH</span>
                   </span>
                 )}
               </div>
@@ -599,6 +543,10 @@ export default function ListingClientWrapper({
                   <span className="font-bold tracking-wider bg-warning text-white px-2.5 py-0.5 rounded-full">{timeLeft}</span>
                 </div>
               )}
+
+              <div className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full w-fit uppercase tracking-wider mt-2">
+                {t.orderNow} {formatDate(delDateMin)} – {formatDate(delDateMax)}
+              </div>
             </div>
 
             <div className="w-full h-px bg-neutral-200"></div>
@@ -670,7 +618,7 @@ export default function ListingClientWrapper({
                   alert(t.addedToCart);
                 }
               }}
-              className="w-full bg-primary text-white hover:bg-primary/90 text-base font-bold py-4 rounded-full transition-all duration-150"
+              className="w-full bg-[#493b54] text-white hover:bg-[#493b54]/90 text-base font-bold py-4 rounded-full transition-all duration-150"
             >
               {t.addToCart}
             </button>
@@ -728,9 +676,9 @@ export default function ListingClientWrapper({
               {detailsExpanded && (
                 <div className="pb-6 space-y-6 animate-in slide-in-from-top-2 fade-in duration-200">
                   {/* Listing Description */}
-                  <p className="text-sm text-black/70 leading-relaxed">
+                  <div className="text-sm text-black/70 leading-relaxed whitespace-pre-wrap">
                     {fetchedProduct?.description_translations?.[lang] || fetchedProduct?.description_translations?.en || "No description provided."}
-                  </p>
+                  </div>
 
                   {/* Specifications */}
                   <div className="flex flex-col space-y-5 text-sm">

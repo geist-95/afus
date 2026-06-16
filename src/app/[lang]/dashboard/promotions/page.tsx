@@ -22,9 +22,9 @@ export default function PromotionsPage({ params }: { params: Promise<{ lang: str
       <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
         <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mb-4">
         </div>
-        <h3 className="text-lg font-bold text-neutral-900">No active promotions</h3>
+        <h3 className="text-lg font-bold text-neutral-900">{t.noPromotions}</h3>
         <p className="text-sm text-neutral-500 max-w-sm mt-2">
-          You don't have any active discounts or promotions. Create one to boost your sales.
+          {t.createFirst}
         </p>
       </div>
     </div>

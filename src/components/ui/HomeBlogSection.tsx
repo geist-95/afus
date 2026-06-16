@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const MOCK_POSTS = [
   {
     id: 1,
     slug: "art-of-moroccan-zellige",
     date: "2024-05-15",
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&fit=crop",
     title: {
       en: "The Art of Moroccan Zellige",
       fr: "L'art du zellige marocain",
@@ -25,6 +27,7 @@ const MOCK_POSTS = [
     id: 2,
     slug: "weaving-stories-berber-rugs",
     date: "2024-06-02",
+    image: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=600&fit=crop",
     title: {
       en: "Weaving Stories: The Berber Rugs",
       fr: "Tisser des histoires : Les tapis berbères",
@@ -85,8 +88,15 @@ export default function HomeBlogSection({ lang }: { lang: string }) {
           {MOCK_POSTS.map((post) => (
             <Link href={`/${lang}/blog/${post.slug}`} key={post.id} className="group h-full hover:shadow-xl transition-shadow duration-300 arabic-frame bg-neutral-300 p-[1px]">
               <div className="flex flex-col h-full bg-white arabic-frame overflow-hidden">
-                <div className="relative h-60 w-full overflow-hidden bg-neutral-200 arabic-frame flex items-center justify-center">
-                  <span className="text-neutral-400">Placeholder Image</span>
+                <div className="relative h-60 w-full overflow-hidden arabic-frame">
+                  <Image
+                    src={post.image}
+                    alt={(post.title as any)[lang] || post.title.en}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="text-xs text-neutral-400 mb-3">{post.date}</div>

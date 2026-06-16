@@ -4,8 +4,7 @@ import { WishlistProvider } from "@/lib/wishlist";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import LanguageModal from "@/components/ui/LanguageModal";
-import BetaReportFab from "@/components/ui/BetaReportFab";
-import { Readex_Pro } from 'next/font/google';
+import { Readex_Pro, Instrument_Sans, Noto_Sans_Tifinagh } from 'next/font/google';
 import { Toaster } from "sonner";
 import "../globals.css";
 
@@ -13,6 +12,19 @@ const readexPro = Readex_Pro({
   subsets: ['arabic'],
   display: 'swap',
   variable: '--font-readex-pro',
+});
+
+const instrumentSans = Instrument_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+});
+
+const tifinagh = Noto_Sans_Tifinagh({
+  subsets: ['tifinagh'],
+  weight: '400',
+  display: 'swap',
+  variable: '--font-tifinagh',
 });
 
 const metaTranslations: Record<string, {
@@ -122,13 +134,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const dir = isAr ? "rtl" : "ltr";
 
   return (
-    <html lang={lang} dir={dir} className={`h-full ${readexPro.variable}`} suppressHydrationWarning>
+    <html lang={lang} dir={dir} className={`h-full ${readexPro.variable} ${instrumentSans.variable} ${tifinagh.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-white text-black antialiased font-sans" suppressHydrationWarning>
         <WishlistProvider>
         <CartProvider>
           <LanguageModal currentLang={lang} />
           {children}
-          <BetaReportFab />
           <Toaster position="top-center" richColors />
           <SpeedInsights />
           <Analytics />

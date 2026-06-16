@@ -108,7 +108,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         facebook,
         banner_bg_color: bannerBgColor,
         announcement,
-        announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
+        announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : lang === 'tz' ? 'tz' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
       };
 
       // Update profiles (notifications)
@@ -238,43 +238,43 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             onClick={() => setActiveTab('general')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'general' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <Settings className="w-4 h-4" /> General
+            <Settings className="w-4 h-4" /> {t.tabs.general}
           </button>
           <button 
             onClick={() => setActiveTab('header')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'header' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <ImageIcon className="w-4 h-4" /> Header
+            <ImageIcon className="w-4 h-4" /> {t.tabs.header}
           </button>
           <button 
             onClick={() => setActiveTab('contact')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'contact' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <Phone className="w-4 h-4" /> Contact
+            <Phone className="w-4 h-4" /> {t.tabs.contact}
           </button>
           <button 
             onClick={() => setActiveTab('faq')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'faq' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <Settings className="w-4 h-4" /> FAQ
+            <Settings className="w-4 h-4" /> {t.tabs.faq}
           </button>
           <button 
             onClick={() => setActiveTab('notifications')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'notifications' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <Bell className="w-4 h-4" /> Notifications
+            <Bell className="w-4 h-4" /> {t.tabs.notifications}
           </button>
           <button 
             onClick={() => setActiveTab('collections')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'collections' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <LayoutGrid className="w-4 h-4" /> Collections
+            <LayoutGrid className="w-4 h-4" /> {t.tabs.collections}
           </button>
           <button 
             onClick={() => setActiveTab('featured')}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'featured' ? 'bg-neutral-100 text-neutral-900' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
           >
-            <Star className="w-4 h-4" /> Featured Items
+            <Star className="w-4 h-4" /> {t.tabs.featured}
           </button>
         </div>
 
@@ -285,7 +285,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           {activeTab === 'general' && (
             <div className="space-y-6">
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Store name</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.general.storeName}</label>
                 <input
                   type="text"
                   value={shopName}
@@ -295,7 +295,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Store URL</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.general.storeUrl}</label>
                 <div className="flex items-center border border-neutral-200 rounded-lg overflow-hidden focus-within:border-neutral-400 transition-colors">
                   <span className="bg-neutral-50 text-neutral-500 px-3 py-3 text-sm border-r border-neutral-200 whitespace-nowrap">
                     afus.ma/store/
@@ -307,11 +307,11 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                     className="w-full p-3 bg-white focus:outline-none text-sm"
                   />
                 </div>
-                <p className="text-xs text-neutral-400">This is your unique store link. Only use lowercase letters, numbers, and hyphens.</p>
+                 <p className="text-xs text-neutral-400">{lang === 'fr' ? "C'est le lien unique de votre boutique. Utilisez uniquement des lettres minuscules, des chiffres et des tirets." : lang === 'ar' ? 'هذا هو رابط متجرك الفريد. استخدم فقط الأحرف الصغيرة والأرقام والشرطات.' : lang === 'tz' ? 'ⵜⵓⴳⴳⴰ ⵏ ⵜⵃⴰⵏⵓⵜ ⵏⵏⴽ ⵜⴰⵥⵍⴰⵢⵜ. ⵙⵙⵎⵔⵙ ⵖⴰⵙ ⵜⵉⵔⵔⴰ ⵎⵥⵥⵉⵢⵏ, ⵜⵉⵎⴹⴰⵏⵉⵏ ⴷ ⵉⵎⵉⵍⵏ.' : 'This is your unique store link. Only use lowercase letters, numbers, and hyphens.'}</p>
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">City</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.general.city}</label>
                 <input
                   type="text"
                   value={city}
@@ -321,7 +321,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Description</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.general.description}</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -336,8 +336,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             <div className="space-y-8">
               <div className="space-y-3">
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-lg">Store logo</h3>
-                  <p className="text-sm text-neutral-500">Provide your store logo URL (recommended: square, 500x500px)</p>
+                  <h3 className="font-bold text-neutral-800 text-lg">{t.header.logo}</h3>
+                  <p className="text-sm text-neutral-500">{t.header.logoDesc}</p>
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-4">
@@ -350,7 +350,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                     )}
                     <input
                       type="text"
-                      placeholder="Paste Logo image URL (e.g. https://...)"
+                      placeholder={t.header.logoPlaceholder}
                       value={logoUrl}
                       onChange={(e) => setLogoUrl(e.target.value)}
                       className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
@@ -361,8 +361,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
               <div className="border-t border-neutral-100 pt-8 space-y-3">
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-lg">Store cover image</h3>
-                  <p className="text-sm text-neutral-500">Provide a cover image URL for your store (recommended: 1920x400px)</p>
+                  <h3 className="font-bold text-neutral-800 text-lg">{t.header.cover}</h3>
+                  <p className="text-sm text-neutral-500">{t.header.coverDesc}</p>
                 </div>
                 <div className="space-y-4">
                   {coverUrl ? (
@@ -370,12 +370,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                   ) : (
                     <div className="w-full h-32 rounded-lg bg-neutral-100 border border-neutral-200 border-dashed flex flex-col items-center justify-center gap-2 text-neutral-400">
                       <ImageIcon className="w-6 h-6" />
-                      <span className="text-sm">No cover image URL set</span>
+                      <span className="text-sm">{t.header.coverNone}</span>
                     </div>
                   )}
                   <input
                     type="text"
-                    placeholder="Paste Cover image URL (e.g. https://...)"
+                    placeholder={t.header.coverPlaceholder}
                     value={coverUrl}
                     onChange={(e) => setCoverUrl(e.target.value)}
                     className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
@@ -385,8 +385,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
               <div className="border-t border-neutral-100 pt-8 space-y-3">
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-lg">Banner Background Color</h3>
-                  <p className="text-sm text-neutral-500">Set the background color of the store header banner.</p>
+                  <h3 className="font-bold text-neutral-800 text-lg">{t.header.bgColor}</h3>
+                  <p className="text-sm text-neutral-500">{t.header.bgColorDesc}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <input
@@ -402,18 +402,18 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                     className="border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm font-mono w-32"
                   />
                 </div>
-                <p className="text-xs text-neutral-400">Please choose a dark/deep contrast color so the white banner text is readable.</p>
+                <p className="text-xs text-neutral-400">{t.header.bgColorHelper}</p>
               </div>
 
               <div className="border-t border-neutral-100 pt-8 space-y-3">
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-lg">Store Announcement</h3>
-                  <p className="text-sm text-neutral-500">Post a public notice or update (e.g., holiday delivery deadlines).</p>
+                  <h3 className="font-bold text-neutral-800 text-lg">{t.header.announcement}</h3>
+                  <p className="text-sm text-neutral-500">{t.header.announcementDesc}</p>
                 </div>
                 <textarea
                   value={announcement}
                   onChange={(e) => setAnnouncement(e.target.value)}
-                  placeholder="E.g. **HOLIDAY DELIVERY DEADLINE** Orders must be placed before December 20..."
+                  placeholder={t.header.announcementPlaceholder}
                   className="w-full border border-neutral-200 p-3 bg-white focus:outline-none rounded-lg text-sm h-28"
                 />
               </div>
@@ -423,10 +423,10 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           {/* Contact Tab */}
           {activeTab === 'contact' && (
             <div className="space-y-6">
-              <h3 className="font-bold text-neutral-800 text-lg mb-4">Contact information</h3>
+              <h3 className="font-bold text-neutral-800 text-lg mb-4">{t.contactInfo.title}</h3>
               
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Phone</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.contactInfo.phone}</label>
                 <input
                   type="text"
                   value={phone}
@@ -437,7 +437,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Email</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.contactInfo.email}</label>
                 <input
                   type="email"
                   value={email}
@@ -448,7 +448,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">WhatsApp</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.contactInfo.whatsapp}</label>
                 <input
                   type="text"
                   value={whatsapp}
@@ -459,7 +459,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Instagram</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.contactInfo.instagram}</label>
                 <input
                   type="text"
                   value={instagram}
@@ -470,7 +470,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="block font-semibold text-neutral-800 text-sm">Facebook</label>
+                <label className="block font-semibold text-neutral-800 text-sm">{t.contactInfo.facebook}</label>
                 <input
                   type="text"
                   value={facebook}
@@ -487,8 +487,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-lg">Store FAQ</h3>
-                  <p className="text-sm text-neutral-500">Manage frequently asked questions for your store page.</p>
+                  <h3 className="font-bold text-neutral-800 text-lg">{t.faqSection.title}</h3>
+                  <p className="text-sm text-neutral-500">{t.faqSection.desc}</p>
                 </div>
                 <button
                   type="button"
@@ -503,7 +503,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                   }}
                   className="bg-neutral-800 hover:bg-black text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors"
                 >
-                  + Add FAQ
+                  {t.faqSection.addBtn}
                 </button>
               </div>
 
@@ -517,15 +517,15 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       }}
                       className="absolute top-4 right-4 text-red-500 hover:text-red-700 font-semibold text-xs"
                     >
-                      Delete
+                      {t.faqSection.deleteBtn}
                     </button>
                     
-                    <h4 className="font-bold text-sm text-neutral-800">FAQ Item #{index + 1}</h4>
+                    <h4 className="font-bold text-sm text-neutral-800">{t.faqSection.itemTitle} #{index + 1}</h4>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Questions */}
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Question (EN)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.qEn}</label>
                         <input
                           type="text"
                           value={faq.q.en || ''}
@@ -539,7 +539,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       </div>
                       {/* Answers */}
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Answer (EN)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.aEn}</label>
                         <textarea
                           value={faq.a.en || ''}
                           onChange={(e) => {
@@ -552,7 +552,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Question (FR)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.qFr}</label>
                         <input
                           type="text"
                           value={faq.q.fr || ''}
@@ -565,7 +565,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Answer (FR)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.aFr}</label>
                         <textarea
                           value={faq.a.fr || ''}
                           onChange={(e) => {
@@ -578,7 +578,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Question (AR)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.qAr}</label>
                         <input
                           type="text"
                           value={faq.q.ar || ''}
@@ -592,7 +592,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-neutral-500">Answer (AR)</label>
+                        <label className="block text-xs font-semibold text-neutral-500">{t.faqSection.aAr}</label>
                         <textarea
                           value={faq.a.ar || ''}
                           onChange={(e) => {
@@ -610,7 +610,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
                 {faqs.length === 0 && (
                   <div className="text-center py-8 text-neutral-400 text-sm">
-                    No FAQs added yet. Click "+ Add FAQ" to create one.
+                    {t.faqSection.none}
                   </div>
                 )}
               </div>
@@ -620,12 +620,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           {/* Notifications Tab */}
           {activeTab === 'notifications' && (
             <div className="space-y-6">
-              <h3 className="font-bold text-neutral-800 text-lg mb-4">Email Notifications</h3>
+              <h3 className="font-bold text-neutral-800 text-lg mb-4">{t.notify.title}</h3>
               
               <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg bg-white">
                 <div>
-                  <div className="font-semibold text-neutral-800 text-sm">Order Updates</div>
-                  <div className="text-xs text-neutral-500 mt-1">Receive emails when your order status changes (e.g. shipped, delivered).</div>
+                  <div className="font-semibold text-neutral-800 text-sm">{t.notify.orders}</div>
+                  <div className="text-xs text-neutral-500 mt-1">{t.notify.ordersDesc}</div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" checked={emailOrders} onChange={(e) => setEmailOrders(e.target.checked)} />
@@ -635,8 +635,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
               <div className="flex items-center justify-between p-4 border border-neutral-200 rounded-lg bg-white">
                 <div>
-                  <div className="font-semibold text-neutral-800 text-sm">New Messages</div>
-                  <div className="text-xs text-neutral-500 mt-1">Receive emails when someone sends you a direct message.</div>
+                  <div className="font-semibold text-neutral-800 text-sm">{t.notify.messages}</div>
+                  <div className="text-xs text-neutral-500 mt-1">{t.notify.messagesDesc}</div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input type="checkbox" className="sr-only peer" checked={emailMessages} onChange={(e) => setEmailMessages(e.target.checked)} />
@@ -651,12 +651,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             <div className="flex flex-col items-center justify-center text-center h-full space-y-4 py-12">
               <LayoutGrid className="w-12 h-12 text-neutral-300" />
               <div className="space-y-1">
-                <h3 className="font-bold text-neutral-800 text-lg">Manage Store Collections</h3>
-                <p className="text-sm text-neutral-500 max-w-sm">Create and organize custom product collections to showcase on your store page.</p>
+                <h3 className="font-bold text-neutral-800 text-lg">{t.collectionsSection.title}</h3>
+                <p className="text-sm text-neutral-500 max-w-sm">{t.collectionsSection.desc}</p>
               </div>
               <Link href={`/${lang}/dashboard/collections`}>
                 <button className="bg-neutral-800 hover:bg-black text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors mt-2">
-                  Go to Collections Manager
+                  {t.collectionsSection.btn}
                 </button>
               </Link>
             </div>
@@ -665,12 +665,12 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           {/* Featured Items Tab */}
           {activeTab === 'featured' && (
             <div className="space-y-6">
-              <h3 className="font-bold text-neutral-800 text-lg">Featured Showcase</h3>
-              <p className="text-sm text-neutral-500">Pin top products or specific collections to the top of your grid.</p>
+              <h3 className="font-bold text-neutral-800 text-lg">{t.featuredSection.title}</h3>
+              <p className="text-sm text-neutral-500">{t.featuredSection.desc}</p>
               
               <div className="border border-dashed border-neutral-200 rounded-xl p-12 text-center text-neutral-500">
                 <Star className="w-8 h-8 mx-auto text-neutral-300 mb-3" />
-                <p className="text-sm">Select products to feature (Coming soon)</p>
+                <p className="text-sm">{t.featuredSection.comingSoon}</p>
               </div>
             </div>
           )}

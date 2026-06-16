@@ -31,7 +31,11 @@ function ScrollableTrail({ children }: { children: React.ReactNode }) {
 
   const scroll = (direction: 'left' | 'right') => {
     if (!scrollRef.current) return;
-    const scrollAmount = direction === 'left' ? -400 : 400;
+    const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
+    let scrollAmount = direction === 'left' ? -400 : 400;
+    if (isRtl) {
+      scrollAmount = -scrollAmount;
+    }
     scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
@@ -101,7 +105,11 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
 
   const scrollNewArrivals = (direction: 'left' | 'right') => {
     if (!newArrivalsRef.current) return;
-    const scrollAmount = direction === 'left' ? -400 : 400;
+    const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
+    let scrollAmount = direction === 'left' ? -400 : 400;
+    if (isRtl) {
+      scrollAmount = -scrollAmount;
+    }
     newArrivalsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
@@ -250,8 +258,11 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
 
   const t = labels[lang] || labels.en;
 
-  // Filter lists using the local products merged state
-  const newProducts = [...allProducts].slice(0, 8);
+  // Filter lists using the local products merged state and sort by created_at descending (newest first)
+  const newProducts = [...allProducts]
+    .filter(p => p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119'))
+    .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+    .slice(0, 8);
 
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
   const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || matchedCategory?.name.en || "";
@@ -265,20 +276,11 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
               : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
                 : p.category_id;
     return isDirectMatch || legacyMappedId === recentCategoryId;
-  }).slice(0, 8);
+  })
+  .filter(p => p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119'))
+  .slice(0, 8);
 
-
-
-  const newestStores = [...shops].slice(0, 6);
-  while (newestStores.length < 6) {
-    newestStores.push({
-      id: `placeholder-${newestStores.length}`,
-      name: 'Coming Soon',
-      merchant_city: 'Morocco',
-      slug: '#',
-      is_placeholder: true
-    });
-  }
+  const newestStores = [...shops].filter(store => !store.is_placeholder);
 
   return (
     <div className="space-y-16">

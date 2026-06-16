@@ -256,6 +256,8 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
                                       src={slide.image}
                                       fill
                                       className="object-contain"
+                                      priority={index === 0}
+                                      sizes="(max-width: 768px) 280px, 280px"
                                     />
                                   </div>
                                 </div>
@@ -293,6 +295,8 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
                   loop
                   muted
                   playsInline
+                  preload="metadata"
+                  poster="/onboarding.jpg"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 

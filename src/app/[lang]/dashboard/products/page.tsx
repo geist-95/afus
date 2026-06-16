@@ -62,7 +62,7 @@ export default function ProductsManagerPage({ params }: PageProps) {
         <div className="flex gap-3">
           <Link href={`/${lang}/dashboard/orders`}>
             <button className="h-10 px-4 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-semibold text-sm rounded-lg transition-colors">
-              View Orders
+              {lang === 'fr' ? 'Voir les commandes' : lang === 'ar' ? 'عرض الطلبات' : 'View Orders'}
             </button>
           </Link>
           <Link href={`/${lang}/dashboard/products/new`}>
@@ -106,23 +106,30 @@ export default function ProductsManagerPage({ params }: PageProps) {
                     <div className="mt-auto flex gap-2">
                       <Link
                         href={`/${lang}/listing/${p.numeric_id}/${slug}`}
-                        className="flex-1 border border-neutral-200 rounded-lg px-3 py-2 bg-neutral-50 hover:bg-neutral-100 text-center text-xs font-bold transition-colors"
+                        className="flex-1 border border-neutral-200 rounded-lg px-2 py-2 bg-neutral-50 hover:bg-neutral-100 text-center text-xs font-bold transition-colors"
                       >
-                        View
+                        {lang === 'fr' ? 'Voir' : lang === 'ar' ? 'عرض' : 'View'}
+                      </Link>
+                      <Link
+                        href={`/${lang}/dashboard/products/${p.id}`}
+                        className="flex-1 border border-neutral-200 rounded-lg px-2 py-2 bg-neutral-50 hover:bg-neutral-100 text-center text-xs font-bold transition-colors"
+                      >
+                        {lang === 'fr' ? 'Modifier' : lang === 'ar' ? 'تعديل' : 'Edit'}
                       </Link>
                       <button
                         type="button"
                         onClick={() => {
-                          if (confirm('Are you sure you want to delete this listing?')) {
+                          const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette annonce ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟' : 'Are you sure you want to delete this listing?';
+                          if (confirm(confirmMsg)) {
                             const localProducts = JSON.parse(localStorage.getItem('local_products') || '[]');
                             const updated = localProducts.filter((item: any) => item.id !== p.id && item.numeric_id !== Number(p.id) && item.numeric_id !== p.numeric_id);
                             localStorage.setItem('local_products', JSON.stringify(updated));
                             setShopProducts(prev => prev.filter(item => item.id !== p.id && item.numeric_id !== p.numeric_id));
                           }
                         }}
-                        className="text-red-600 hover:bg-red-50 border border-neutral-200 hover:border-red-200 px-3 py-2 rounded-lg transition-colors text-xs font-bold"
+                        className="flex-1 text-red-600 hover:bg-red-50 border border-neutral-200 hover:border-red-200 px-2 py-2 rounded-lg transition-colors text-xs font-bold"
                       >
-                        Delete
+                        {lang === 'fr' ? 'Supprimer' : lang === 'ar' ? 'حذف' : 'Delete'}
                       </button>
                     </div>
                   </div>

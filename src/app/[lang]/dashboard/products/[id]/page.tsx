@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getActiveSession } from '@/lib/auth';
-import { createProductListing } from '@/lib/supabase';
+import { fetchProductById, updateProductListing } from '@/lib/supabase';
 import { taxonomy, suggestCategories, translateCategory, translateSubcategory } from '@/lib/categories';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 import { X, Search, Package, FileText, ChevronLeft, Info, HelpCircle, Plus, ExternalLink, Copy, MoreHorizontal } from 'lucide-react';
@@ -16,6 +16,7 @@ const localDicts = {
   en: {
     backToListings: "Back to listings",
     newListing: "New listing",
+    editListing: "Edit listing",
     draft: "Draft",
     notListedYet: "Not listed yet",
     requiredInputsOnly: "Required inputs only",
@@ -148,6 +149,7 @@ const localDicts = {
   fr: {
     backToListings: "Retour aux fiches",
     newListing: "Nouvelle fiche",
+    editListing: "Modifier l'annonce",
     draft: "Brouillon",
     notListedYet: "Pas encore en ligne",
     requiredInputsOnly: "Champs requis uniquement",
@@ -280,6 +282,7 @@ const localDicts = {
   ar: {
     backToListings: "العودة إلى القوائم",
     newListing: "قائمة جديدة",
+    editListing: "تعديل المنتج",
     draft: "مسودة",
     notListedYet: "لم يتم نشره بعد",
     requiredInputsOnly: "المدخلات المطلوبة فقط",
@@ -369,7 +372,7 @@ const localDicts = {
       addBtn: "إضافة",
       left: "متبقي",
       materialsLabel: "المواد",
-      materialsHelper: "يقدر المشترون الشفافية - أخبرهم بالمواد المستخدمة."
+      materialsHelper: "يُقدِّر المشترون الشفافية — أخبرهم بالمواد المستخدمة في صنع منتجك."
     },
     shipping: {
       title: "الشحن",
@@ -412,6 +415,7 @@ const localDicts = {
   tz: {
     backToListings: "ⴰⵖⵓⵍ ⵖⵔ ⵜⵍⴳⴰⵎⵉⵏ",
     newListing: "ⵜⴰⴼⵉⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ",
+    editListing: "ⵙⵏⴼⵍ ⵜⴰⴼⵉⵍⵜ",
     draft: "ⴱⵔⵓⵢⵓ",
     notListedYet: "ⵓⵔ ⵜⵍⵍⵉ ⴳ ⵓⵥⵟⵟⴰ",
     requiredInputsOnly: "ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵜⵉⵔⴰⵏⵉⵏ ⵖⴰⵙ",
@@ -463,7 +467,7 @@ const localDicts = {
     },
     variations: {
       title: "ⵜⵉⵏⴼⵔⵓⵜⵉⵏ",
-      subtitle: "ⵜⴰⴼⵉⵍⵜ ⴰⴷ ⵜⵍⵍⴰ ⴳⵉⵙ ⵜⵉⴼⵔⵉⵜⵉⵏ ⵢⴰⴹⵏ (ⴽⵓⵍⵓⵔ, ⵜⴰⵣⵡⵉⵍⵜ).",
+      subtitle: "ⵜⴰⴼⵉⵍⵜ ⴰⴷ ⵜⵍⵍⴰ ⴳ ⵜⵉⴼⵔⵉⵜⵉⵏ ⵢⴰⴹⵏ (ⴽⵓⵍⵓⵔ, ⵜⴰⵣⵡⵉⵍⵜ).",
       addBtn: "ⵔⵏⵓ ⵜⵉⵏⴼⵔⵓⵜⵉⵏ",
       pricesVary: "ⴰⵜⵉⴳ ⴰⵔ ⵉⵙⵏⴼⵉⵍ",
       pricingTable: "ⵜⵉⵣⵣⵉⴳⵣⵜ",
@@ -497,7 +501,7 @@ const localDicts = {
       title: "ⵜⵉⴼⴰⵡⵉⵏ",
       subtitle: "ⵔⵏⵓ ⵜⵉⴼⴰⵡⵉⵏ ⴰⴼⴰⴷ ⴰⴷ ⴰⴼⵏ ⵉⵎⵙⵖⴰⵏⵏ ⵜⴰⵖⴰⵡⵙⴰ ⵏⵏⴽ.",
       tagsLabel: "ⵜⵉⴳⵓⵔⵉⵡⵉⵏ",
-      tagsHelper: "ⵔⵏⵓ ⴰⵔ 13 ⵜⵉⴳⵓⵔⵉⵡⵉⵏ ⵉ ⵓⵙⵉⴳⴳⵍ.",
+      tagsHelper: "ⵔⵏⵓ ⴰⵔ 13 ⵜⵉⴳⵓⵔⵉⵡⵉⵏ ⵉ ⵓⵙⵉⴳﮕⵍ.",
       addBtn: "ⵔⵏⵓ",
       left: "ⵉⵇⵇⴰⵏ",
       materialsLabel: "ⵉⵎⴰⵙⵙⵏ",
@@ -524,7 +528,7 @@ const localDicts = {
     },
     settings: {
       title: "ⵜⵉⵙⵖⴰⵍ",
-      returnsTitle: "ⵜⵉⵙⵖⴰⵍ ⵏ ⵓⵖⵓⵍ ⴷ ⵓⵙⵏⴼⵍ",
+      returnsTitle: "ⵜⵉⵙⵖⴰⵍ ⵏ ⵓⵖⵓⵍ ⴷ ⵓⵙⵏⴼﻠ",
       changePolicy: "ⵙⵏⴼⵍ ⵜⴰⵙⵖⵍⵜ",
       policyHelper: "ⵉⵥⴹⴰⵕ ⵓⵎⵙⵖⴰⵏ ⴰⴷ ⵉⵎⵙⴰⵡⴰⵍ ⴷ ⵓⵎⵙⵏⴼⵍ ⵅⴼ ⴽⵔⴰ ⵏ ⵓⵎⵓⵛⴽⵉⵍ.",
       sectionTitle: "ⵜⴰⴳⵔⵓⵎⵎⴰ ⵏ ⵜⵃⴰⵏⵓⵜ (ⴼⵔⵏ)",
@@ -542,13 +546,12 @@ const localDicts = {
     }
   }
 };
-
 interface PageProps {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: string; id: string }>;
 }
 
-export default function NewListingPage({ params }: PageProps) {
-  const { lang } = use(params);
+export default function EditListingPage({ params }: PageProps) {
+  const { lang, id } = use(params);
   const router = useRouter();
 
   const t = localDicts[lang as 'en'|'fr'|'ar'|'tz'] || localDicts.en;
@@ -585,7 +588,7 @@ export default function NewListingPage({ params }: PageProps) {
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('1');
 
-  // New Fields from Etsy screenshots
+  // New Fields
   const [tagsInput, setTagsInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [materials, setMaterials] = useState('');
@@ -635,7 +638,7 @@ export default function NewListingPage({ params }: PageProps) {
     async function checkAuth() {
       const activeUser = await getActiveSession();
       if (!activeUser) {
-        router.push(`/${lang}/login?redirect=dashboard/upload/new`);
+        router.push(`/${lang}/login?redirect=dashboard/products/${id}`);
         return;
       }
       setSession(activeUser);
@@ -655,22 +658,93 @@ export default function NewListingPage({ params }: PageProps) {
           }
         }
       }
+
+      // Fetch Product Details
+      const product = await fetchProductById(id);
+      if (product) {
+        setTitleEn(product.title_translations?.en || '');
+        setTitleFr(product.title_translations?.fr || '');
+        setTitleAr(product.title_translations?.ar || '');
+        setTitleTz(product.title_translations?.tz || '');
+
+        setDescEn(product.description_translations?.en || '');
+        setDescFr(product.description_translations?.fr || '');
+        setDescAr(product.description_translations?.ar || '');
+        setDescTz(product.description_translations?.tz || '');
+
+        setPrice((product.base_price_mad || '').toString());
+        setMediaUrls(product.media_gallery || []);
+        setSelectedCatId(product.category_id || '');
+        setSelectedSubcatId(product.subcategory_id || '');
+
+        if (product.category_id) {
+          const transCat = translateCategory(product.category_id, lang, 'Jewelry');
+          const transSub = product.subcategory_id ? translateSubcategory(product.subcategory_id, lang, '') : '';
+          setSuggestionQuery(transSub ? `${transCat} > ${transSub}` : transCat);
+        }
+
+        if (product.metadata) {
+          setItemType(product.metadata.itemType || 'physical');
+          setWhoMadeIt(product.metadata.whoMadeIt || 'i_did');
+          setWhenMade(product.metadata.whenMade || 'recently');
+          setTags(product.metadata.tags || []);
+          setMaterials(product.metadata.materials || '');
+
+          if (product.metadata.personalization) {
+            setShowPersonalization(true);
+            setPersonalizationInstructions(product.metadata.personalization.instructions || '');
+            setCharLimit((product.metadata.personalization.charLimit || 256).toString());
+            setPersonalizationOptional(!!product.metadata.personalization.optional);
+          }
+
+          if (product.metadata.variations) {
+            setVariations(product.metadata.variations.items || []);
+            setPricesVary(!!product.metadata.variations.pricesVary);
+            setVariationMatrix(product.metadata.variations.matrix || {});
+            if (product.metadata.variations.items?.length > 0) {
+              setHasVariations(true);
+            }
+          }
+
+          if (product.metadata.shipping) {
+            setShippingAmana(!!product.metadata.shipping.amana);
+            setShippingHand(!!product.metadata.shipping.handDelivery);
+            setProcessingTime(product.metadata.shipping.processingTime || '1-2 business days');
+
+            if (product.metadata.shipping.weight) {
+              setHasItemWeightAndSize(true);
+              setItemWeightKg(product.metadata.shipping.weight.kg || '');
+            }
+            if (product.metadata.shipping.size) {
+              setHasItemWeightAndSize(true);
+              setItemSizeLength(product.metadata.shipping.size.length || '');
+              setItemSizeWidth(product.metadata.shipping.size.width || '');
+              setItemSizeHeight(product.metadata.shipping.size.height || '');
+            }
+          }
+
+          if (product.metadata.settings) {
+            setReturnsPolicy(product.metadata.settings.returnsPolicy || 'No returns or exchanges');
+            setShopSection(product.metadata.settings.shopSection || '');
+            setFeatureListing(!!product.metadata.settings.featureListing);
+          }
+        }
+      }
     }
 
     checkAuth();
-  }, [lang, router]);
+  }, [lang, id, router]);
 
   // Scroll listener to update active tab based on scroll position
   useEffect(() => {
     const handleScroll = () => {
       const sectionIds = ['about', 'price', 'variations', 'details', 'shipping', 'settings'];
       let currentSection = 'about';
-      
+
       for (const id of sectionIds) {
         const el = document.getElementById(id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          // If the top of the section is near or above the viewport top
           if (rect.top <= 220) {
             currentSection = id;
           }
@@ -703,7 +777,7 @@ export default function NewListingPage({ params }: PageProps) {
     setTags(tags.filter(t => t !== tagToRemove));
   };
 
-  const handleCreateListing = async () => {
+  const handleUpdateListing = async () => {
     setIsSubmitting(true);
 
     const reverseCategoryMapping: Record<string, string> = {
@@ -720,7 +794,6 @@ export default function NewListingPage({ params }: PageProps) {
     const activeDesc = descEn || descFr || descAr || descTz;
 
     const payload = {
-      shop_id: session?.shop?.id || (session?.id === 's1_owner' ? 's1' : 's2'),
       category_id: dbCategoryId,
       subcategory_id: selectedSubcatId,
       base_price_mad: parseFloat(price) || 0,
@@ -738,7 +811,6 @@ export default function NewListingPage({ params }: PageProps) {
       },
       media_gallery: mediaUrls,
       stock_quantity: 1,
-      featured: featureListing,
       metadata: {
         itemType,
         whoMadeIt,
@@ -767,17 +839,13 @@ export default function NewListingPage({ params }: PageProps) {
         settings: {
           returnsPolicy,
           shopSection,
-          featureListing
+          featureListing: featureListing
         }
       }
     };
 
-    const result = await createProductListing(payload);
+    const result = await updateProductListing(id, payload);
     if (result) {
-      // Add featured flag on local mock object
-      const mockResult = { ...result, featured: featureListing };
-      const productId = result.id || result.numeric_id?.toString();
-
       // If a shop section (collection) was selected, add the product to that collection
       if (shopSection) {
         const collectionsRaw = localStorage.getItem('local_collections');
@@ -788,8 +856,8 @@ export default function NewListingPage({ params }: PageProps) {
               const updatedCols = allCols.map((c: any) => {
                 if (c.id === shopSection) {
                   const pIds = Array.isArray(c.product_ids) ? c.product_ids : [];
-                  if (!pIds.includes(productId)) {
-                    return { ...c, product_ids: [...pIds, productId] };
+                  if (!pIds.includes(result.id || result.numeric_id?.toString())) {
+                    return { ...c, product_ids: [...pIds, result.id || result.numeric_id?.toString()] };
                   }
                 }
                 return c;
@@ -797,14 +865,10 @@ export default function NewListingPage({ params }: PageProps) {
               localStorage.setItem('local_collections', JSON.stringify(updatedCols));
             }
           } catch (e) {
-            console.error('Failed to update collection with new product:', e);
+            console.error('Failed to update collection with edited product:', e);
           }
         }
       }
-
-      const localProducts = JSON.parse(localStorage.getItem('local_products') || '[]');
-      localProducts.unshift(mockResult);
-      localStorage.setItem('local_products', JSON.stringify(localProducts));
 
       router.push(`/${lang}/dashboard/products`);
     }
@@ -886,6 +950,8 @@ export default function NewListingPage({ params }: PageProps) {
     { id: 'settings', label: t.tabs.settings }
   ];
 
+  const displayedTitle = titleEn || titleFr || titleAr || titleTz || t.editListing;
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-neutral-50 pb-24">
       {/* Top Header (Not Sticky) */}
@@ -897,7 +963,7 @@ export default function NewListingPage({ params }: PageProps) {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-neutral-800 max-w-3xl line-clamp-2">
-              {titleEn || t.newListing}
+              {displayedTitle}
             </h1>
             <div className="flex items-center gap-3 mt-2">
               <span className="px-2 py-0.5 bg-neutral-200 text-neutral-700 text-xs font-bold rounded-md">{t.draft}</span>
@@ -1168,6 +1234,23 @@ export default function NewListingPage({ params }: PageProps) {
                 <HelpCircle className="w-4 h-4 text-neutral-400" />
               </label>
               <p className="text-xs text-neutral-500 mb-2">{t.about.photosHelper}</p>
+              
+              {mediaUrls.length > 0 && (
+                <div className="grid grid-cols-5 gap-3 mb-4">
+                  {mediaUrls.map((url, i) => (
+                    <div key={i} className="aspect-square bg-neutral-100 rounded-lg relative overflow-hidden group border border-neutral-200">
+                      <img src={url} alt="product" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => setMediaUrls(mediaUrls.filter((_, idx) => idx !== i))}
+                        className="absolute top-1 right-1 p-1 bg-black/70 hover:bg-black text-white rounded-full transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
               <div className="bg-neutral-50 p-6 rounded-xl border-2 border-dashed border-neutral-300 text-center flex flex-col items-center justify-center">
                 <MediaUploader onUploadComplete={handleUploadComplete} maxFiles={10} />
               </div>
@@ -1757,7 +1840,7 @@ export default function NewListingPage({ params }: PageProps) {
           </button>
         </Link>
         <button
-          onClick={handleCreateListing}
+          onClick={handleUpdateListing}
           disabled={isSubmitting || !(lang === 'en' ? titleEn : lang === 'fr' ? titleFr : lang === 'ar' ? titleAr : titleTz) || !price || !selectedCatId}
           className="px-8 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-sm rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
         >

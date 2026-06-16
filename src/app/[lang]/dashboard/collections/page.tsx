@@ -114,7 +114,8 @@ export default function CollectionsPage({ params }: PageProps) {
   const handleCreateCollection = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn.trim()) {
-      alert('English name is required');
+      const alertMsg = lang === 'fr' ? 'Le nom anglais est requis' : lang === 'ar' ? 'الاسم بالإنجليزية مطلوب' : 'English name is required';
+      alert(alertMsg);
       return;
     }
     if (!session?.shop?.id) return;
@@ -151,12 +152,14 @@ export default function CollectionsPage({ params }: PageProps) {
     setNameFr('');
     setNameAr('');
     setSelectedProductIds([]);
-    setMessage('collection created successfully');
+    const successMsg = lang === 'fr' ? 'Collection créée avec succès' : lang === 'ar' ? 'تم إنشاء المجموعة بنجاح' : 'collection created successfully';
+    setMessage(successMsg);
     setTimeout(() => setMessage(''), 3000);
   };
 
   const handleDeleteCollection = (id: string) => {
-    if (!confirm('are you sure you want to delete this collection?')) return;
+    const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette collection ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذه المجموعة؟' : 'are you sure you want to delete this collection?';
+    if (!confirm(confirmMsg)) return;
     
     const allCollectionsRaw = localStorage.getItem('local_collections') || '[]';
     let allCollections: Collection[] = [];
@@ -204,7 +207,7 @@ export default function CollectionsPage({ params }: PageProps) {
             {/* Trilingual Title Translations */}
             <div className="space-y-4 pt-1">
               <div className="space-y-2">
-                <label className="text-neutral-600 font-semibold text-sm block">English Name</label>
+                <label className="text-neutral-600 font-semibold text-sm block">{lang === 'fr' ? 'Nom anglais' : lang === 'ar' ? 'الاسم بالإنجليزية' : lang === 'tz' ? 'ⵉⵙⵎ ⵙ ⵜⵏⴳⵍⵉⵣⵜ' : 'English Name'}</label>
                 <input
                   type="text"
                   required
@@ -216,7 +219,7 @@ export default function CollectionsPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2">
-                <label className="text-neutral-600 font-semibold text-sm block">French Name (Nom Français)</label>
+                <label className="text-neutral-600 font-semibold text-sm block">{lang === 'fr' ? 'Nom français' : lang === 'ar' ? 'الاسم بالفرنسية' : lang === 'tz' ? 'ⵉⵙⵎ ⵙ ⵜⴼⵕⴰⵏⵚⵉⵚⵜ' : 'French Name (Nom Français)'}</label>
                 <input
                   type="text"
                   placeholder="ex: Soldes d'été, Bagues en argent..."
@@ -227,7 +230,7 @@ export default function CollectionsPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-2" dir="rtl">
-                <label className="text-neutral-600 font-semibold text-sm block text-right">اسم المجموعة بالعربية</label>
+                <label className="text-neutral-600 font-semibold text-sm block text-right">{lang === 'fr' ? 'Nom arabe' : lang === 'ar' ? 'الاسم بالعربية' : lang === 'tz' ? 'ⵉⵙⵎ ⵙ ⵜⵄⵕⴰⴱⵜ' : 'Arabic Name'}</label>
                 <input
                   type="text"
                   placeholder="مثال: عروض الصيف، خواتم الفضة..."
@@ -241,11 +244,11 @@ export default function CollectionsPage({ params }: PageProps) {
             {/* Products Selector */}
             <div className="space-y-3">
               <label className="block text-neutral-800 font-semibold text-sm">
-                Select products to include ({selectedProductIds.length} selected)
+                {lang === 'fr' ? `Sélectionnez les produits à inclure (${selectedProductIds.length} sélectionnés)` : lang === 'ar' ? `اختر المنتجات لإضافتها (تم تحديد ${selectedProductIds.length})` : `Select products to include (${selectedProductIds.length} selected)`}
               </label>
               {products.length === 0 ? (
                 <div className="border border-dashed border-neutral-200 rounded-lg p-6 text-center text-neutral-500 bg-neutral-50/50 text-sm">
-                  No products found in your shop. Create products first to add them to collections.
+                  {lang === 'fr' ? "Aucun produit trouvé dans votre boutique. Créez d'abord des produits pour les ajouter aux collections." : lang === 'ar' ? 'لم يتم العثور على منتجات في متجرك. قم بإنشاء منتجات أولاً لإضافتها إلى المجموعات.' : 'No products found in your shop. Create products first to add them to collections.'}
                 </div>
               ) : (
                 <div className="border border-neutral-200 rounded-lg max-h-64 overflow-y-auto divide-y divide-neutral-100 custom-scrollbar">
@@ -306,12 +309,12 @@ export default function CollectionsPage({ params }: PageProps) {
                 {collections.map((c) => {
                   const name = c.name_translations[lang as 'en'|'fr'|'ar'] || c.name_translations.en;
                   return (
-                    <div key={c.id} className="rounded-lg border border-neutral-200 p-4 bg-white hover:bg-neutral-50 transition-colors flex justify-between items-start gap-4">
+                     <div key={c.id} className="rounded-lg border border-neutral-200 p-4 bg-white hover:bg-neutral-50 transition-colors flex justify-between items-start gap-4">
                       <div className="space-y-2 min-w-0 flex-1">
                         <h4 className="font-bold text-sm text-neutral-800 truncate">{name}</h4>
                         <div className="flex gap-2 flex-wrap">
                           <span className="bg-neutral-100 text-neutral-600 px-2.5 py-1 rounded-md font-semibold text-xs border border-neutral-200">
-                            📦 {c.product_ids.length} Products
+                            📦 {c.product_ids.length} {lang === 'fr' ? 'Produits' : lang === 'ar' ? 'منتجات' : 'Products'}
                           </span>
                         </div>
                       </div>
@@ -319,7 +322,7 @@ export default function CollectionsPage({ params }: PageProps) {
                         type="button"
                         onClick={() => handleDeleteCollection(c.id)}
                         className="text-red-600 hover:text-red-800 p-2 rounded-md hover:bg-red-50 flex-shrink-0 cursor-pointer transition-colors"
-                        title="Delete collection"
+                        title={lang === 'fr' ? 'Supprimer la collection' : lang === 'ar' ? 'حذف المجموعة' : 'Delete collection'}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

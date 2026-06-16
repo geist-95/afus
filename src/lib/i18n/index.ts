@@ -89,7 +89,76 @@ export const dictionaries = {
       subtitle: "Manage your store profile and preferences.",
       save: "Save Changes",
       profile: "Store Profile",
-      contact: "Contact Info"
+      contact: "Contact Info",
+      tabs: {
+        general: "General",
+        header: "Header",
+        contact: "Contact",
+        faq: "FAQ",
+        notifications: "Notifications",
+        collections: "Collections",
+        featured: "Featured Items"
+      },
+      general: {
+        storeName: "Store name",
+        storeUrl: "Store URL",
+        city: "City",
+        description: "Description"
+      },
+      header: {
+        logo: "Store logo",
+        logoDesc: "Provide your store logo URL (recommended: square, 500x500px)",
+        logoPlaceholder: "Paste Logo image URL...",
+        cover: "Store cover image",
+        coverDesc: "Provide a cover image URL for your store (recommended: 1920x400px)",
+        coverPlaceholder: "Paste Cover image URL...",
+        coverNone: "No cover image URL set",
+        bgColor: "Banner Background Color",
+        bgColorDesc: "Set the background color of the store header banner.",
+        bgColorHelper: "Please choose a dark/deep contrast color so the white banner text is readable.",
+        announcement: "Store Announcement",
+        announcementDesc: "Post a public notice or update (e.g., holiday delivery deadlines).",
+        announcementPlaceholder: "E.g. **HOLIDAY DELIVERY DEADLINE**..."
+      },
+      contactInfo: {
+        title: "Contact information",
+        phone: "Phone",
+        email: "Email",
+        whatsapp: "WhatsApp",
+        instagram: "Instagram",
+        facebook: "Facebook"
+      },
+      faqSection: {
+        title: "Store FAQ",
+        desc: "Manage frequently asked questions for your store page.",
+        addBtn: "+ Add FAQ",
+        deleteBtn: "Delete",
+        itemTitle: "FAQ Item",
+        none: "No FAQs added yet. Click \"+ Add FAQ\" to create one.",
+        qEn: "Question (EN)",
+        aEn: "Answer (EN)",
+        qFr: "Question (FR)",
+        aFr: "Answer (FR)",
+        qAr: "Question (AR)",
+        aAr: "Answer (AR)"
+      },
+      notify: {
+        title: "Email Notifications",
+        orders: "Order Updates",
+        ordersDesc: "Receive emails when your order status changes (e.g. shipped, delivered).",
+        messages: "New Messages",
+        messagesDesc: "Receive emails when someone sends you a direct message."
+      },
+      collectionsSection: {
+        title: "Manage Store Collections",
+        desc: "Create and organize custom product collections to showcase on your store page.",
+        btn: "Go to Collections Manager"
+      },
+      featuredSection: {
+        title: "Featured Showcase",
+        desc: "Pin top products or specific collections to the top of your grid.",
+        comingSoon: "Select products to feature (Coming soon)"
+      }
     }
   },
   fr: {
@@ -182,7 +251,76 @@ export const dictionaries = {
       subtitle: "Gérez le profil de votre boutique et vos préférences.",
       save: "Enregistrer",
       profile: "Profil Boutique",
-      contact: "Infos Contact"
+      contact: "Infos Contact",
+      tabs: {
+        general: "Général",
+        header: "En-tête",
+        contact: "Contact",
+        faq: "FAQ",
+        notifications: "Notifications",
+        collections: "Collections",
+        featured: "Articles vedettes"
+      },
+      general: {
+        storeName: "Nom de la boutique",
+        storeUrl: "URL de la boutique",
+        city: "Ville",
+        description: "Description"
+      },
+      header: {
+        logo: "Logo de la boutique",
+        logoDesc: "Fournissez l'URL du logo de votre boutique (recommandé: carré, 500x500px)",
+        logoPlaceholder: "Collez l'URL de l'image du logo...",
+        cover: "Image de couverture",
+        coverDesc: "Fournissez l'URL de l'image de couverture (recommandé: 1920x400px)",
+        coverPlaceholder: "Collez l'URL de l'image de couverture...",
+        coverNone: "Aucune image de couverture définie",
+        bgColor: "Couleur d'arrière-plan de la bannière",
+        bgColorDesc: "Définissez la couleur d'arrière-plan de l'en-tête de la boutique.",
+        bgColorHelper: "Veuillez choisir une couleur sombre/contrastée pour que le texte blanc soit lisible.",
+        announcement: "Annonce de la boutique",
+        announcementDesc: "Publiez un avis public ou une mise à jour (ex: délais de livraison des fêtes).",
+        announcementPlaceholder: "Ex: **LIVRAISON POUR LES FÊTES**..."
+      },
+      contactInfo: {
+        title: "Informations de contact",
+        phone: "Téléphone",
+        email: "E-mail",
+        whatsapp: "WhatsApp",
+        instagram: "Instagram",
+        facebook: "Facebook"
+      },
+      faqSection: {
+        title: "FAQ de la boutique",
+        desc: "Gérez les questions fréquemment posées pour votre boutique.",
+        addBtn: "+ Ajouter FAQ",
+        deleteBtn: "Supprimer",
+        itemTitle: "FAQ",
+        none: "Aucune FAQ ajoutée pour le moment. Cliquez sur \"+ Ajouter FAQ\" pour en créer une.",
+        qEn: "Question (EN)",
+        aEn: "Réponse (EN)",
+        qFr: "Question (FR)",
+        aFr: "Réponse (FR)",
+        qAr: "Question (AR)",
+        aAr: "Réponse (AR)"
+      },
+      notify: {
+        title: "Notifications par e-mail",
+        orders: "Mises à jour des commandes",
+        ordersDesc: "Recevez des e-mails lorsque le statut de votre commande change (ex: expédié, livré).",
+        messages: "Nouveaux messages",
+        messagesDesc: "Recevez des e-mails lorsque quelqu'un vous envoie un message direct."
+      },
+      collectionsSection: {
+        title: "Gérer les collections de la boutique",
+        desc: "Créez et organisez des collections de produits personnalisées pour votre boutique.",
+        btn: "Aller au gestionnaire de collections"
+      },
+      featuredSection: {
+        title: "Vitrine d'articles vedettes",
+        desc: "Épinglez vos meilleurs produits ou collections en haut de votre page.",
+        comingSoon: "Sélectionner les produits à mettre en avant (Bientôt disponible)"
+      }
     }
   },
   ar: {
@@ -275,7 +413,76 @@ export const dictionaries = {
       subtitle: "إدارة ملف تعريف متجرك وتفضيلاتك.",
       save: "حفظ التغييرات",
       profile: "ملف تعريف المتجر",
-      contact: "معلومات الاتصال"
+      contact: "معلومات الاتصال",
+      tabs: {
+        general: "عام",
+        header: "الترويسة والواجهة",
+        contact: "الاتصال",
+        faq: "الأسئلة الشائعة",
+        notifications: "التنبيهات",
+        collections: "المجموعات",
+        featured: "المنتجات المميزة"
+      },
+      general: {
+        storeName: "اسم المتجر",
+        storeUrl: "رابط المتجر",
+        city: "المدينة",
+        description: "الوصف"
+      },
+      header: {
+        logo: "شعار المتجر",
+        logoDesc: "أدخل رابط شعار متجرك (موصى به: مربع، 500x500 بكسل)",
+        logoPlaceholder: "ألصق رابط صورة الشعار...",
+        cover: "صورة غلاف المتجر",
+        coverDesc: "أدخل رابط صورة الغلاف لمتجرك (موصى به: 1920x400 بكسل)",
+        coverPlaceholder: "ألصق رابط صورة الغلاف...",
+        coverNone: "لم يتم تعيين رابط صورة الغلاف",
+        bgColor: "لون خلفية البانر",
+        bgColorDesc: "اختر لون خلفية ترويسة المتجر الرئيسي.",
+        bgColorHelper: "يرجى اختيار لون غامق لتسهيل قراءة النص الأبيض.",
+        announcement: "إعلان المتجر",
+        announcementDesc: "انشر تنويهاً عاماً أو تحديثاً لزوار متجرك.",
+        announcementPlaceholder: "مثال: **مواعيد التوصيل خلال العطلة**..."
+      },
+      contactInfo: {
+        title: "معلومات الاتصال",
+        phone: "الهاتف",
+        email: "البريد الإلكتروني",
+        whatsapp: "واتساب",
+        instagram: "إنستغرام",
+        facebook: "فيسبوك"
+      },
+      faqSection: {
+        title: "الأسئلة الشائعة للمتجر",
+        desc: "إدارة قائمة الأسئلة الأكثر شيوعاً لمتجرك.",
+        addBtn: "+ إضافة سؤال",
+        deleteBtn: "حذف",
+        itemTitle: "سؤال وجواب",
+        none: "لا توجد أسئلة شائعة مضافة بعد. اضغط على \"+ إضافة سؤال\" لإنشاء واحد.",
+        qEn: "السؤال (EN)",
+        aEn: "الجواب (EN)",
+        qFr: "السؤال (FR)",
+        aFr: "الجواب (FR)",
+        qAr: "السؤال (AR)",
+        aAr: "الجواب (AR)"
+      },
+      notify: {
+        title: "تنبيهات البريد الإلكتروني",
+        orders: "تحديثات الطلبات",
+        ordersDesc: "تلقي رسائل البريد الإلكتروني عند تغير حالة طلبك (مثل تم الشحن أو التسليم).",
+        messages: "الرسائل الجديدة",
+        messagesDesc: "تلقي رسائل البريد الإلكتروني عندما يرسل لك شخص ما رسالة مباشرة."
+      },
+      collectionsSection: {
+        title: "إدارة مجموعات المتجر",
+        desc: "أنشئ ونظم مجموعات مخصصة لمنتجاتك لعرضها في متجرك.",
+        btn: "انتقل إلى إدارة المجموعات"
+      },
+      featuredSection: {
+        title: "واجهة العرض المميز",
+        desc: "قم بتثبيت أفضل منتجاتك أو مجموعاتك في أعلى متجرك.",
+        comingSoon: "اختر المنتجات المميزة (قريباً)"
+      }
     }
   },
   tz: {
@@ -364,11 +571,80 @@ export const dictionaries = {
       createFirst: "Create your first product to start selling."
     },
     settings: {
-      title: "Store Settings",
+      title: "ⵜⵉⵙⵖⴰⵍ ⵏ ⵜⵃⴰⵏⵓⵜ",
       subtitle: "Manage your store profile and preferences.",
       save: "Save Changes",
       profile: "Store Profile",
-      contact: "Contact Info"
+      contact: "Contact Info",
+      tabs: {
+        general: "General",
+        header: "Header",
+        contact: "Contact",
+        faq: "FAQ",
+        notifications: "Notifications",
+        collections: "Collections",
+        featured: "Featured Items"
+      },
+      general: {
+        storeName: "Store name",
+        storeUrl: "Store URL",
+        city: "City",
+        description: "Description"
+      },
+      header: {
+        logo: "Store logo",
+        logoDesc: "Provide your store logo URL (recommended: square, 500x500px)",
+        logoPlaceholder: "Paste Logo image URL...",
+        cover: "Store cover image",
+        coverDesc: "Provide a cover image URL for your store (recommended: 1920x400px)",
+        coverPlaceholder: "Paste Cover image URL...",
+        coverNone: "No cover image URL set",
+        bgColor: "Banner Background Color",
+        bgColorDesc: "Set the background color of the store header banner.",
+        bgColorHelper: "Please choose a dark/deep contrast color so the white banner text is readable.",
+        announcement: "Store Announcement",
+        announcementDesc: "Post a public notice or update (e.g., holiday delivery deadlines).",
+        announcementPlaceholder: "E.g. **HOLIDAY DELIVERY DEADLINE**..."
+      },
+      contactInfo: {
+        title: "Contact information",
+        phone: "Phone",
+        email: "Email",
+        whatsapp: "WhatsApp",
+        instagram: "Instagram",
+        facebook: "Facebook"
+      },
+      faqSection: {
+        title: "Store FAQ",
+        desc: "Manage frequently asked questions for your store page.",
+        addBtn: "+ Add FAQ",
+        deleteBtn: "Delete",
+        itemTitle: "FAQ Item",
+        none: "No FAQs added yet. Click \"+ Add FAQ\" to create one.",
+        qEn: "Question (EN)",
+        aEn: "Answer (EN)",
+        qFr: "Question (FR)",
+        aFr: "Answer (FR)",
+        qAr: "Question (AR)",
+        aAr: "Answer (AR)"
+      },
+      notify: {
+        title: "Email Notifications",
+        orders: "Order Updates",
+        ordersDesc: "Receive emails when your order status changes (e.g. shipped, delivered).",
+        messages: "New Messages",
+        messagesDesc: "Receive emails when someone sends you a direct message."
+      },
+      collectionsSection: {
+        title: "Manage Store Collections",
+        desc: "Create and organize custom product collections to showcase on your store page.",
+        btn: "Go to Collections Manager"
+      },
+      featuredSection: {
+        title: "Featured Showcase",
+        desc: "Pin top products or specific collections to the top of your grid.",
+        comingSoon: "Select products to feature (Coming soon)"
+      }
     }
   }
 };

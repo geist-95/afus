@@ -277,8 +277,8 @@ export default function NavBar({ lang }: NavBarProps) {
           href={`/${lang}`}
           className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
         >
-          <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none" />
-          <img src="/logo/afus.svg" alt="afus" className="h-5 object-contain !rounded-none" />
+          <img src="/logo/logo.png" alt="Afus Logo" width={32} height={32} className="w-8 h-8 object-contain !rounded-none" />
+          <img src="/logo/afus.svg" alt="afus" width={80} height={20} className="h-5 object-contain !rounded-none" />
         </Link>
 
         {/* Search Bar */}
@@ -356,7 +356,7 @@ export default function NavBar({ lang }: NavBarProps) {
                   <div className="absolute right-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-white border border-primary/20 rounded-lg shadow-lg z-50 p-2">
                     <div className="px-2 py-2 border-b border-primary/10 text-xs font-bold text-black mb-2 flex justify-between items-center">
                       {lang === 'fr' ? 'Alertes' : lang === 'ar' ? 'تنبيهات' : 'Notifications'}
-                      <button onClick={() => setNotificationsOpen(false)} className="text-black/50 hover:text-black">×</button>
+                      <button onClick={() => setNotificationsOpen(false)} className="text-black/50 hover:text-black cursor-pointer" aria-label="Close notifications">×</button>
                     </div>
                     {newAlerts.length > 0 ? (
                       <div className="flex flex-col gap-1">
@@ -367,7 +367,7 @@ export default function NavBar({ lang }: NavBarProps) {
                             onClick={() => setNotificationsOpen(false)}
                             className="flex items-start gap-3 p-2 hover:bg-neutral-50 rounded-md transition-colors"
                           >
-                            <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" className="w-10 h-10 object-cover rounded-md" />
+                            <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" width={40} height={40} loading="lazy" className="w-10 h-10 object-cover rounded-md" />
                             <div className="flex-1 min-w-0">
                               <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
                               <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'|'tz'] || alert.title_translations?.en}</p>
@@ -391,9 +391,9 @@ export default function NavBar({ lang }: NavBarProps) {
                   className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
                 >
                   {(session as any).avatar_url ? (
-                    <img src={(session as any).avatar_url} alt="avatar" className="w-6 h-6 rounded-full object-cover" />
+                    <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
                   ) : (
-                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" className="w-6 h-6 rounded-full" />
+                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
                   )}
                   <span className="hidden sm:inline max-w-[80px] truncate">{shortName}</span>
                   <span className="text-black/50 text-[10px]">▼</span>

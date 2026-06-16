@@ -491,7 +491,7 @@ export async function fetchOrders(shopId?: string, buyerId?: string) {
       items: (o.order_items || []).map((oi: any) => ({
         id: oi.id,
         product_id: oi.product_id,
-        title: oi.products?.title_translations?.en || 'artisan craft',
+        title: oi.title || oi.product_title || oi.product_name || oi.products?.title_translations?.en || 'artisan craft',
         quantity: oi.quantity,
         price_mad: oi.price_mad,
         variant_sku: oi.variant_id,
@@ -750,6 +750,179 @@ export async function createProductListing(productData: {
     };
     mockProducts.push(newProduct);
     return newProduct;
+  }
+}
+
+export async function fetchProductById(id: string) {
+  if (typeof window !== 'undefined') {
+    try {
+      const localRaw = localStorage.getItem('local_products');
+      if (localRaw) {
+        const localProducts = JSON.parse(localRaw);
+        if (Array.isArray(localProducts)) {
+          const found = localProducts.find((p) => p.id === id || p.numeric_id?.toString() === id);
+          if (found) return found;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse local_products in fetchProductById:', e);
+    }
+  }
+
+  const memFound = mockProducts.find((p) => p.id === id || p.numeric_id?.toString() === id);
+  if (memFound) return memFound;
+
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, shops(*), product_variants(*)')
+      .eq('id', id)
+      .single();
+    if (error || !data) throw error || new Error('product not found');
+    return {
+      ...data,
+      variants: data.product_variants || [],
+    };
+  } catch (err) {
+    console.warn(`using mock fallback for product ID ${id}:`, err);
+    return null;
+  }
+}
+
+export async function updateProductListing(productId: string, productData: {
+  category_id: string;
+  subcategory_id?: string;
+  title_translations: Record<string, string>;
+  description_translations: Record<string, string>;
+  base_price_mad: number;
+  media_gallery: string[];
+  stock_quantity: number;
+  metadata?: any;
+}) {
+  const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+  if (!isUUID(productId)) {
+    if (typeof window !== 'undefined') {
+      const localRaw = localStorage.getItem('local_products');
+      if (localRaw) {
+        try {
+          const localProducts = JSON.parse(localRaw);
+          if (Array.isArray(localProducts)) {
+            const idx = localProducts.findIndex((p: any) => p.id === productId || p.numeric_id?.toString() === productId);
+            if (idx !== -1) {
+              const updatedProduct = {
+                ...localProducts[idx],
+                category_id: productData.category_id,
+                subcategory_id: productData.subcategory_id,
+                title_translations: productData.title_translations,
+                description_translations: productData.description_translations,
+                base_price_mad: productData.base_price_mad,
+                media_gallery: productData.media_gallery && productData.media_gallery.length > 0
+                  ? productData.media_gallery
+                  : localProducts[idx].media_gallery,
+                stock_quantity: productData.stock_quantity,
+                metadata: {
+                  ...localProducts[idx].metadata,
+                  ...productData.metadata,
+                }
+              };
+              localProducts[idx] = updatedProduct;
+              localStorage.setItem('local_products', JSON.stringify(localProducts));
+              return updatedProduct;
+            }
+          }
+        } catch (e) {
+          console.error('Failed to update mock product:', e);
+        }
+      }
+    }
+    const idx = mockProducts.findIndex(p => p.id === productId || p.numeric_id?.toString() === productId);
+    if (idx !== -1) {
+      const existingProduct = mockProducts[idx] as any;
+      mockProducts[idx] = {
+        ...existingProduct,
+        category_id: productData.category_id,
+        subcategory_id: productData.subcategory_id || existingProduct.subcategory_id,
+        title_translations: productData.title_translations as any,
+        description_translations: productData.description_translations as any,
+        base_price_mad: productData.base_price_mad,
+        media_gallery: productData.media_gallery,
+        stock_quantity: productData.stock_quantity,
+        metadata: {
+          ...existingProduct.metadata,
+          ...productData.metadata,
+        }
+      } as any;
+      return mockProducts[idx];
+    }
+    return null;
+  }
+
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const slugTranslations = {
+      en: (productData.title_translations.en || 'product').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      fr: (productData.title_translations.fr || 'produit').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      ar: 'منتج-جديد',
+    };
+
+    const { data, error } = await supabase
+      .from('products')
+      .update({
+        category_id: productData.category_id,
+        subcategory_id: productData.subcategory_id,
+        title_translations: productData.title_translations,
+        description_translations: productData.description_translations,
+        slug_translations: slugTranslations,
+        base_price_mad: productData.base_price_mad,
+        media_gallery: productData.media_gallery,
+        stock_quantity: productData.stock_quantity,
+        metadata: productData.metadata,
+      })
+      .eq('id', productId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.warn('using mock fallback for updating product:', err);
+    if (typeof window !== 'undefined') {
+      const localRaw = localStorage.getItem('local_products');
+      if (localRaw) {
+        try {
+          const localProducts = JSON.parse(localRaw);
+          if (Array.isArray(localProducts)) {
+            const idx = localProducts.findIndex((p: any) => p.id === productId || p.numeric_id?.toString() === productId);
+            if (idx !== -1) {
+              const updatedProduct = {
+                ...localProducts[idx],
+                category_id: productData.category_id,
+                subcategory_id: productData.subcategory_id,
+                title_translations: productData.title_translations,
+                description_translations: productData.description_translations,
+                base_price_mad: productData.base_price_mad,
+                media_gallery: productData.media_gallery && productData.media_gallery.length > 0
+                  ? productData.media_gallery
+                  : localProducts[idx].media_gallery,
+                stock_quantity: productData.stock_quantity,
+                metadata: {
+                  ...localProducts[idx].metadata,
+                  ...productData.metadata,
+                }
+              };
+              localProducts[idx] = updatedProduct;
+              localStorage.setItem('local_products', JSON.stringify(localProducts));
+              return updatedProduct;
+            }
+          }
+        } catch (e) {
+          console.error('Failed to update local product after Supabase fallback:', e);
+        }
+      }
+    }
+    return null;
   }
 }
 

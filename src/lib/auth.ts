@@ -210,10 +210,10 @@ export async function registerUser(payload: {
 
     const actualRole = payload.shopName ? 'seller' : (payload.role || 'buyer');
 
-    // 2. Insert profile row
+    // 2. Insert/Upsert profile row (since the auth trigger might have created it)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .insert({
+      .upsert({
         id: userId,
         email: payload.email,
         full_name: payload.fullName,

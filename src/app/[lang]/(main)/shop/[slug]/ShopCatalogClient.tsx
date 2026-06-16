@@ -49,6 +49,9 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
     }
   }, [initialProducts, shop.id]);
 
+  // Determine featured products
+  const featuredProducts = products.filter(p => p.featured === true || p.metadata?.settings?.featureListing === true);
+
   // Determine filtered list of products
   let filteredProducts = products;
   if (selectedCollectionId !== 'all') {
@@ -65,7 +68,23 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
   const allLabel = lang === 'fr' ? 'tous' : lang === 'ar' ? 'الكل' : 'all';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Featured Items Section */}
+      {featuredProducts.length > 0 && selectedCollectionId === 'all' && (
+        <div className="space-y-4 pb-6 border-b border-neutral-150">
+          <h3 className="text-lg font-bold text-neutral-800 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-neutral-900 animate-pulse"></span>
+            {lang === 'fr' ? 'Articles en vedette' : lang === 'ar' ? 'المنتجات المميزة' : 'Featured items'}
+          </h3>
+          <ProductGrid 
+            initialProducts={featuredProducts} 
+            shops={[shop]} 
+            lang={lang} 
+            shopFilterId={shop.id}
+          />
+        </div>
+      )}
+
       {/* Collections Tabs Navigation */}
       {collections.length > 0 && (
         <div className="flex flex-wrap gap-2 pb-2">
@@ -80,7 +99,7 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
             {allLabel}
           </button>
           {collections.map(c => {
-            const name = c.name_translations[lang] || c.name_translations.en || c.name;
+            const name = c.name_translations?.[lang] || c.name_translations?.en || c.name;
             return (
               <button
                 key={c.id}
@@ -99,12 +118,19 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
       )}
 
       {/* Products Grid */}
-      <ProductGrid 
-        initialProducts={filteredProducts} 
-        shops={[shop]} 
-        lang={lang} 
-        shopFilterId={shop.id}
-      />
+      <div className="space-y-4">
+        {collections.length > 0 && selectedCollectionId === 'all' && (
+          <h3 className="text-lg font-bold text-neutral-800">
+            {lang === 'fr' ? 'Tous les produits' : lang === 'ar' ? 'جميع المنتجات' : 'All products'}
+          </h3>
+        )}
+        <ProductGrid 
+          initialProducts={filteredProducts} 
+          shops={[shop]} 
+          lang={lang} 
+          shopFilterId={shop.id}
+        />
+      </div>
     </div>
   );
 }
