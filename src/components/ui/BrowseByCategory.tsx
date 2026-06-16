@@ -11,7 +11,7 @@ const categories = [
   { label: "Baby",        labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" },        href: "/category/kids-baby",        img: "/categories/baby.png"    },
 ];
 
-export default function BrowseByCategory({ lang }: { lang: string }) {
+export default function BrowseByCategory({ lang, className }: { lang: string; className?: string }) {
   const titles: Record<string, string> = {
     en: "Browse By Category",
     fr: "Parcourir par catégorie",
@@ -21,7 +21,7 @@ export default function BrowseByCategory({ lang }: { lang: string }) {
   const title = titles[lang] || titles.en;
 
   return (
-    <div className="max-w-[100rem] mx-auto px-4 md:px-12 py-2 md:py-8">
+    <div className={`max-w-[100rem] mx-auto px-4 md:px-12 py-2 md:py-8${className ? ` ${className}` : ""}`}>
       <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-center !text-black">{title}</h2>
       
       {/* Mobile: horizontal scroll */}
