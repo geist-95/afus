@@ -57,7 +57,7 @@ function ScrollableTrail({ children }: { children: React.ReactNode }) {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+        className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
       >
         {children}
       </div>
@@ -120,47 +120,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
     }
   }, []);
 
-  // Merge client-published products from localStorage on load
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const localRaw = localStorage.getItem('local_products');
-      if (localRaw) {
-        try {
-          const localProducts = JSON.parse(localRaw);
-          if (Array.isArray(localProducts) && localProducts.length > 0) {
-            const validLocal = localProducts.filter(
-              (p) => p && typeof p === 'object' && p.title_translations
-            );
-            const combined = [...validLocal, ...products];
-
-            // Remove duplicates by numeric_id or id
-            const seen = new Set();
-            const unique = combined.filter((p) => {
-              const key = p.numeric_id || p.id;
-              if (seen.has(key)) return false;
-              seen.add(key);
-              return true;
-            });
-
-            setAllProducts(unique);
-          } else {
-            setAllProducts(products);
-          }
-        } catch (e) {
-          console.error('Failed to parse local_products in DynamicTrailsClient:', e);
-          setAllProducts(products);
-        }
-      } else {
-        setAllProducts(products);
-      }
-    }
+    setAllProducts(products);
   }, [products]);
 
   // Labels & translations
   const labels: Record<string, Record<string, string>> = {
     en: {
-      newItems: "New Arrivals",
-      newItemsSub: "Freshly crafted items from across Morocco",
+      newItems: "Last Created Products",
+      newItemsSub: "See the most recently added items on afus",
       yourCity: "Your City Specialty",
       yourCitySub: "Unique creations straight from local makers in",
       recentlyViewed: "Based on Your Interests",
@@ -183,8 +151,8 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       faq4A: "Artisans accept returns within 7 days of package delivery. The item must be unused and in its original packaging. Return shipping is handled directly with the seller.",
     },
     fr: {
-      newItems: "Nouveautés",
-      newItemsSub: "Articles fraîchement fabriqués à travers le Maroc",
+      newItems: "Derniers produits créés",
+      newItemsSub: "Découvrez les derniers articles ajoutés sur afus",
       yourCity: "Spécialités de votre ville",
       yourCitySub: "Créations uniques provenant directement d'artisans à",
       recentlyViewed: "Selon vos intérêts",
@@ -207,8 +175,8 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       faq4A: "Les artisans acceptent les retours sous 7 jours après la livraison. L'article doit être inutilisé et dans son emballage d'origine. Les retours sont gérés directement avec le vendeur.",
     },
     ar: {
-      newItems: "وصلنا حديثاً",
-      newItemsSub: "منتجات حرفية جديدة من جميع أنحاء المغرب",
+      newItems: "آخر المنتجات المضافة",
+      newItemsSub: "شاهد أحدث المنتجات التي تم إضافتها على أفوس",
       yourCity: "حرف وتخصصات مدينتك",
       yourCitySub: "إبداعات فريدة مباشرة من الصناع التقليديين في",
       recentlyViewed: "بناءً على اهتماماتك",
@@ -231,8 +199,8 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       faq4A: "يقبل الحرفيون الإرجاع في غضون 7 أيام من استلام الطرد. يجب أن يكون المنتج غير مستخدم وفي تغليفه الأصلي. ويتم تنسيق عملية الإرجاع مباشرة مع البائع.",
     },
     tz: {
-      newItems: "ⵉⵎⴰⵢⵏⵓⵜⵏ ⵏ ⴷⵖⵉ",
-      newItemsSub: "ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ ⵙⴳ ⴰⵎⵓⵔ ⴰⴽⴽⵯ ⵏ ⵍⵎⵖⵔⵉⴱ",
+      newItems: "ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵎⴳⴳⵓⵔⴰ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ",
+      newItemsSub: "ⵥⵕ ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ ⴳ afus",
       yourCity: "ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵜⵖⵔⵎⵜ ⵏⵏⴽ",
       yourCitySub: "ⵜⵉⴳⴰⵡⵉⵏ ⵜⵉⵥⵍⴰⵢⵉⵏ ⵙⴳ ⵉⵎⵙⴽⴰⵔⵏ ⵉⴷⵖⴰⵔⴰⵏⵏ ⴳ",
       recentlyViewed: "ⵅⴼ ⵎⴰⵢⴷ ⵜⵔⵉⴷ",
@@ -258,9 +226,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
 
   const t = labels[lang] || labels.en;
 
-  // Filter lists using the local products merged state and sort by created_at descending (newest first)
   const newProducts = [...allProducts]
-    .filter(p => p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119'))
     .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
     .slice(0, 8);
 
@@ -301,7 +267,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
             </button>
           </div>
         </div>
-        <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
+        <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
           {newProducts.map((p) => {
             const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
             return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[calc(20%-12.8px)]" />;

@@ -4,41 +4,41 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
-const MOCK_POSTS = [
+const FEATURED_POSTS = [
   {
     id: 1,
-    slug: "art-of-moroccan-zellige",
-    date: "2024-05-15",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&fit=crop",
+    slug: "refresh-home-spring-handcrafted-decor",
+    date: "2026-06-03",
+    image: "/blog/3-ways.png",
     title: {
-      en: "The Art of Moroccan Zellige",
-      fr: "L'art du zellige marocain",
-      ar: "فن الزليج المغربي",
-      tz: "ⵜⴰⵥⵓⵕⵉ ⵏ ⵣⵣⵍⵍⵉⵊ ⴰⵎⵖⵔⵉⴱⵉ"
+      en: "3 Ways to Refresh Your Home for Summer with Handcrafted Decor",
+      fr: "3 façons de rafraîchir votre maison pour l'été avec de la déco faite main",
+      ar: "3 طرق لتجديد منزلك في الصيف بديكور مصنوع يدويًا",
+      tz: "3 ⵜⵖⴰⵔⴰⵙⵉⵏ ⴰⴷ ⵜⵙⵎⴰⵢⵏⵓⵜ ⵜⴰⴷⴷⴰⵔⵜ ⵏⵏⴽ ⵉ ⵓⵏⴱⴷⵓ ⵙ ⵓⵙⵎⵙⴰⵙⴰ ⵏ ⵓⴼⵓⵙ"
     },
     excerpt: {
-      en: "Discover the intricate geometry and vibrant colors of traditional Moroccan tilework, a centuries-old craft that continues to inspire modern design.",
-      fr: "Découvrez la géométrie complexe et les couleurs vibrantes du carrelage traditionnel marocain, un artisanat séculaire qui continue d'inspirer le design moderne.",
-      ar: "اكتشف الهندسة المعقدة والألوان النابضة بالحياة للبلاط المغربي التقليدي، وهي حرفة عمرها قرون لا تزال تلهم التصميم الحديث.",
-      tz: "ⴰⴼ ⵜⴰⵏⵣⴳⴳⴰⵖⵜ ⵉⵅⴰⵜⵔⵏ ⴷ ⵉⴽⵯⵍⴰⵏ ⵉⴼⴰⵡⵏ ⵏ ⵣⵣⵍⵍⵉⵊ ⴰⵎⵖⵔⵉⴱⵉ ⴰⵇⴱⵓⵔ, ⵢⴰⵜ ⵜⵎⴳⵓⵔⵉ ⵏ ⵉⴳⵉⵎⵉⵏ ⵏ ⵉⵙⴳⴳⵯⴰⵙⵏ ⵍⵍⵉ ⵉⵙⵓⵍⵏ ⴰⵔ ⵜⵙⵙⵎⵔⴰⵙ ⴳ ⵓⵙⵎⵙⴰⵙⴰ ⴰⵜⵔⴰⵔ."
+      en: "Welcome the sunny season by incorporating vibrant, breathable hand-woven textiles, cooling ceramics, and natural textures into your living space.",
+      fr: "Accueillez la saison estivale en intégrant des textiles tissés à la main respirants, des céramiques rafraîchissantes et des textures naturelles.",
+      ar: "استقبل الموسم المشمس بدمج المنسوجات المنسوجة يدويًا القابلة للتنفس، والسيراميك المنعش، والأنسجة الطبيعية في مساحة معيشتك.",
+      tz: "ⵙⵏⵓⴱⴳ ⴰⵏⴱⴷⵓ ⵙ ⵓⵙⵉⴷⴼ ⵏ ⵜⵉⵥⵕⴱⴰⵢ ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ, ⵍⵅⵣⴼ, ⴷ ⵜⵖⴰⵔⴰⵙⵉⵏ ⵜⵉⴳⴰⵎⴰⵏⵉⵏ ⴳ ⵓⴷⵖⴰⵔ ⵏⵏⴽ."
     }
   },
   {
     id: 2,
-    slug: "weaving-stories-berber-rugs",
-    date: "2024-06-02",
-    image: "https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=600&fit=crop",
+    slug: "andalusian-echoes-tetouan",
+    date: "2024-09-05",
+    image: "/cities-2/hamama.jpg",
     title: {
-      en: "Weaving Stories: The Berber Rugs",
-      fr: "Tisser des histoires : Les tapis berbères",
-      ar: "نسج القصص: السجاد الأمازيغي",
-      tz: "ⴰⵥⵟⵟⴰ ⵏ ⵜⵉⵏⵇⵇⵉⵙⵉⵏ: ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ"
+      en: "Andalusian Echoes in Tetouan",
+      fr: "Échos andalous à Tétouan",
+      ar: "أصداء أندلسية في تطوان",
+      tz: "ⵜⵉⴷⵉⴽⵍⵜ ⵜⴰⵏⴷⴰⵍⵓⵙⵉⵜ ⴳ ⵟⵉⵟⵡⴰⵏ"
     },
     excerpt: {
-      en: "Every knot tells a story. Explore the rich symbolism and diverse styles of Berber rugs, handwoven by artisans across the Atlas Mountains.",
-      fr: "Chaque nœud raconte une histoire. Explorez le riche symbolisme et les divers styles de tapis berbères, tissés à la main par des artisans à travers les montagnes de l'Atlas.",
-      ar: "كل عقدة تحكي قصة. استكشف الرمزية الغنية والأنماط المتنوعة للسجاد الأمازيغي، المنسوج يدويًا من قبل الحرفيين عبر جبال الأطلس.",
-      tz: "ⴽⵓ ⵜⵉⴽⵔⵙⵜ ⴰⵔ ⵜⵙⴰⵡⴰⵍ ⵢⴰⵜ ⵜⵏⵇⵇⵉⵙⵜ. ⵔⵣⵓ ⴳ ⵉⵏⵉⴳⵍⴰⵏ ⵉⵅⴰⵜⵔⵏ ⴷ ⵉⵡⵏⵏⵉⵜⵏ ⵉⵎⵢⴰⵏⴰⵡⵏ ⵏ ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ, ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴳ ⵉⴷⵔⴰⵔⵏ ⵏ ⵡⴰⵟⵍⴰⵙ."
+      en: "Explore how the 'White Dove' of Morocco preserves the artistic and musical heritage brought by Andalusian refugees centuries ago.",
+      fr: "Découvrez comment la « Colombe Blanche » du Maroc préserve le patrimoine artistique et musical apporté par les réfugiés andalous il y a des siècles.",
+      ar: "استكشف كيف تحافظ «الحمامة البيضاء» في المغرب على التراث الفني والموسيقي الذي جلبه اللاجئون الأندلسيون قبل قرون.",
+      tz: "ⵔⵣⵓ ⵎⴰⵎⴽ ⵜⵙⵙⴼⵔⵖ 'ⵜⵉⵜⴱⵉⵔⵜ ⵜⵓⵎⵍⵉⵍⵜ' ⵏ ⵍⵎⵖⵔⵉⴱ ⵜⴰⵢⵙⵉ ⵜⴰⵥⵓⵕⴰⵏⵜ ⴷ ⵜⵎⵓⵣⵉⵇⵜ ⵏⵏⴰ ⴷ ⵉⵡⵉⵏ ⵉⵎⵣⵡⴰⴳⵏ ⵉⵏⴷⴰⵍⵓⵙⵉⵢⵏ ⴳ ⵉⴳⵉⵎⵉⵏ ⵏ ⵉⵙⴳⴳⵯⴰⵙⵏ."
     }
   }
 ];
@@ -85,10 +85,10 @@ export default function HomeBlogSection({ lang }: { lang: string }) {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {MOCK_POSTS.map((post) => (
+          {FEATURED_POSTS.map((post) => (
             <Link href={`/${lang}/blog/${post.slug}`} key={post.id} className="group h-full hover:shadow-xl transition-shadow duration-300 arabic-frame bg-neutral-300 p-[1px]">
               <div className="flex flex-col h-full bg-white arabic-frame overflow-hidden">
-                <div className="relative h-60 w-full overflow-hidden arabic-frame">
+                <div className="relative h-60 w-full overflow-hidden">
                   <Image
                     src={post.image}
                     alt={(post.title as any)[lang] || post.title.en}

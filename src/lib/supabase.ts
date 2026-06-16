@@ -396,7 +396,7 @@ export async function fetchProducts() {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*)');
+      .select('*, shops(*), product_variants(*), reviews(rating)');
     if (error || !data || data.length === 0) throw error || new Error('empty products');
     
     list = data.map((p: any) => ({
@@ -407,21 +407,17 @@ export async function fetchProducts() {
     console.warn('using mock fallback for products:', err);
     list = [...mockProducts];
   }
-
-  // Always merge localStorage custom items on the client browser
   if (typeof window !== 'undefined') {
     try {
       const localRaw = localStorage.getItem('local_products');
       if (localRaw) {
         const localProducts = JSON.parse(localRaw);
         if (Array.isArray(localProducts)) {
-          const validLocal = localProducts.filter(
-            (p) => p && typeof p === 'object' && p.title_translations
-          );
-          // Filter duplicates
-          const existingIds = new Set(list.map((p) => p.numeric_id || p.id));
-          const uniqueLocal = validLocal.filter((p) => !existingIds.has(p.numeric_id || p.id));
-          list = [...uniqueLocal, ...list];
+          localProducts.forEach((lp: any) => {
+            if (!list.some(p => p.id === lp.id)) {
+              list.unshift(lp);
+            }
+          });
         }
       }
     } catch (e) {
@@ -437,7 +433,7 @@ export async function fetchProductByNumericId(numericId: number) {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*)')
+      .select('*, shops(*), product_variants(*), reviews(rating)')
       .eq('numeric_id', numericId)
       .single();
     if (error || !data) throw error || new Error('product not found');
@@ -776,7 +772,7 @@ export async function fetchProductById(id: string) {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*)')
+      .select('*, shops(*), product_variants(*), reviews(rating)')
       .eq('id', id)
       .single();
     if (error || !data) throw error || new Error('product not found');
@@ -1066,6 +1062,33 @@ export async function searchProducts(
     });
 
     return results;
+  }
+}
+
+export async function fetchProductReviews(productId: string) {
+  try {
+    if (isPlaceholder) throw new Error('placeholder');
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*, reviewer_profile:profiles!reviewer_id(full_name, avatar_url)')
+      .eq('product_id', productId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.warn('using mock fallback for product reviews:', err);
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('local_reviews');
+        if (cached) {
+          const localReviews = JSON.parse(cached);
+          const prodRev = localReviews.filter((r: any) => r.product_id === productId);
+          return [...prodRev, ...mockReviews.filter(r => r.product_id === productId)];
+        }
+      } catch (e) {}
+    }
+    return mockReviews.filter(r => r.product_id === productId);
   }
 }
 

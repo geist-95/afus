@@ -26,7 +26,7 @@ export default function BrowseByCategory({ lang }: { lang: string }) {
       
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2" style={{ scrollbarWidth: "none" }}>
+        <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
           {categories.map((cat) => (
             <Link
               key={cat.label}
@@ -47,6 +47,8 @@ export default function BrowseByCategory({ lang }: { lang: string }) {
               </span>
             </Link>
           ))}
+          {/* Spacer so last item isn't cropped */}
+          <div className="flex-shrink-0 w-1" aria-hidden="true" />
         </div>
       </div>
 

@@ -110,9 +110,9 @@ export default function Footer({ lang }: FooterProps) {
   return (
     <footer className="text-white arabic-frame-top mt-12 relative z-20" style={{ backgroundColor: '#1D0D2C' }}>
       <div className="max-w-[100rem] mx-auto px-6 sm:px-12 pt-28 pb-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-x-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-x-12">
           
-          <div className="col-span-2 md:col-span-3 lg:col-span-2">
+          <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <Image 
                 alt="Afus Logo" 

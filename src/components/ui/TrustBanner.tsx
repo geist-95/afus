@@ -92,43 +92,36 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
       </div>
       {/* Main Banner */}
       <div 
-        className="w-full h-[160px] ps-10 pe-0 md:ps-16 flex flex-row items-center justify-between relative overflow-hidden"
-        style={{
-          background: `
-            radial-gradient(circle at top left, transparent 12px, #11061c 13px) top left,
-            radial-gradient(circle at top right, transparent 12px, #11061c 13px) top right,
-            radial-gradient(circle at bottom left, transparent 12px, #11061c 13px) bottom left,
-            radial-gradient(circle at bottom right, transparent 12px, #11061c 13px) bottom right
-          `,
-          backgroundSize: '51% 51%',
-          backgroundRepeat: 'no-repeat',
-        }}
+        className="w-full min-h-[160px] ps-6 pe-6 md:ps-16 md:pe-0 pt-6 pb-0 md:py-0 flex flex-col md:flex-row items-center justify-between relative overflow-hidden arabic-frame bg-[#11061c]"
       >
-        {/* Text */}
-        <div className="z-10 flex flex-col justify-center text-start min-w-max">
-          <h2 className="text-xl md:text-2xl lg:text-3xl !font-ariom font-medium tracking-tight leading-[1.1] !text-[#F5EAFB] whitespace-pre-line">
-            {t.title}
-          </h2>
+        {/* Top row on mobile: Text + CTA */}
+        <div className="flex flex-row items-center gap-4 w-full md:w-auto md:flex-shrink-0">
+          {/* Text */}
+          <div className="z-10 flex flex-col justify-center text-start flex-shrink-0">
+            <h2 className="text-lg md:text-2xl lg:text-3xl !font-ariom font-medium tracking-tight leading-[1.1] !text-[#F5EAFB] whitespace-pre-line">
+              {t.title}
+            </h2>
+          </div>
+
+          {/* CTA Button */}
+          <div className="z-10 flex-shrink-0 flex items-center justify-center ps-0 md:ps-10">
+            <button className="border border-[#F5EAFB] text-[#F5EAFB] !font-ariom hover:bg-[#F5EAFB] hover:text-[#11061c] transition-all duration-300 rounded-full px-4 md:px-6 py-2 md:py-2.5 text-xs md:text-base whitespace-nowrap flex items-center gap-1.5 md:gap-2">
+              {t.cta}
+              <IconArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4 rtl:rotate-180" />
+            </button>
+          </div>
         </div>
 
-        {/* CTA Button */}
-        <div className="z-10 flex-shrink-0 flex items-center justify-center ps-6 md:ps-10">
-          <button className="border border-[#F5EAFB] text-[#F5EAFB] !font-ariom hover:bg-[#F5EAFB] hover:text-[#11061c] transition-all duration-300 rounded-full px-6 py-2.5 text-sm md:text-base whitespace-nowrap flex items-center gap-2">
-            {t.cta}
-            <IconArrowRight className="w-4 h-4 rtl:rotate-180" />
-          </button>
-        </div>
-
-        {/* People Image */}
-        <div className="z-10 h-full flex items-end justify-end pe-10 md:pe-16 lg:pe-20 ms-auto">
-          <img 
-            src="/people.png" 
-            alt="Moroccan Artisans" 
+        {/* People Image - bottom on mobile, right on desktop */}
+        <div className="z-10 flex items-center justify-center md:justify-end mt-6 md:mt-0 md:pe-16 lg:pe-20 md:ms-auto md:h-full">
+          <img
+            src="/people.png"
+            alt="Moroccan Artisans"
             width={300}
             height={140}
             loading="lazy"
             decoding="async"
-            className="h-[120px] md:h-[140px] object-contain object-bottom"
+            className="h-[80px] md:h-[140px] object-contain object-bottom"
           />
         </div>
       </div>

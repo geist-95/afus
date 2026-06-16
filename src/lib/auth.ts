@@ -89,7 +89,7 @@ export async function getActiveSession(): Promise<UserSession | null> {
       })();
 
       const timeoutPromise = new Promise<null>((_, reject) =>
-        setTimeout(() => reject(new Error('Supabase request timed out')), 1500)
+        setTimeout(() => reject(new Error('Supabase request timed out')), 8000)
       );
 
       const activeUser = await Promise.race([getSessionPromise, timeoutPromise]);

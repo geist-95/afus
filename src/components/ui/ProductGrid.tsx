@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/cart';
+import { fetchProductReviews } from '@/lib/supabase';
 
 interface ProductGridProps {
   initialProducts: any[];
@@ -16,6 +17,38 @@ interface ProductGridProps {
 
 export function SimpleProductCard({ product, lang, shop, className }: { product: any; lang: string; shop?: any; className?: string }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [reviews, setReviews] = useState<any[]>(product?.reviews || []);
+  const [loading, setLoading] = useState(!product?.reviews);
+
+  useEffect(() => {
+    if (product?.reviews) {
+      setReviews(product.reviews);
+      return;
+    }
+    let active = true;
+    async function loadReviews() {
+      try {
+        const data = await fetchProductReviews(product.id);
+        if (active) {
+          setReviews(data);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadReviews();
+    return () => {
+      active = false;
+    };
+  }, [product.id, product.reviews]);
+
+  const reviewCount = reviews.length;
+  const averageRating = reviewCount > 0 
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount
+    : 0;
+
   const title =
     product?.title_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] ||
     product?.title_translations?.en ||
@@ -52,14 +85,24 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
         <p className="text-sm font-medium text-neutral-800 truncate leading-tight">{title}</p>
         <p className="text-xs font-light text-neutral-500 line-clamp-1">{shopName}</p>
         <p className="text-base font-bold text-black">{price} MAD</p>
-        <div className="flex items-center gap-0.5">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <svg key={star} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-black">
-              <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-            </svg>
-          ))}
-          <span className="text-[10px] text-neutral-500 ml-1 font-medium">(24)</span>
-        </div>
+        {reviewCount > 0 && (
+          <div className="flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <svg
+                key={star}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill={star <= Math.round(averageRating) ? "currentColor" : "none"}
+                stroke="currentColor"
+                strokeWidth={star <= Math.round(averageRating) ? 0 : 1.5}
+                className="w-3.5 h-3.5 text-black"
+              >
+                <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+              </svg>
+            ))}
+            <span className="text-[10px] text-neutral-500 ml-1 font-medium">({reviewCount})</span>
+          </div>
+        )}
       </div>
     </Link>
   );
@@ -78,6 +121,38 @@ export function ProductCard({
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const { addItem } = useCart();
+
+  const [reviews, setReviews] = useState<any[]>(product?.reviews || []);
+  const [loading, setLoading] = useState(!product?.reviews);
+
+  useEffect(() => {
+    if (product?.reviews) {
+      setReviews(product.reviews);
+      return;
+    }
+    let active = true;
+    async function loadReviews() {
+      try {
+        const data = await fetchProductReviews(product.id);
+        if (active) {
+          setReviews(data);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    loadReviews();
+    return () => {
+      active = false;
+    };
+  }, [product.id, product.reviews]);
+
+  const reviewCount = reviews.length;
+  const averageRating = reviewCount > 0 
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount
+    : 0;
 
   const title = product?.title_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] || product?.title_translations?.en || 'artisan craft';
   const isSaleActive = product.sale_price_mad !== null && product.sale_price_mad !== undefined &&
@@ -196,10 +271,14 @@ export function ProductCard({
 
           {/* Rating, Orders & Shop */}
           <div className="text-[11px] text-neutral-500 flex items-center gap-1 flex-wrap pt-0.5">
-            <span className="font-bold text-neutral-800">{shop?.average_rating || '4.9'}</span>
-            <span className="text-amber-500">★</span>
-            <span>({shop?.completed_orders_count || '18'})</span>
-            <span className="text-neutral-300">•</span>
+            {reviewCount > 0 ? (
+              <>
+                <span className="font-bold text-neutral-800">{averageRating.toFixed(1)}</span>
+                <span className="text-amber-500">★</span>
+                <span>({reviewCount})</span>
+                <span className="text-neutral-300">•</span>
+              </>
+            ) : null}
             <span>{t.shopLabel} : {shop?.name || 'artisan'}</span>
           </div>
 

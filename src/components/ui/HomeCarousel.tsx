@@ -329,15 +329,110 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
         </div>
       </div>
 
-      {/* Mobile hero CTA */}
-      <div className="md:hidden bg-[#1b0f2b] py-10 px-6 text-center arabic-frame">
-        <h2 className="text-2xl font-bold text-white !font-ariom">{content.videoTitle}</h2>
-        <button
-          onClick={handleRightCTA}
-          className="mt-6 inline-flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition hover:opacity-95"
+      {/* Mobile: Carousel + Video stacked */}
+      <div className="md:hidden">
+        {/* Mobile Carousel */}
+        <div className="relative w-full overflow-hidden arabic-frame"
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            (e.currentTarget as any)._touchStartX = touch.clientX;
+          }}
+          onTouchEnd={(e) => {
+            const startX = (e.currentTarget as any)._touchStartX;
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (Math.abs(diff) > 50) {
+              const isNext = lang === 'ar' ? diff < 0 : diff > 0;
+              if (isNext) {
+                setCurrentSlide((prev) => (prev + 1) % content.slides.length);
+              } else {
+                setCurrentSlide((prev) => (prev - 1 + content.slides.length) % content.slides.length);
+              }
+            }
+          }}
         >
-          {rightCtaText}
-        </button>
+          <div
+            className="flex w-full transition-transform duration-[600ms] ease-in-out"
+            style={{ transform: `translateX(${lang === 'ar' ? '' : '-'}${currentSlide * 100}%)` }}
+          >
+            {content.slides.map((slide, index) => (
+              <div
+                key={index}
+                className="w-full min-w-full shrink-0 overflow-hidden"
+              >
+                <div className={`relative ${slide.bg} px-5 py-8 flex flex-row items-center overflow-hidden min-h-[180px]`}>
+                  {/* Left: Title + CTA */}
+                  <div className="flex flex-col items-start text-start z-10 flex-1 min-w-0 pe-2">
+                    <h2 className="text-[22px] font-bold leading-tight tracking-tight !text-white !font-ariom">
+                      {slide.title}
+                    </h2>
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={() => handleSlideAction(slide.action)}
+                        className="inline-flex items-center justify-center !rounded-full bg-white px-6 py-2.5 text-sm font-bold text-[#160a23] transition hover:opacity-95 active:opacity-90"
+                      >
+                        {slide.btnText}
+                      </button>
+                    </div>
+                  </div>
+                  {/* Right: Image */}
+                  <div className="relative w-[140px] h-[140px] shrink-0">
+                    <Image
+                      alt={slide.title}
+                      src={slide.image}
+                      fill
+                      className="object-contain"
+                      priority={index === 0}
+                      sizes="140px"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Dots */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 w-24 z-20">
+            {content.slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-1 flex-1 rounded-full transition-all duration-500 ${currentSlide === index ? "bg-white" : "bg-white/20 hover:bg-white/40"
+                  }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Video Section */}
+        <div className="relative w-full aspect-square group overflow-hidden arabic-frame mt-3">
+          <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#11061c]/95 via-[#2d1b4d]/50 to-transparent z-10 pointer-events-none" />
+          <video
+            src="/video.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            poster="/onboarding.jpg"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 z-20 flex flex-col justify-end px-6 pb-5">
+            <h2 className="text-xl font-bold leading-tight tracking-tight !text-white !font-ariom">
+              {content.videoTitle}
+            </h2>
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={handleRightCTA}
+                className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-bold text-[#160a23] transition hover:opacity-95"
+              >
+                {rightCtaText}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <StoreOnboardingModal

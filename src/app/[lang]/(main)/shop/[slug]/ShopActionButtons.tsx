@@ -29,8 +29,8 @@ export default function ShopActionButtons({ shopId, contactLabel, subscribeLabel
   return (
     <div className="flex flex-row gap-3">
       {/* Contact Button */}
-      <button className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white text-black hover:bg-neutral-100 transition-colors font-medium text-sm w-full sm:w-auto shadow-sm border border-transparent">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+      <button className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#493b54] text-white border border-[#493b54] hover:opacity-90 transition-opacity font-medium text-sm w-full sm:w-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-white/90">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
         </svg>
         {contactLabel}
@@ -41,8 +41,8 @@ export default function ShopActionButtons({ shopId, contactLabel, subscribeLabel
         onClick={handleToggle}
         className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-full border transition-colors font-medium text-sm w-full sm:w-auto ${
           followed 
-            ? 'border-white/20 bg-white/10 text-white hover:bg-white/20' 
-            : 'border-white text-white bg-transparent hover:bg-white/5'
+            ? 'border-neutral-200 bg-neutral-100 text-neutral-800 hover:bg-neutral-200' 
+            : 'border-neutral-200 text-neutral-800 bg-transparent hover:bg-neutral-50'
         }`}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={followed ? "#ef4444" : "none"} stroke={followed ? "#ef4444" : "currentColor"} strokeWidth={1.5} className="w-5 h-5">

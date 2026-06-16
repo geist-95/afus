@@ -138,7 +138,7 @@ export default async function HomePage({ params }: PageProps) {
       </div>
 
       {/* Browse by Category */}
-      <BrowseByCategory lang={lang} />
+      <BrowseByCategory className="mt-8" lang={lang} />
 
       {/* Cities */}
       <CitiesSection lang={lang} />
