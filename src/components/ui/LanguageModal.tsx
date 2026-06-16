@@ -19,14 +19,7 @@ export default function LanguageModal({ currentLang }: LanguageModalProps) {
     const updatesSeen = localStorage.getItem('updatesSeen');
     
     if (!hasChosen) {
-      if (pathname && pathname.includes('/beta-access')) {
-        const timer = setTimeout(() => {
-          setIsOpen(true);
-        }, 4500); // Delay to let the welcome intro animation pass (4.2s)
-        return () => clearTimeout(timer);
-      } else {
-        setIsOpen(true);
-      }
+      setIsOpen(true);
     } else if (!updatesSeen) {
       setShowUpdates(true);
     }

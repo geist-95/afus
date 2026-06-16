@@ -227,6 +227,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const t = labels[lang] || labels.en;
 
   const newProducts = [...allProducts]
+    .filter(p => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(p.id)))
     .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
     .slice(0, 8);
 
@@ -252,28 +253,30 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
     <div className="space-y-16">
 
       {/* New Items Trail */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between mb-4 md:mb-[30px]">
-          <div>
-            <h2 className="text-xl md:text-3xl font-bold !text-black">{t.newItems}</h2>
-            <p className="text-xs text-neutral-500 mt-1">{t.newItemsSub}</p>
+      {newProducts.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold !text-black">{t.newItems}</h2>
+              <p className="text-xs text-neutral-500 mt-1">{t.newItemsSub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollNewArrivals('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollNewArrivals('right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-            <button onClick={() => scrollNewArrivals('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-            </button>
-            <button onClick={() => scrollNewArrivals('right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-            </button>
+          <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {newProducts.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[calc(20%-12.8px)]" />;
+            })}
           </div>
-        </div>
-        <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
-          {newProducts.map((p) => {
-            const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-            return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[calc(20%-12.8px)]" />;
-          })}
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 4. Recently Viewed Category Trail */}
       {recentCategoryName && recentCategoryProducts.length > 0 && (

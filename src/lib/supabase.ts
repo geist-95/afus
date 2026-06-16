@@ -396,16 +396,18 @@ export async function fetchProducts() {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*), reviews(rating)');
-    if (error || !data || data.length === 0) throw error || new Error('empty products');
+      .select('*, shops(*), product_variants(*)');
+    if (error) throw error;
     
-    list = data.map((p: any) => ({
-      ...p,
-      variants: p.product_variants || [],
-    }));
+    if (data) {
+      list = data.map((p: any) => ({
+        ...p,
+        variants: p.product_variants || [],
+      }));
+    }
   } catch (err) {
     console.warn('using mock fallback for products:', err);
-    list = [...mockProducts];
+    list = isPlaceholder ? [...mockProducts] : [];
   }
   if (typeof window !== 'undefined') {
     try {
@@ -433,7 +435,7 @@ export async function fetchProductByNumericId(numericId: number) {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*), reviews(rating)')
+      .select('*, shops(*), product_variants(*)')
       .eq('numeric_id', numericId)
       .single();
     if (error || !data) throw error || new Error('product not found');
@@ -772,7 +774,7 @@ export async function fetchProductById(id: string) {
     if (isPlaceholder) throw new Error('placeholder');
     const { data, error } = await supabase
       .from('products')
-      .select('*, shops(*), product_variants(*), reviews(rating)')
+      .select('*, shops(*), product_variants(*)')
       .eq('id', id)
       .single();
     if (error || !data) throw error || new Error('product not found');

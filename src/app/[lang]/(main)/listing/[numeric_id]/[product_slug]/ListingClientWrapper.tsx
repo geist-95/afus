@@ -350,6 +350,17 @@ export default function ListingClientWrapper({
 
   return (
     <div className="space-y-8">
+      {/* Product no longer available banner */}
+      {!isFetchingBackground && !fetchedProduct && (
+        <div className="w-full bg-red-600 text-white font-bold py-4 px-6 text-center animate-in fade-in duration-200 rounded-2xl">
+          {lang === 'fr' 
+            ? "Ce produit n'est plus disponible" 
+            : lang === 'ar' 
+            ? "هذا المنتج لم يعد متوفراً" 
+            : "The product is no longer available"}
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="flex justify-center items-center gap-2 text-sm text-black/40 font-medium flex-wrap">
         <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
