@@ -79,7 +79,8 @@ export function proxy(request: NextRequest) {
   }
 
   const redirectUrl = new URL(`${targetPath}${search}`, request.url);
-  return NextResponse.redirect(redirectUrl);
+  // Use status 308 (Permanent Redirect) for SEO optimization
+  return NextResponse.redirect(redirectUrl, 308);
 }
 
 export const config = {

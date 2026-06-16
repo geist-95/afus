@@ -39,6 +39,82 @@ const MOCK_POSTS = {
     author: "Fatima Zahra",
     color: "#0d1f2d",
     textColor: "#c9e0f0",
+    content: (lang: string) => {
+      const allTexts = {
+        en: {
+          intro: "Moroccan Zellige is more than just tilework; it is a mathematical symphony expressed in hand-chiseled clay. For centuries, master artisans (Maalems) in Fez have turned local clay into intricate geometric mosaics that grace palaces, mosques, and modern homes alike.",
+          h1: "1. The Unique Clay of Fez",
+          p1: "The foundation of authentic Zellige is the gray clay harvested from the hills of Fez. This specific clay is exceptionally malleable and, when baked, becomes highly durable yet soft enough to be precisely chiseled by hand. The clay is mixed with water, molded by hand, and left to dry in the Mediterranean sun before its first firing.",
+          h2: "2. Geometry as a Spiritual Language",
+          p2: "Every Zellige design is rooted in sacred geometry. Without drawings or rulers, the artisans assemble thousands of tiny tiles (Fermlah) into intricate stars, polygons, and interlocking weaves, following a mathematical tradition passed down through generations. This geometry represents order, infinity, and cosmic harmony.",
+          h3: "3. The Precision of the Nakkach",
+          p3: "The defining step is the chiseling (Nakkach). Using a heavy, razor-sharp hammer, the artisan chips the edges of baked tiles at precise angles. This creates beveled edges, allowing the tiles to fit so closely that there is almost no visible grout between them, creating a continuous and breathtaking mosaic surface.",
+          quote: "Zellige is where patience meets geometry, transforming earth into an eternal dance of light and color.",
+          outro: "Today, Zellige continues to bring organic texture, reflecting light beautifully, and historical depth to modern kitchens, bathrooms, and statement walls around the world.",
+          imageAlt: "Authentic Moroccan Zellige tilework from Fez"
+        },
+        fr: {
+          intro: "Le zellige marocain est bien plus qu'un simple carrelage : c'est une symphonie mathématique exprimée dans l'argile façonnée à la main. Depuis des siècles, les maîtres artisans (Maalems) de Fès transforment l'argile locale en mosaïques géométriques complexes qui ornent les palais, les mosquées et les intérieurs modernes.",
+          h1: "1. L'argile unique de Fès",
+          p1: "La base du zellige authentique est l'argile grise récoltée dans les collines de Fès. Cette argile spécifique est exceptionnellement malléable et, une fois cuite, devient très solide tout en restant assez tendre pour être ciselée avec précision à la main. L'argile est mélangée à l'eau, moulée à la main et séchée au soleil avant d'être cuite.",
+          h2: "2. La géométrie comme langage spirituel",
+          p2: "Chaque motif de zellige s'appuie sur la géométrie sacrée. Sans plans ni règles, les artisans assemblent des milliers de petits carreaux (Fermlah) en étoiles complexes et polygones entrelacés, suivant une tradition mathématique transmise depuis des générations représentant l'harmonie cosmique.",
+          h3: "3. La précision du Nakkach",
+          p3: "L'étape clé est le ciselage (Nakkach). À l'aide d'un marteau lourd et tranchant, l'artisan taille les bords des carreaux cuits selon des angles précis. Cela crée des bords biseautés qui s'emboîtent parfaitement sans joint visible, formant une surface continue spectaculaire.",
+          quote: "Le zellige est la rencontre de la patience et de la géométrie, transformant la terre en une danse éternelle de lumière et de couleur.",
+          outro: "Aujourd'hui, le zellige continue d'apporter texture, reflets lumineux et profondeur historique aux cuisines modernes et salles de bains du monde entier.",
+          imageAlt: "Zellige marocain authentique fait main à Fès"
+        },
+        ar: {
+          intro: "الزليج المغربي هو أكثر من مجرد بلاط؛ إنه سيمفونية رياضية تتجسد في الطين المشكل يدويًا. لقرون، قام معلمو الحرفة (المعالمة) في فاس بتحويل الطين المحلي إلى فسيفساء هندسية معقدة تزين القصور والمساجد والمنازل الحديثة.",
+          h1: "1. طين فاس الفريد",
+          p1: "أساس الزليج الأصيل هو الطين الرمادي المستخرج من تلال فاس. هذا الطين يتميز بمرونة استثنائية، وعند خبزه يصبح متينًا للغاية ولكنه ناعم بما يكفي ليتم نحته بدقة باليد. يُخلط الطين بالماء ويُشكل يدويًا ويُترك ليجف تحت الشمس قبل الحرق الأول.",
+          h2: "2. الهندسة كلغة روحية",
+          p2: "كل تصميم للزليج متجذر في الهندسة المقدسة. بدون رسومات أو مساطر، يجمع الحرفيون آلاف القطع الصغيرة (الفرملة) في نجوم ومضلعات متداخلة معقدة، متبعين تقليدًا رياضيًا ينتقل عبر الأجيال يمثل التناغم الكوني.",
+          h3: "3. دقة النقاش",
+          p3: "الخطوة الحاسمة هي النحت (النقش). باستخدام مطرقة ثقيلة وحادة للغاية، يقطع الحرفي حواف البلاط المخبوز بزوايا دقيقة، مما يسمح للقطع بالتقارب الشديد دون فراغات مرئية، مما يخلق سطحًا متكاملًا ومذهلاً.",
+          quote: "الزليج هو ملتقى الصبر والهندسة، يحول التراب إلى رقصة أبدية من الضوء والألوان.",
+          outro: "اليوم، يستمر الزليج في إضفاء نسيج عضوي وعمق تاريخي يعكس الضوء بشكل جميل في المطابخ والحمامات المعاصرة حول العالم.",
+          imageAlt: "بلاط الزليج المغربي الأصيل من فاس"
+        },
+        tz: {
+          intro: "ⵣⵣⵍⵍⵉⵊ ⴰⵎⵖⵔⵉⴱⵉ ⵉⴳⴰ ⵜⴰⵥⵓⵕⵉ ⵜⴰⵇⴱⵓⵔⵜ ⵏ ⵜⵎⴳⵓⵔⵉ ⵏ ⵓⴼⵓⵙ. ⵙⴳ ⵉⵙⴳⴳⵯⴰⵙⵏ ⵎⵇⵇⵓⵕⵏⵉⵏ, ⵉⵎⴰⵙⵜⴰⵏⵏ ⵏ ⴼⴰⵙ ⴰⵔ ⵙⵏⴼⵍⵓⵍⵏ ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵣⵣⵍⵍⵉⵊ ⵉⴼⴰⵡⵏ.",
+          h1: "1. ⴰⴽⴰⵍ ⵏ ⴼⴰⵙ",
+          p1: "ⴰⴽⴰⵍ ⵏ ⴼⴰⵙ ⵉⴳⴰ ⵓⵥⵍⴰⵢ ⵉ ⵣⵣⵍⵍⵉⵊ. ⵉⴳⴰ ⴰⴽⴰⵍ ⵉⵥⵉⵍⵏ ⵏⵏⴰ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⵙ ⵜⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ.",
+          h2: "2. ⵜⴰⵏⵣⴳⴳⴰⵖⵜ ⵜⴰⵇⴱⵓⵔⵜ",
+          p2: "ⴽⵓ ⵜⴰⵡⵓⵔⵉ ⵏ ⵣⵣⵍⵍⵉⵊ ⵜⴱⴷⴷⴰ ⴼ ⵜⴰⵏⵣⴳⴳⴰⵖⵜ ⵉⵅⴰⵜⵔⵏ ⴷ ⵜⵉⴽⵔⵙⵉⵏ ⵜⵉⵇⴱⵓⵔⵉⵏ.",
+          h3: "3. ⵜⴰⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ (ⴰⵏⵇⵇⴰⵛ)",
+          p3: "ⴰⵏⵇⵇⴰⵛ ⵉⴳⴰ ⴰⴽⵓⴷ ⵉⵙⵍⴰⵏ ⴳ ⵜⵡⵓⵔⵉ ⵏ ⵣⵣⵍⵍⵉⵊ ⴰⴼⴰⴷ ⴰⴷ ⵜⵜⵓⵙⵖⵥⵏⵜ ⵜⵉⴼⵔⵉⵏ ⵙ ⵓⵎⵙⴰⵙⴰ.",
+          quote: "ⵣⵣⵍⵍⵉⵊ ⵉⴳⴰ ⴰⵎⵙⴰⵡⴰⵍ ⴳⵔ ⵡⴰⴽⴰⵍ ⴷ ⵜⴼⵓⴽⵜ.",
+          outro: "ⴳ ⵡⴰⵙⵙ ⴰⴷ, ⵣⵣⵍⵍⵉⵊ ⵉⵙⵓⵍ ⴳ ⵜⴳⵎⵎⴰ ⵜⵉⵜⵔⴰⵔⵉⵏ ⴳ ⵓⵎⴰⴹⴰⵍ.",
+          imageAlt: "ⵣⵣⵍⵍⵉⵊ ⴰⵎⵖⵔⵉⴱⵉ"
+        }
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
+      return (
+        <>
+          <p className="lead font-medium text-2xl text-[#0d1f2d] mb-8">{texts.intro}</p>
+          <div className="my-10 w-full h-96 relative overflow-hidden arabic-frame">
+            <Image 
+              src="/cities-2/fes.jpg" 
+              alt={texts.imageAlt} 
+              fill 
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+              priority
+            />
+          </div>
+          <h2>{texts.h1}</h2>
+          <p>{texts.p1}</p>
+          <h2>{texts.h2}</h2>
+          <p>{texts.p2}</p>
+          <h2>{texts.h3}</h2>
+          <p>{texts.p3}</p>
+          <blockquote>"{texts.quote}"</blockquote>
+          <p>{texts.outro}</p>
+        </>
+      );
+    }
   },
   "weaving-stories-berber-rugs": {
     id: 2,
@@ -52,13 +128,88 @@ const MOCK_POSTS = {
       en: "Every knot tells a story. Explore the rich symbolism and diverse styles of Berber rugs, handwoven by artisans across the Atlas Mountains.",
       fr: "Chaque nœud raconte une histoire. Explorez le riche symbolisme et les divers styles de tapis berbères, tissés à la main par des artisans à travers les montagnes de l'Atlas.",
       ar: "كل عقدة تحكي قصة. استكشف الرمزية الغنية والأنماط المتنوعة للسجاد الأمازيغي، المنسوج يدويًا من قبل الحرفيين عبر جبال الأطلس.",
-      tz: "ⴽⵓ ⵜⵉⴽⵔⵙⵜ ⴰⵔ ⵜⵙⴰⵡⴰⵍ ⵢⴰⵜ ⵜⵏⵇⵇⵉⵙⵜ. ⵔⵣⵓ ⴳ ⵉⵏⵉⴳⵍⴰⵏ ⵉⵅⴰⵜⵔⵏ ⴷ ⵉⵡⵏⵏⵉⵜⵏ ⵉⵎⵢⴰⵏⴰⵡⵏ ⵏ ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ, ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴳ ⵉⴷⵔⴰⵔⵏ ⵏ ⵡⴰⵟⵍⴰⵙ."
+      tz: "ⴽⵓ ⵜⵉⴽⵔⵙⵜ ⴰⵔ ⵜⵙⴰⵡⴰⵍ ⵢⴰⵜ ⵜⵏⵇⵇⵉⵙⵜ. ⵔⵣⵓ ⴳ ⵉⵏⵉⴳⵍⴰⵏ ⵉⵅⴰⵜⵔⵏ ⴷ ⵉⵡⵏⵏⵉⵜⵏ ⵉⵎⴰⵏⴰⵡⵏ ⵏ ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ, ⵉⵜⵜⵓⵥⴹⴰⵏ ⵙ ⵓⴼⵓⵙ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴳ ⵉⴷⵔⴰⵔⵏ ⵏ ⵡⴰⵟⵍⴰⵙ."
     },
     image: "/cities-2/marrakesh.avif",
     date: "2024-06-02",
     author: "Youssef Amrani",
     color: "#2a0a1e",
     textColor: "#f5deb3",
+    content: (lang: string) => {
+      const allTexts = {
+        en: {
+          intro: "Every knot in a Berber rug is a letter in a woven diary. Passed down from mother to daughter across generations, these rugs are not merely floor coverings; they are ancestral texts written in wool, reflecting the hopes, beliefs, and life experiences of female weavers in the Atlas Mountains.",
+          h1: "1. The Symbolism of the Loom",
+          p1: "Berber weavers do not work from pre-drawn patterns. Instead, they weave spontaneously, letting the design evolve as a narrative. Geometric motifs like diamonds represent protection and fertility, zigzags represent water and journey, and crossed lines guard against the evil eye. The rug becomes a living canvas of the weaver's personal and familial journey.",
+          h2: "2. Wool and Natural Dyes",
+          p2: "Authentic rugs use high-grade wool sheared from native Atlas sheep, washed and spun by hand. Colors are derived from nature: indigo root for blues, madder root for reds, saffron and wild pomegranate peels for vibrant yellows, and henna for deep browns. Uncolored wool offers the iconic ivory, charcoal, and cream variations.",
+          h3: "3. Distinct Styles Across Tribes",
+          p3: "Each tribe boasts a signature style. The Beni Ourain tribe produces thick, plush white rugs with simple dark diamond lines for warmth. Azilal rugs are known for abstract, colorful patterns, while Kilim (Hanbel) weaves are flat, lightweight, and tightly woven, showcasing intricate tribal geometry.",
+          quote: "A Berber rug is a story told in wool, keeping the spirit of the loom alive across centuries.",
+          outro: "Buying an authentic Berber rug means bringing a piece of living history, warmth, and artistic expression into your home while directly supporting female weaving cooperatives.",
+          imageAlt: "Handwoven Berber rugs on display"
+        },
+        fr: {
+          intro: "Chaque nœud d'un tapis berbère est une lettre dans un journal intime tissé. Transmis de mère en fille, ces tapis ne sont pas de simples décorations ; ce sont des textes ancestraux écrits en laine, reflétant la vie, les espoirs et les émotions des tisserandes des montagnes de l'Atlas.",
+          h1: "1. Le symbolisme du métier à tisser",
+          p1: "Les tisserandes berbères ne travaillent pas avec des modèles pré-dessinés. Elles créent spontanément, laissant le motif évoluer comme un récit. Les diamants représentent la protection et la fertilité, les zigzags l'eau et le voyage, et les lignes croisées éloignent le mauvais œil. Le tapis est une toile vivante du voyage de la tisserande.",
+          h2: "2. Laine et teintures naturelles",
+          p2: "Les tapis authentiques sont fabriqués avec une laine de qualité supérieure tondue sur les moutons de l'Atlas, lavée et filée à la main. Les couleurs proviennent de la nature : l'indigo pour le bleu, la garance pour le rouge, le safran et la grenade pour les jaunes vibrants, et le henné pour les bruns.",
+          h3: "3. Des styles distincts selon les tribus",
+          p3: "Chaque tribu a son style. Les Beni Ourain créent des tapis épais et douillets en laine écrue avec de simples losanges foncés. Les tapis d'Azilal sont célèbres pour leurs motifs colorés et abstraits, tandis que les Kilims (Hanbel) sont plats, légers et très graphiques.",
+          quote: "Le tapis berbère est une histoire racontée en laine, qui garde l'esprit du tissage vivant à travers les siècles.",
+          outro: "Acheter un authentique tapis berbère, c'est faire entrer chez soi une histoire vivante, de la chaleur et de l'art tout en soutenant directement les coopératives de femmes.",
+          imageAlt: "Tapis berbères faits main suspendus"
+        },
+        ar: {
+          intro: "كل عقدة في السجاد الأمازيغي هي حرف في مذكرات منسوجة. ينتقل هذا الفن من الأمهات إلى البنات عبر الأجيال، فالسجاد ليس مجرد غطاء للأرض، بل هو نصوص أسلاف مكتوبة بالصوف تعكس آمال ومعتقدات وتجارب النساجات في جبال الأطلس.",
+          h1: "1. رمزية النول والتنسيج",
+          p1: "لا تعمل النساجات الأمازيغيات وفقًا لأنماط مرسومة مسبقًا. بدلاً من ذلك، ينسجن بشكل تلقائي، مما يسمح للتصميم بالتطور كقصة. تمثل الأشكال الهندسية مثل المعينات الحماية والخصوبة، وتمثل الزيغزاغات الماء والرحلة، وتطرد الخطوط المتقاطعة العين الشريرة.",
+          h2: "2. الصوف والأصباغ الطبيعية",
+          p2: "يستخدم السجاد الأصيل صوفًا عالي الجودة مقصوصًا من أغنام الأطلس المحلية، ومغسولًا ومغزولاً يدويًا. تُشتق الألوان من الطبيعة: النيلة الزرقاء، وجذور الفوة للون الأحمر، والزعفران وقشور الرمان للون الأصفر، والحناء للبني الدافئ.",
+          h3: "3. أنماط متميزة بين القبائل",
+          p3: "تميز كل قبيلة بأسلوب خاص. تنتج قبائل بني ورين سجادًا سميكًا وناعمًا باللون الأبيض العاجي مع خطوط معينة داكنة بسيطة. ويشتهر سجاد أزيلال بأنماطه الملونة والتجريدية، بينما يتميز الكليم (الحنبل) بكونه مسطحًا وخفيفًا وذو هندسة دقيقة.",
+          quote: "السجادة الأمازيغية هي قصة تُروى بالصوف، تحافظ على روح النول حية عبر القرون.",
+          outro: "إن اقتناء سجادة أمازيغية أصيلة يعني إدخال قطعة من التاريخ الحي والجمال الفني إلى منزلك، مع دعم تعاونيات النساء مباشرة.",
+          imageAlt: "سجاد بربري مغربي منسوج يدويا"
+        },
+        tz: {
+          intro: "ⴰⵥⵟⵟⴰ ⵏ ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ ⵉⴳⴰ ⵜⴰⵏⵙⴰⵢⵜ ⵉⴷⵔⵏ ⴳ ⵉⴷⵔⴰⵔⵏ ⵏ ⵡⴰⵟⵍⴰⵙ. ⴽⵓ ⵜⵉⴽⵔⵙⵜ ⵜⴳⴰ ⵜⵉⵏⵇⵇⵉⵙⵜ ⵏ ⵜⵓⴷⵔⵜ.",
+          h1: "1. ⵉⵏⵉⴳⵍⴰⵏ ⵏ ⵡⴰⵥⵟⵟⴰ",
+          p1: "ⵉⵎⴳⵓⵔⵉⵢⵏ ⵓⵔ ⵙⵙ幕ⵔⴰⵙⵏ ⵜⵉⴼⵔⵉⵏ ⵉⵜⵜⵓⴽⵍⵓⵏ. ⴰⵔ ⵜⵜⵥⴹⴰⵏ ⵙ ⵓⵙⵡⵉⵏⴳgm ⴷ ⵜⵓⵎⵔⵜ.",
+          h2: "2. ⵜⴰⴹⵓⵜ ⵜⴰⴳⴰﻤⴰⵏⵜ",
+          p2: "ⴰⵥⵕⴱⵉⵢ ⴰⵎⴰⵣⵉⵖ ⵉⵜⵜⵓսⴽⴰⵔ ⵙ ⵜⴹⵓⵜ ⵉⵥⵉⵍⵏ ⴷ ⵉⴽⵯⵍⴰⵏ ⵏ ⵜⴳⴰⵎⴰ.",
+          h3: "3. ⵉⵥⵕⴱⴰⵢ ⵏ ⴱⵏⵉ ⵡⵔⴰⵢⵏ ⴷ ⵡⴰⵣⵉⵍⴰⵍ",
+          p3: "ⵍⵍⴰⵏ ⵉⵥⵕⴱⴰⵢ ⵉⵎⵢⴰⵏⴰⵡⵏ ⴳⵔ ⵜⵇⴱⵉⵍⵉⵏ ⴰⵎ ⴱⵏⵉ ⵡⵔⴰⵢⵏ ⴷ ⵡⴰⵣⵉⵍⴰⵍ ⵉⵜⵜⵡⴰⵙⵙⵏⵏ ⴳ ⵓⵎⴰⴹⴰⵍ.",
+          quote: "ⴰⵥⵕⴱⵉⵢ ⵉⴳⴰ ⵜⴰⵏⵇⵇⵉⵙⵜ ⵏ ⵜⴹⵓⵜ.",
+          outro: "ⴰⵙⵜⴰⵢ ⵏ ⵓⵥⵕⴱⵉⵢ ⴰⵎⴰⵣⵉⵖ ⵉⴳⴰ ⴰⵏⴰⵍ ⵏ ⵜⵎⴳⵓⵔⵉ ⵜⴰⵇⴱⵓⵔⵜ.",
+          imageAlt: "ⵉⵥⵕⴱⴰⵢ ⵉⵎⴰⵣⵉⵖⵏ"
+        }
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
+      return (
+        <>
+          <p className="lead font-medium text-2xl text-[#2a0a1e] mb-8">{texts.intro}</p>
+          <div className="my-10 w-full h-96 relative overflow-hidden arabic-frame">
+            <Image 
+              src="/cities-2/marrakesh.avif" 
+              alt={texts.imageAlt} 
+              fill 
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
+          <h2>{texts.h1}</h2>
+          <p>{texts.p1}</p>
+          <h2>{texts.h2}</h2>
+          <p>{texts.p2}</p>
+          <h2>{texts.h3}</h2>
+          <p>{texts.p3}</p>
+          <blockquote>"{texts.quote}"</blockquote>
+          <p>{texts.outro}</p>
+        </>
+      );
+    }
   },
   "scent-of-the-medina-spices": {
     id: 3,
@@ -66,7 +217,7 @@ const MOCK_POSTS = {
       en: "The Scent of the Medina: A Guide to Spices",
       fr: "Le parfum de la Médina : Guide des épices",
       ar: "عطر المدينة: دليل التوابل",
-      tz: "ⴰⵙⵜⵜⵉ ⵏ ⵜⵖⵔⵎⵜ: ⴰⵎⴰⵏⴰⵔ ⵏ ⵜⴰⵇⵇⴰⵢⵉⵏ"
+      tz: "ⴰⵙⵜⵜⵉ ⵏ ⵜⵖﺮⵎⵜ: ⴰⵎⴰⵏⴰⵔ ⵏ ⵜⴰⵇⵇⴰⵢⵉⵏ"
     },
     excerpt: {
       en: "From ras el hanout to saffron, journey through the aromatic world of Moroccan spices and learn how they define the country's culinary landscape.",
@@ -79,6 +230,81 @@ const MOCK_POSTS = {
     author: "Amina Bennis",
     color: "#1e0a2e",
     textColor: "#e8d5f0",
+    content: (lang: string) => {
+      const allTexts = {
+        en: {
+          intro: "To enter a Moroccan medina is to be greeted by a rich, sensory tapestry, defined heavily by the earthy, sweet, and pungent aroma of freshly ground spices. Stacked in vibrant, colorful cones inside the spice souks, these spices are the heartbeat of Moroccan gastronomy and hospitality.",
+          h1: "1. Ras El Hanout: The King of Blends",
+          p1: "Literally translating to 'head of the shop,' Ras El Hanout is a complex spice blend representing the spice merchant's finest offerings. It can contain anywhere from 10 to over 30 different ground spices, including cardamom, nutmeg, cinnamon, mace, allspice, galangal, ginger, cloves, and even dried rosebuds, creating an incredibly deep flavor profile for slow-cooked tagines.",
+          h2: "2. Saffron from Taliouine: Morocco's Red Gold",
+          p2: "Prized worldwide for its purity and intense aroma, Moroccan saffron is harvested in the volcanic soil of the Taliouine region. Hand-picked at dawn by local women during a brief two-week autumn window, it takes over 150,000 crocus flowers to produce a single kilogram of this red gold, which infuses dishes with an earthy, complex warmth and golden hue.",
+          h3: "3. Healing and Hospitality",
+          p3: "Spices in Morocco are not just for taste; they are medicine. Cumin is used to aid digestion, ginger combats colds, and cinnamon balances blood sugar. Sharing a spiced mint tea or a aromatic tagine is a sacred gesture of welcoming guests into one's home and family.",
+          quote: "Moroccan spices do not mask the food; they marry it, elevating simple ingredients into a festive feast.",
+          outro: "When sourcing spices, look for whole seeds or fresh-milled powders from reputable spice souks to ensure you capture the true, aromatic soul of Morocco.",
+          imageAlt: "Vibrant heaps of Moroccan spices in the souk"
+        },
+        fr: {
+          intro: "Entrer dans une médina marocaine, c'est être accueilli par un parfum envoûtant d'épices fraîchement moulues. Disposées en cônes colorés dans les souks, ces épices racontent l'histoire de la gastronomie et de l'hospitalité marocaine.",
+          h1: "1. Le Ras El Hanout : Le roi des mélanges",
+          p1: "Signifiant littéralement 'la tête de la boutique', le Ras El Hanout est un mélange complexe d'épices représentant le meilleur du marchand. Il contient de 10 à plus de 30 épices (cardamome, muscade, cannelle, gingembre, clous de girofle, boutons de rose séchés), idéal pour les tajines mijotés.",
+          h2: "2. Le safran de Taliouine : L'or rouge du Maroc",
+          p2: "Réputé pour sa pureté, le safran marocain est cultivé dans la région de Taliouine. Cueilli à la main à l'aube par les femmes, il faut plus de 150 000 fleurs de crocus pour produire un kilo de cet or rouge, qui donne aux plats une chaleur complexe et une couleur dorée.",
+          h3: "3. Vertus curatives et hospitalité",
+          p3: "Au Maroc, les épices sont aussi des remèdes naturels. Le cumin aide à la digestion, le gingembre combat le rhume, et la cannelle réchauffe le corps. Offrir un plat parfumé est un geste d'accueil sacré.",
+          quote: "Les épices marocaines ne masquent pas le plat ; elles l'épousent, élevant les ingrédients simples en un festin de fête.",
+          outro: "Pour vos recettes, privilégiez les épices entières ou moulues à la demande pour conserver toute la richesse de leurs huiles essentielles.",
+          imageAlt: "Cônes d'épices colorés dans un souk marocain"
+        },
+        ar: {
+          intro: "دخول المدينة العتيقة في المغرب يعني استقبالك برائحة غنية ودافئة للتوابل المطحونة حديثًا. التوابل المتراصة في مخاريط ملونة نابضة بالحياة داخل الأسواق هي نبض المطبخ المغربي ورمز الكرم والضيافة.",
+          h1: "1. رأس الحانوت: ملك التوابل",
+          p1: "يعني رأس الحانوت حرفياً 'أفضل ما في المحل'، وهو مزيج معقد يمثل صفوة معروضات تاجر التوابل. يمكن أن يحتوي على ما بين 10 إلى أكثر من 30 نوعًا مختلفًا من التوابل (الهيل، جوزة الطيب، القرفة، الزنجبيل، القرنفل، وحتى براعم الورد المجففة)، مما يمنح الطواجن نكهة عميقة.",
+          h2: "2. زعفران تاليوين: ذهب المغرب الأحمر",
+          p2: "يُزرع الزعفران المغربي في التربة البركانية لمنطقة تاليوين ويُصنف كواحد من الأجود عالميًا. تقطف النساء الزهور يدويًا عند الفجر، ويتطلب الأمر أكثر من 150,000 زهرة لإنتاج كيلوغرام واحد من هذا الذهب الأحمر الذي يضفي نكهة ولونًا ذهبيًا لا يُنسى.",
+          h3: "3. العلاج والضيافة",
+          p3: "التوابل في المغرب ليست للمذاق فقط، بل لها استخدامات علاجية. يُستخدم الكمون للهضم، والزنجبيل لنزلات البرد، والقرفة لتوازن الجسم. تقديم شاي النعناع المعطر بالتوابل أو طاجين شهي هو بادرة ترحيب مقدسة بالضيوف.",
+          quote: "التوابل المغربية لا تخفي نكهة الطعام؛ بل تتزوجها، وترفع المكونات البسيطة إلى مأدبة احتفالية.",
+          outro: "عند شراء التوابل، ابحث عن الحبوب الكاملة أو المطحونة حديثًا من الأسواق التقليدية لضمان الحصول على الجودة والنكهة الأصلية.",
+          imageAlt: "توابل مغربية ملونة في السوق"
+        },
+        tz: {
+          intro: "ⵜⴰⵇⵇⴰⵢⵉⵏ ⵜⵉⵎⵖⵔⵉⴱⵉⵢⵉⵏ ⴳⴰⵏⵜ ⴰⵙⴼⵔⵓ ⵏ ⵜⵉⵔⴰⵎ ⴷ ⵓⵙⵏⵓⴱⴳ ⴳ ⵍﻤⵖⵔⵉⴱ.",
+          h1: "1. ⵔⴰⵙ ⵍⵃⴰⵏⵓⵜ",
+          p1: "ⵔⴰⵙ ⵍⵃⴰⵏⵓⵜ ⵉⴳⴰ ⴰⵙⵜⵜⵉ ⵏ ⵜⴰⵇⵇⴰⵢⵉⵏ ⵉⵎⵢⴰⵏⴰⵡⵏ ⵏⵏⴰ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⵉ ⵜⵉⵔⴰⵎ.",
+          h2: "2. ⵣⵣⵄⴼﺮⴰⵏ ⵏ ⵜⴰⵍⵉⵡⵉⵏ",
+          p2: "ⵣⵣⵄⴼﺮⴰⵏ ⵏ ⵜⴰⵍⵉⵡⵉⵏ ⵉⴳⴰ ⵓⵔⵖ ⴰⵣﮕﮕⵯⵖ ⵏ ⵍﻤⵖⵔⵉⴱ. ⵉⵜⵜⵓⵙⴽⴰⵔ ⵙ ⵜⵡⵓⵔⵉ ⵏ ⵉⴼⴰⵙⵙⵏ.",
+          h3: "3. ⵜⴰⵙⵏⵉⵊⵊⵉⵜ ⴷ ⵓⵙⵏⵓⴱⴳ",
+          p3: "ⵜⴰⵇⵇⴰⵢⵉⵏ ⴳⴰⵏⵜ ⵜⴰⵙⵏⵉⵊⵊⵉⵜ ⵜⴰⴳⴰﻤⴰⵏⵜ ⴷ ⵜⵎⴰⵜⴰⵔⵜ ⵏ ⵓⵙⵏⵓⴱⴳ ⵉⵥⵉⵍⵏ.",
+          quote: "ⵜⴰⵇⵇⴰⵢⵉⵏ ⴳⴰⵏⵜ ⵉⵎⵙⵍⵉ ⵏ ⵜⵓⴷⵔⵜ.",
+          outro: "ⴰⵙⵜⴰⵢ ⵏ ⵜⴰⵇⵇⴰⵢⵉⵏ ⵉⴼⴰⵡⵏ ⵉⴳⴰ ⴰⵙⵖⵥⵏ ⵏ ⵜⵉⵔⴰⵎ ⵉⵥⵉⵍⵏ.",
+          imageAlt: "ⵜⴰⵇⵇⴰⵢⵉⵏ ⵜⵉⵎⵖⵔⵉⴱⵉⵢⵉⵏ"
+        }
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
+      return (
+        <>
+          <p className="lead font-medium text-2xl text-[#1e0a2e] mb-8">{texts.intro}</p>
+          <div className="my-10 w-full h-96 relative overflow-hidden arabic-frame">
+            <Image 
+              src="/cities-2/meknes-2.jpg" 
+              alt={texts.imageAlt} 
+              fill 
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
+          <h2>{texts.h1}</h2>
+          <p>{texts.p1}</p>
+          <h2>{texts.h2}</h2>
+          <p>{texts.p2}</p>
+          <h2>{texts.h3}</h2>
+          <p>{texts.p3}</p>
+          <blockquote>"{texts.quote}"</blockquote>
+          <p>{texts.outro}</p>
+        </>
+      );
+    }
   },
   "leather-tanneries-fes": {
     id: 4,
@@ -86,19 +312,94 @@ const MOCK_POSTS = {
       en: "Leather Tanneries of Fes: A Timeless Tradition",
       fr: "Les tanneries de Fès : Une tradition intemporelle",
       ar: "مدابغ الجلود في فاس: تقليد خالد",
-      tz: "ⵉⵎⵍⴰⵏ ⵏ ⵉⵍⵎⴰⵡⵏ ⵏ ⴼⴰⵙ: ⵢⴰⵜ ⵜⴰⵏⵙⴰⵢⵜ ⵓⵔ ⵉⵜⵜⵎⵜⵜⴰⵜⵏ"
+      tz: "ⵉⵎⵍⴰⵏ ⵏ ⵉⵍⵎⴰⵡⵏ ⵏ ⴼⴰⵙ: ⵢⴰⵜ ⵜⴰⵏସⴰⵢⵜ ⵓⵔ ⵉⵜⵜⵎⵜⵜⴰⵜⵏ"
     },
     excerpt: {
       en: "Step into the iconic Chouara Tannery and witness the traditional methods used to produce some of the world's finest leather goods.",
       fr: "Entrez dans l'emblématique tannerie Chouara et découvrez les méthodes traditionnelles utilisées pour produire certains des meilleurs articles en cuir au monde.",
       ar: "ادخل إلى مدبغة شوارة الشهيرة وشاهد الأساليب التقليدية المستخدمة لإنتاج بعض أفضل المنتجات الجلدية في العالم.",
-      tz: "ⴽⵛⵎ ⵖⵔ ⵜⵎⵍⴰ ⵏ ⵛⵡⵡⴰⵔⴰ ⵉⵜⵜⵡⴰⵙⵙⵏⵏ ⴷ ⵥⵕ ⵜⵉⵖⴰⵔⴰⵙⵉⵏ ⵜⵉⵇⴱⵓⵔⵉⵏ ⵉⵜⵜⵓⵙⵎⵔⴰⵙⵏ ⵉ ⵓⴼⴰⵔⵙ ⵏ ⴽⵔⴰ ⵏ ⵜⴳⴰⵡⵉⵏ ⵏ ⵉⵍⵎⴰⵡⵏ ⵉⵥⵉⵍⵏ ⴳ ⵓⵎⴰⴹⴰⵍ."
+      tz: "ⴽⵛⵎ ⵖⵔ ⵜⵎⵍⴰ ⵏ ⵛⵡⵡⴰⵔⴰ ⵉⵜⵜⵡⴰⵙⵙⵏⵏ ⴷ ⵥⵕ ⵜⵉⵖⴰⵔⴰⵙⵉⵏ ⵜⵉⵇⴱⵓⵔⵉⵏ ⵉⵜⵜⵓⵙⵎⵔⴰⵙⵏ ⵉ ⵓⴼⴰﺮⵙ ⵏ ⴽⵔⴰ ⵏ ⵜⴳⴰⵡⵉⵏ ⵏ ⵉⵍⵎⴰⵡⵏ ⵉⵥⵉⵍⵏ ⴳ ⵓⵎⴰⴹⴰⵍ."
     },
     image: "/cities-2/rabat.jpg",
     date: "2024-08-10",
     author: "Omar Tariq",
     color: "#0a1a0e",
     textColor: "#c5e8cc",
+    content: (lang: string) => {
+      const allTexts = {
+        en: {
+          intro: "Standing on a surrounding terrace overlooking the Chouara Tannery in Fes is like stepping straight into the Middle Ages. The hive of workers standing knee-deep in multi-colored stone vats has remained largely unchanged since the 11th century, utilizing completely organic processes to produce world-class Moroccan leather.",
+          h1: "1. The Traditional Curing Process",
+          p1: "Before leather is dyed, it must be prepared. Hides are soaked in a mixture of limestone, water, and pigeon droppings. The ammonia from the pigeon droppings acts as a natural softening agent, allowing the stiff hides to become supple, malleable, and ready to absorb the rich natural dyes.",
+          h2: "2. The Magic of Organic Dye Vats",
+          p2: "Once softened, the hides are transferred to circular stone dye vessels. Only natural materials are used to achieve the iconic colors: poppy flowers produce vibrant red, saffron and turmeric yield rich yellows, indigo provides deep blues, and cedar wood powder produces warm browns.",
+          h3: "3. Generation of Master Craftsmen",
+          p3: "Tanning is a gruelling, physically demanding trade. The techniques and dye secrets are passed down within families from father to son. The pride of the workers is reflected in the final leather—celebrated globally for its durability, unique natural patina, and water resistance.",
+          quote: "Fez leather holds the rich aroma of heritage and the warm color of sun-baked, medieval tradition.",
+          outro: "By choosing handmade Moroccan leather goods, you directly support a millennial craft, ensuring these traditional tanneries survive for generations to come.",
+          imageAlt: "The stone dye vats of Chouara Tannery in Fes"
+        },
+        fr: {
+          intro: "Contempler la tannerie Chouara à Fès depuis une terrasse voisine, c'est comme faire un bond dans le Moyen Âge. Ce labyrinthe de cuves en pierre où s'activent des artisans n'a pas changé depuis le XIe siècle, perpétuant une méthode de tannage 100% organique unique au monde.",
+          h1: "1. Le processus de traitement traditionnel",
+          p1: "Avant d'être teintes, les peaux doivent être préparées. Elles sont trempées dans un mélange de chaux, d'eau et de fientes de pigeon. L'ammoniaque des fientes assouplit les peaux de façon naturelle, les rendant malléables et prêtes à absorber les pigments.",
+          h2: "2. La magie des cuves de teintures végétales",
+          p2: "Une fois assouplies, les peaux passent dans les cuves de teinture circulaires. Seuls des ingrédients naturels sont utilisés : le coquelicot pour le rouge vif, le safran et le curcuma pour les jaunes dorés, l'indigo pour le bleu, et la poudre de bois de cèdre pour les bruns.",
+          h3: "3. Une transmission de père en fils",
+          p3: "Le métier de tanneur est éprouvant et exigeant physiquement. Les techniques et les secrets de coloration se transmettent de génération en génération. Ce savoir-faire donne au cuir marocain sa souplesse, sa durabilité et sa patine unique.",
+          quote: "Le cuir de Fès porte en lui l'odeur de l'histoire et les couleurs chaleureuses d'une tradition séculaire.",
+          outro: "Acheter des articles en cuir faits main au Maroc, c'est préserver un artisanat millénaire et soutenir le travail de ces familles d'artisans.",
+          imageAlt: "Cuves de teinture de la tannerie Chouara à Fès"
+        },
+        ar: {
+          intro: "الوقوف على شرفة تطل على مدبغة شوارة في فاس يشبه السفر عبر الزمن إلى العصور الوسطى. لم يتغير هذا المشهد من الحرفيين الذين يعملون وسط أحواض حجرية ملونة منذ القرن الحادي عشر، مستخدمين طرقًا طبيعية بالكامل لإنتاج الجلد المغربي ذو الشهرة العالمية.",
+          h1: "1. مرحلة المعالجة والتلين التقليدية",
+          p1: "قبل صباغة الجلود، يجب تحضيرها. تُنقع الجلود في خليط من الجير والماء وفضلات الحمام. يعمل الأمونيا الموجود في فضلات الحمام كملين طبيعي، مما يجعل الجلود الخشنة ناعمة ومرنة وجاهزة لامتصاص الأصباغ الطبيعية.",
+          h2: "2. سحر أحواض الصباغة العضوية",
+          p2: "بعد تليينها، تُنقل الجلود إلى أحواض الصباغة الحجرية الدائرية. تُستخدم فقط المواد الطبيعية للحصول على الألوان المميزة: أزهار الخشخاش للون الأحمر، والزعفران والكركم للأصفر، والنيلة للون الأزرق، ومسحوق خشب الأرز للبني الدافئ.",
+          h3: "3. حرفة تتوارثها الأجيال",
+          p3: "الدباغة هي مهنة شاقة تتطلب مجهودًا بدنيًا كبيرًا. تنتقل التقنيات وأسرار الصباغة داخل العائلات من الآباء إلى الأبناء. ينعكس فخر العمال في جودة الجلد النهائي المشهور عالميًا بمتانته ومقاومته للماء ونعومته.",
+          quote: "جلد فاس يحمل عبق التاريخ وألوان تقاليد عريقة صقلتها الشمس عبر القرون.",
+          outro: "باختيارك للمنتجات الجلدية المصنوعة يدويًا، فإنك تدعم مباشرة حرفة عريقة وتضمن استمرار هذه المدابغ التقليدية لأجيال قادمة.",
+          imageAlt: "أحواض دباغة الجلود التقليدية بفاس"
+        },
+        tz: {
+          intro: "ⵉⵎⵍⴰⵏ ⵏ ⵉⵍⵎⴰⵡⵏ ⴳ ⴼⴰⵙ ⴳⴰⵏ ⵜⴰⵏⵙⴰⵢⵜ ⵓⵔ ⵉⵜⵜⵎⵜⵜⴰⵜⵏ ⵙⴳ ⵓⵙⴳⴳⵯⴰⵙ ⵏ 1100.",
+          h1: "1. ⴰⵙⵏⵓⵊⵊⵉ ⵏ ⵉⵍⵎ",
+          p1: "ⴰⵔ ⵜⵜⵓⵙⴽⴰⵔ ⵜⵡⵓⵔⵉ ⵏ ⵉⵍⵎ ⵙ ⵜⵖﺎⵔⴰⵙⵉⵏ ⵜⵉⵇⴱⵓⵔⵉⵏ ⴰⴼⴰⴷ ⴰⴷ ⵉⴼⵙⵙⵓⵙ.",
+          h2: "2. ⵉⴽⵯⵍⴰⵏ ⵏ ⵜⴳⴰⵎⴰ",
+          p2: "ⴰⵔ ⵜⵜⵓⵙﻤⵔⴰⵙⵏ ⵉⴽⵯⵍⴰⵏ ⵏ ⵜⴳⴰⵎⴰ ⴰⵎ ⵣⵣⵄⴼⵔⴰⵏ ⴷ ⵓⴷﻑⵉⵍ ⵉ ⵜⵡⵓⵔⵉ ⵏ ⵉⵍⵎ.",
+          h3: "3. ⵜⴰⵡⵓⵔⵉ ⵏ ⵉⵎⴰⵙⵜⴰⵏⵏ",
+          p3: "ⵜⴰⵡⵓⵔⵉ ⵏ ⵉⵎⵍⴰⵏ ⵜⴳⴰ ⵜⴰⵡⵓⵔⵉ ⵉⵥⴰⵢⵢⵏ ⵏⵏⴰ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⵙ ⵓⴼⵓⵙ ⴷ ⵜⵡⵓⵔⵉ ⵏ ⵉⴼⴰสⵙⵏ.",
+          quote: "ⵉⵍⵎ ⵏ ⴼⴰⵙ ⵉⴳⴰ ⵜⴰⵏⵙⴰⵢⵜ ⵏ ⵍⵎⵖⵔⵉⴱ.",
+          outro: "ⴰⵙⵖⵥⵏ ⵏ ⵉⵍⵎ ⴰⵎⵖⵔⵉⴱⵉ ⵉⴳⴰ ⴰⵏาล ⵏ ⵜⵎⴳⵓⵔⵉ ⵜⴰⵇⴱⵓⵔⵜ.",
+          imageAlt: "ⵉⵎⵍⴰⵏ ⵏ ⴼⴰⵙ"
+        }
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
+      return (
+        <>
+          <p className="lead font-medium text-2xl text-[#0a1a0e] mb-8">{texts.intro}</p>
+          <div className="my-10 w-full h-96 relative overflow-hidden arabic-frame">
+            <Image 
+              src="/cities-2/rabat.jpg" 
+              alt={texts.imageAlt} 
+              fill 
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
+          <h2>{texts.h1}</h2>
+          <p>{texts.p1}</p>
+          <h2>{texts.h2}</h2>
+          <p>{texts.p2}</p>
+          <h2>{texts.h3}</h2>
+          <p>{texts.p3}</p>
+          <blockquote>"{texts.quote}"</blockquote>
+          <p>{texts.outro}</p>
+        </>
+      );
+    }
   },
   "andalusian-echoes-tetouan": {
     id: 5,
@@ -112,13 +413,88 @@ const MOCK_POSTS = {
       en: "Explore how the 'White Dove' of Morocco preserves the artistic and musical heritage brought by Andalusian refugees centuries ago.",
       fr: "Découvrez comment la « Colombe Blanche » du Maroc préserve le patrimoine artistique et musical apporté par les réfugiés andalous il y a des siècles.",
       ar: "استكشف كيف تحافظ «الحمامة البيضاء» في المغرب على التراث الفني والموسيقي الذي جلبه اللاجئون الأندلسيون قبل قرون.",
-      tz: "ⵔⵣⵓ ⵎⴰⵎⴽ ⵜⵙⵙⴼⵔⵖ 'ⵜⵉⵜⴱⵉⵔⵜ ⵜⵓⵎⵍⵉⵍⵜ' ⵏ ⵍⵎⵖⵔⵉⴱ ⵜⴰⵢⵙⵉ ⵜⴰⵥⵓⵕⴰⵏⵜ ⴷ ⵜⵎⵓⵣⵉⵇⵜ ⵏⵏⴰ ⴷ ⵉⵡⵉⵏ ⵉⵎⵣⵡⴰⴳⵏ ⵉⵏⴷⴰⵍⵓⵙⵉⵢⵏ ⴳ ⵉⴳⵉⵎⵉⵏ ⵏ ⵉⵙⴳⴳⵯⴰⵙⵏ."
+      tz: "ⵔⵣⵓ ⵎⴰⵎⴽ ⵜⵙⵙⴼⵔⵖ 'ⵜⵉⵜⴱⵉⵔⵜ ⵜⵓⵎⵍⵉⵍⵜ' ⵏ ⵍⵎⵖⵔⵉⴱ ⵜⴰયସⵉ ⵜⴰⵥⵓⵕⴰⵏⵜ ⴷ ⵜⵎⵓⵣⵉⵇⵜ ⵏⵏⴰ ⴷ ⵉⵡⵉⵏ ⵉⵎⵣⵡⴰⴳⵏ ⵉⵏⴷⴰⵍⵓⵙⵉⵢⵏ ⴳ ⵉⴳⵉⵎⵉⵏ ⵏ ⵉⵙⴳⴳⵯⴰⵙⵏ."
     },
     image: "/cities-2/hamama.jpg",
     date: "2024-09-05",
     author: "Leila Mernissi",
     color: "#1a1200",
     textColor: "#f5e6b0",
+    content: (lang: string) => {
+      const allTexts = {
+        en: {
+          intro: "Nestled at the foot of the Rif Mountains, Tetouan—often called the 'White Dove'—is a unique cultural sanctuary. Following the fall of Granada in 1492, Andalusian refugees rebuilt the city, weaving a refined Spanish-Moorish heritage directly into its medina, architecture, music, and crafts.",
+          h1: "1. The Hispano-Moorish Medina",
+          p1: "Tetouan's medina is a UNESCO World Heritage site and stands as one of the best-preserved examples of Andalusian influence in North Africa. The stark white houses, tiled courtyards, wrought-iron windows, and orange-tree plazas are reminiscent of southern Spain, creating a tranquil urban landscape of white and green.",
+          h2: "2. The Sacred Melodies of Tarab Al-Ala",
+          p2: "Tetouan is a primary keeper of Al-Ala (Andalusian classical music). Originating in Cordoba and Seville, this orchestral music combines poetry and classical instruments like the Oud, Rabab, and Viols. The musical lineage is preserved inside local conservatories, filling medina courtyards with nostalgic echoes of a golden age.",
+          h3: "3. Exquisite Local Arts: Embroidery and Wood",
+          p3: "The Andalusian influence is strongly felt in Tetouani embroidery, known for its gold-threaded, structural geometric patterns. Similarly, painted woodcarving (Zouak), seen on ceilings, doors, and bridal chests, features rich floral patterns that represent a dialogue of cultures.",
+          quote: "Tetouan is a bridge made of white stone, connecting Andalusian memories to African soil.",
+          outro: "Visiting Tetouan is an invitation to explore a softer, slower side of Moroccan culture, where every alleyways whispers stories of exile, refinement, and artistic fusion.",
+          imageAlt: "White facades of Tetouan Medina"
+        },
+        fr: {
+          intro: "Nichée au pied des montagnes du Rif, Tétouan, surnommée la « Colombe Blanche », est un sanctuaire culturel unique. Reconstruite par les réfugiés andalous après la chute de Grenade en 1492, la ville a tissé un héritage hispano-mauresque raffiné au cœur de sa médina, de son architecture et de ses arts.",
+          h1: "1. La médina hispano-mauresque",
+          p1: "Classée au patrimoine mondial de l'UNESCO, la médina de Tétouan est l'un des exemples les plus achevés de l'influence andalouse en Afrique du Nord. Ses façades d'une blancheur éclatante, ses patios fleuris, ses fenêtres en fer forgé et ses places plantées d'orangers rappellent le sud de l'Espagne.",
+          h2: "2. Les mélodies sacrées du Tarab Al-Ala",
+          p2: "Tétouan est le gardien de la musique classique andalouse (Al-Ala). Née à Cordoue et Séville, cette musique savante mêle poésie et instruments traditionnels comme l'Oud et le Rabab. Cet héritage musical résonne encore lors des festivals locaux dans les cours de la médina.",
+          h3: "3. La broderie tétouanaise et le Zouak",
+          p3: "L'art andalou se retrouve dans la broderie de Tétouan, célèbre pour ses fils d'or et ses motifs complexes. De même, la peinture sur bois (Zouak), présente sur les plafonds et coffres de mariage, illustre la finesse géométrique et florale de cet artisanat.",
+          quote: "Tétouan est un pont de pierre blanche reliant la mémoire andalouse à la terre africaine.",
+          outro: "Découvrir Tétouan est une invitation à apprécier une facette poétique et raffinée du Maroc, où chaque ruelle raconte une histoire de fusion artistique.",
+          imageAlt: "Façades blanches de la médina de Tétouan"
+        },
+        ar: {
+          intro: "تقع تطوان، الملقبة بـ 'الحمامة البيضاء'، عند سفح جبال الريف، وهي ملاذ ثقافي فريد. بعد سقوط غرناطة عام 1492، أعاد اللاجئون الأندلسيون بناء المدينة، ونسجوا تراثًا أندلسيًا موريسكيًا راقيًا في معمارها وموسيقاها وحرفها التقليدية.",
+          h1: "1. المدينة العتيقة ذات الطراز الأندلسي الموريسكي",
+          p1: "المدينة العتيقة لتطوان مصنفة كإرث عالمي لليونسكو، وهي واحدة من أفضل النماذج المحفوظة للتأثير الأندلسي في شمال إفريقيا. وتذكر المنازل البيضاء الناصعة، والساحات المبلطة، والنوافذ الحديدية، وساحات أشجار البرتقال بجنوب إسبانيا.",
+          h2: "2. الألحان الخالدة لطرب الآلة",
+          p2: "تطوان هي الحارس الرئيسي للموسيقى الأندلسية الكلاسيكية (طرب الآلة). تجمع هذه الموسيقى الأوركسترالية التي نشأت في قرطبة وإشبيلية بين الشعر والآلات التقليدية مثل العود والرباب، ويتم الحفاظ عليها داخل معاهد المدينة.",
+          h3: "3. الفنون المحلية الرائعة: التطريز والزواق",
+          p3: "يتجلى التأثير الأندلسي بقوة في التطريز التطواني المعروف بخيوطه الذهبية وأنماطه الهندسية. وبالمثل، يتميز فن الرسم على الخشب (الزواق) الموجود على الأسقف والصناديق التقليدية بنقوش نباتية تمثل حوارًا ثقافيًا.",
+          quote: "تطوان جسر من الحجر الأبيض يربط الذاكرة الأندلسية بالتراب الإفريقي.",
+          outro: "زيارة تطوان هي دعوة لاستكشاف جانب هادئ وراقٍ من الثقافة المغربية، حيث تهمس كل زاوية بقصص الفن والجمال المشترك.",
+          imageAlt: "واجهات بيضاء بالمدينة القديمة لتطوان"
+        },
+        tz: {
+          intro: "ⵟⵉⵟⵡⴰⵏ ⵜⴳⴰ ⵜⵉⵜⴱⵉⵔⵜ ⵜⵓⵎⵍⵉⵍⵜ ⵏ ⵍⵎⵖﺮⵉⴱ. ⵜⴳⴰ ⴰⴷⵖⴰⵔ ⵏ ⵓⵙⵎⵔⵙ ⵏ ⵜⵓⵙⵙⵏⴰ ⵜⴰⵏⴷⴰⵍⵓⵙⵉⵜ.",
+          h1: "1. ⵜⵉⴳⵎⵎⴰ ⵜⵓⵎⵍⵉⵍⵉⵏ",
+          p1: "ⵜⵉⴳⵎⵎⴰ ⵏ ⵟⵉⵟⵡⴰⵏ ⴳⴰⵏⵜ ⵜⵓⵎⵍⵉⵍⵉⵏ ⴷ ⵜⵉⵏⵇⵇⵉⵙⵉⵏ ⵏ ⵡⵓⵥⵍⴰⵢ ⴰⵏⴷⴰⵍⵓⵙⵉ.",
+          h2: "2. ⴰⵎⴰⵔⴳ ⴰⵏⴷⴰⵍⵓⵙⵉ ( Al-Ala )",
+          p2: " طرب الآلة ⵉⴳⴰ ⴰⵎⴰⵔⴳ ⴰⵇⴱⵓⵔ ⵏ ⵟⵉⵟⵡⴰⵏ ⵏⵏⴰ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⴳ ⵜⴳⵎⵎⴰ ⵜⵉⵇⴱⵓⵔⵉⵏ.",
+          h3: "3. ⵜⴰⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ ⴷ ⵓⵥⵟⵟⴰ",
+          p3: "ⵜⴰⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ ⴰⵎ ⵓⵥⵟⵟⴰ ⴷ ⵓⴽⵍⵓ ⵏ ⵓⴼⵓⵙ ⵉⴳⴰ ⴰⵙଫⵔⵓ ⵏ ⵜⵓⵙⵙⵏⴰ ⵏ ⵜⵖⵔⵎⵜ.",
+          quote: "ⵟⵉⵟⵡⴰⵏ ⵜⴳⴰ ⴰⵙⴳⴷⵣ ⴳⵔ ⵍⵎⵖﺮيب ⴷ ⵡⴰⵏⴷⴰⵍⵓⵙ.",
+          outro: "ⵔⵣⵓ ⴳ ⵟⵉⵟⵡⴰⵏ ⴰⴼⴰⴷ ⴰⴷ ⵜⴰⴼⴷ ⵜⵓⵙⵙⵏⴰ ⵉⵥⵉⵍⵏ.",
+          imageAlt: "ⵟⵉⵟⵡⴰⵏ"
+        }
+      };
+      const texts = (allTexts as any)[lang] || allTexts.en;
+      return (
+        <>
+          <p className="lead font-medium text-2xl text-[#1a1200] mb-8">{texts.intro}</p>
+          <div className="my-10 w-full h-96 relative overflow-hidden arabic-frame">
+            <Image 
+              src="/cities-2/hamama.jpg" 
+              alt={texts.imageAlt} 
+              fill 
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
+          </div>
+          <h2>{texts.h1}</h2>
+          <p>{texts.p1}</p>
+          <h2>{texts.h2}</h2>
+          <p>{texts.p2}</p>
+          <h2>{texts.h3}</h2>
+          <p>{texts.p3}</p>
+          <blockquote>"{texts.quote}"</blockquote>
+          <p>{texts.outro}</p>
+        </>
+      );
+    }
   },
   "ultimate-gift-guide-artisanal-moroccan-finds": {
     id: 6,
