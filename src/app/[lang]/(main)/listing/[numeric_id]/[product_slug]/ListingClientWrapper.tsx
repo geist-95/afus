@@ -686,7 +686,7 @@ export default function ListingClientWrapper({
                 toggle({
                   id: fetchedProduct.id,
                   title: fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en,
-                  price_mad: currentPrice,
+                  price_mad: activeCurrentPrice,
                   image: fetchedProduct.media_gallery?.[0] || initialImage,
                   shop_name: fetchedShop?.name || initialShopName,
                   slug: fetchedProduct.slug_translations?.[lang] || fetchedProduct.slug_translations?.en || productSlug,
