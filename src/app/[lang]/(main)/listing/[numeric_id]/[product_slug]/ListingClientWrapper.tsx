@@ -273,17 +273,20 @@ export default function ListingClientWrapper({
     return () => clearInterval(interval);
   }, [fetchedProduct, isSaleActive]);
 
+  const isSeeded = fetchedProduct?.title_translations?._is_seeded || fetchedProduct?.slug_translations?._is_seeded;
+  const isPersonalizable = fetchedProduct?.title_translations?._is_personalizable || fetchedProduct?.slug_translations?._is_personalizable;
+
   // Determine current active price
-  let basePrice = fetchedProduct ? fetchedProduct.base_price_mad : parseFloat(initialPrice || "0");
-  let currentPrice = basePrice;
+  const activeBasePrice = fetchedProduct ? fetchedProduct.base_price_mad : parseFloat(initialPrice || "0");
+  let activeCurrentPrice = activeBasePrice;
   if (isSaleActive && fetchedProduct) {
-    currentPrice = fetchedProduct.sale_price_mad;
+    activeCurrentPrice = fetchedProduct.sale_price_mad;
   }
 
   if (fetchedProduct && selectedVariantId) {
     const activeVariant = fetchedProduct.variants.find((v: any) => v.id === selectedVariantId);
     if (activeVariant && activeVariant.price_override_mad) {
-      currentPrice = activeVariant.price_override_mad;
+      activeCurrentPrice = activeVariant.price_override_mad;
     }
   }
 
@@ -304,7 +307,7 @@ export default function ListingClientWrapper({
   };
 
   const shippingCost = getShippingCost();
-  const totalCOD = currentPrice + shippingCost;
+  const totalCOD = activeCurrentPrice + shippingCost;
 
   // Form submission handler removed in favor of cart
 
@@ -527,14 +530,14 @@ export default function ListingClientWrapper({
             {/* Price */}
             <div className="space-y-2 py-2">
               <div className="flex flex-wrap items-baseline gap-3">
-                {isSaleActive ? (
+                {isSaleActive && fetchedProduct ? (
                   <>
                     <span className="text-3xl tracking-wider text-warning">
                       <span className="font-normal">Now at </span>
-                      <span className="font-bold">{fetchedProduct.sale_price_mad} DH</span>
+                      <span className="font-bold">{fetchedProduct.sale_price_mad} {t.mad}</span>
                     </span>
                     <span className="text-lg text-black/30 line-through tracking-wider lowercase">
-                      {basePrice} {t.mad}
+                      {activeBasePrice} {t.mad}
                     </span>
                     <span className="bg-warning text-white text-xs rounded-full font-bold px-2.5 py-0.5 tracking-wider">
                       sale
@@ -543,7 +546,7 @@ export default function ListingClientWrapper({
                 ) : (
                   <span className="text-3xl tracking-wider text-black">
                     <span className="font-normal">Now at </span>
-                    <span className="font-bold">{currentPrice} DH</span>
+                    <span className="font-bold">{activeCurrentPrice} {t.mad}</span>
                   </span>
                 )}
               </div>
@@ -574,36 +577,76 @@ export default function ListingClientWrapper({
             </div>
           </div>
 
+          {/* Variant Selector */}
+          {fetchedProduct?.variants && fetchedProduct.variants.length > 0 && (
+            <div className="space-y-2 text-sm capitalize">
+              <label className="block font-bold text-black/70 capitalize">
+                {(() => {
+                  const firstVariant = fetchedProduct.variants[0];
+                  const attrs = firstVariant.attributes?.[lang] || firstVariant.attributes?.en || {};
+                  const keys = Object.keys(attrs).filter((k) => !k.startsWith('_'));
+                  return keys.length > 0 ? keys.join(' / ') : (t.variantLabel || 'Select option');
+                })()}
+              </label>
+              <Select value={selectedVariantId} onValueChange={(val) => setSelectedVariantId(val)}>
+                <SelectTrigger className="w-full h-12 !rounded-md border-neutral-200 shadow-none font-bold text-black bg-white justify-between text-left">
+                  <SelectValue placeholder={t.variantLabel || 'Select option'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {fetchedProduct.variants.map((v: any) => {
+                    const attrs = v.attributes?.[lang] || v.attributes?.en || {};
+                    const labelStr = Object.entries(attrs)
+                      .filter(([k]) => !k.startsWith('_'))
+                      .map(([_, val]) => val)
+                      .join(' - ') || v.sku;
+                    const priceDiff = v.price_override_mad && v.price_override_mad !== activeBasePrice 
+                      ? ` (${v.price_override_mad} ${t.mad})` 
+                      : '';
+                    return (
+                      <SelectItem key={v.id} value={v.id}>
+                        {labelStr}{priceDiff}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Customization Input */}
-          <div className="space-y-2 text-sm capitalize">
-            <label className="block font-bold text-black/70 capitalize">{t.customizationLabel}</label>
-            <textarea
-              rows={3}
-              value={customizationText}
-              onChange={(e) => setCustomizationText(e.target.value)}
-              placeholder={t.customizationPlaceholder}
-              className="flex min-h-[80px] w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-none"
-            />
-          </div>
+          {(!isSeeded || isPersonalizable) && (
+            <div className="space-y-2 text-sm capitalize">
+              <label className="block font-bold text-black/70 capitalize">{t.customizationLabel}</label>
+              <textarea
+                rows={3}
+                value={customizationText}
+                onChange={(e) => setCustomizationText(e.target.value)}
+                placeholder={t.customizationPlaceholder}
+                className="flex min-h-[80px] w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-neutral-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 shadow-none"
+              />
+            </div>
+          )}
 
 
 
           {/* Quantity Selector */}
-          <div className="space-y-2 text-sm capitalize">
-            <label className="block font-bold text-black/70 capitalize">{t.quantity}</label>
-            <Select value={quantity.toString()} onValueChange={(val) => setQuantity(parseInt(val) || 1)}>
-              <SelectTrigger className="w-full h-12 !rounded-md border-neutral-200 shadow-none font-bold text-black text-center bg-white justify-between">
-                <SelectValue placeholder="1" />
-              </SelectTrigger>
-              <SelectContent>
-                {[...Array(10)].map((_, i) => (
-                  <SelectItem key={i + 1} value={(i + 1).toString()}>
-                    {i + 1}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {!isSeeded && (
+            <div className="space-y-2 text-sm capitalize">
+              <label className="block font-bold text-black/70 capitalize">{t.quantity}</label>
+              <Select value={quantity.toString()} onValueChange={(val) => setQuantity(parseInt(val) || 1)}>
+                <SelectTrigger className="w-full h-12 !rounded-md border-neutral-200 shadow-none font-bold text-black text-center bg-white justify-between">
+                  <SelectValue placeholder="1" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[...Array(10)].map((_, i) => (
+                    <SelectItem key={i + 1} value={(i + 1).toString()}>
+                      {i + 1}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-2">
             {/* Add to Cart Button */}
@@ -620,7 +663,7 @@ export default function ListingClientWrapper({
                     shop_id: fetchedShop.id,
                     shop_city: fetchedShop.merchant_city,
                     title: fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en,
-                    price_mad: currentPrice,
+                    price_mad: activeCurrentPrice,
                     quantity: quantity,
                     image: fetchedProduct.media_gallery[0] || initialImage,
                     customizationText: customizationText,

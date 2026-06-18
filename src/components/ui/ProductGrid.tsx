@@ -63,6 +63,14 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
     'product';
   const shopName = shop?.name || 'Artisan';
 
+  const isVideo = (url?: string) => {
+    if (!url) return false;
+    return url.endsWith('.mp4') || url.includes('data:video/') || url.includes('video');
+  };
+
+  const activeMedia = isHovered && imgHover ? imgHover : img;
+  const showVideo = isVideo(activeMedia);
+
   return (
     <Link 
       href={`/${lang}/listing/${numId}/${slug}`} 
@@ -71,15 +79,26 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="aspect-square relative overflow-hidden bg-neutral-100 arabic-frame">
-        <img
-          src={isHovered && imgHover ? imgHover : img}
-          alt={title}
-          width={300}
-          height={300}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+        {showVideo ? (
+          <video
+            src={activeMedia}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <img
+            src={activeMedia}
+            alt={title}
+            width={300}
+            height={300}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        )}
       </div>
       <div className="mt-2 space-y-1">
         <p className="text-sm font-medium text-neutral-800 truncate leading-tight">{title}</p>
