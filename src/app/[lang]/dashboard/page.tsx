@@ -15,6 +15,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   const [session, setSession] = useState<UserSession | null>(null);
   const [ordersCount, setOrdersCount] = useState(0);
   const [productsCount, setProductsCount] = useState(0);
+  const [products, setProducts] = useState<any[]>([]);
   const [revenue, setRevenue] = useState(0);
   const t = getDictionary(lang).dashboard;
 
@@ -28,6 +29,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
         const allProducts = await fetchProducts();
         const shopProducts = allProducts.filter((p) => p.shop_id === user.shop.id);
         setProductsCount(shopProducts.length);
+        setProducts(shopProducts);
 
         // Load real orders count and revenue
         try {
@@ -106,38 +108,65 @@ export default function DashboardPage({ params }: DashboardPageProps) {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold tracking-tight">{t.yourProducts}</h2>
-                <Link href={`/${lang}/dashboard/upload`}>
+                <Link href={`/${lang}/dashboard/products`}>
                   <button className="inline-flex items-center justify-center whitespace-nowrap text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 h-9 px-3 text-neutral-500 hover:text-black font-medium">{t.viewAll}</button>
                 </Link>
               </div>
               <div className="space-y-3">
-                <Link className="block" href={`/${lang}/dashboard/upload`}>
+                <Link className="block" href={`/${lang}/dashboard/products/new`}>
                   <div className="w-full rounded-lg border-2 border-dashed border-neutral-300 p-4 flex items-center justify-center text-neutral-500 hover:text-black hover:border-neutral-400 hover:bg-neutral-50 transition-colors cursor-pointer group gap-2">
                     <Plus className="w-[20px] h-[20px]" />
                     <span className="text-sm font-semibold tracking-wide">{t.addNewProduct}</span>
                   </div>
                 </Link>
 
-                {/* Draft Placeholders (These would be dynamic ideally) */}
-                {[1, 2, 3].map((num) => (
-                  <div key={num} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between opacity-60">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded border border-neutral-200 bg-neutral-100 flex items-center justify-center shrink-0">
-                        <Package className="w-[20px] h-[20px] text-neutral-400" />
+                {products.length > 0 ? (
+                  products.slice(0, 3).map((p) => {
+                    const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'Artisan Craft';
+                    const image = p.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
+                    return (
+                      <div key={p.id} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded border border-neutral-200 bg-neutral-100 flex items-center justify-center shrink-0 overflow-hidden">
+                            <img src={image} alt={title} className="w-full h-full object-cover" />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-sm text-neutral-800 line-clamp-1">{title}</div>
+                            <div className="text-xs text-neutral-500 mt-0.5">{p.base_price_mad} MAD</div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-[10px] font-bold tracking-wider uppercase">{lang === 'fr' ? 'Actif' : lang === 'ar' ? 'نشط' : 'Active'}</span>
+                          <Link href={`/${lang}/dashboard/products/${p.id}`}>
+                            <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 hover:text-black h-8 w-8 text-neutral-400">
+                              <MoreHorizontal className="w-[18px] h-[18px]" />
+                            </button>
+                          </Link>
+                        </div>
                       </div>
-                      <div>
-                        <div className="font-semibold text-sm text-neutral-800">{t.draftProduct} #{num}</div>
-                        <div className="text-xs text-neutral-500 mt-0.5">{t.physicalItem} • 0.00 MAD</div>
+                    );
+                  })
+                ) : (
+                  [1, 2, 3].map((num) => (
+                    <div key={num} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between opacity-60">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded border border-neutral-200 bg-neutral-100 flex items-center justify-center shrink-0">
+                          <Package className="w-[20px] h-[20px] text-neutral-400" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-sm text-neutral-800">{t.draftProduct} #{num}</div>
+                          <div className="text-xs text-neutral-500 mt-0.5">{t.physicalItem} • 0.00 MAD</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">{t.draft}</span>
+                        <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 hover:text-black h-8 w-8 text-neutral-400">
+                          <MoreHorizontal className="w-[18px] h-[18px]" />
+                        </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-1 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">{t.draft}</span>
-                      <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 rounded-xl hover:bg-neutral-100 hover:text-black h-8 w-8 text-neutral-400">
-                        <MoreHorizontal className="w-[18px] h-[18px]" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
