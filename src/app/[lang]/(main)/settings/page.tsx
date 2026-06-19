@@ -41,10 +41,9 @@ export default function SettingsPage() {
       setSaving(false);
       setMessage("Profile updated successfully.");
       
-      // Update local storage session mock
+      // Update session mock
       if (session) {
         const updated = { ...session, full_name: fullName, phone_number: phone };
-        localStorage.setItem("afus_session_user", JSON.stringify(updated));
         setSession(updated);
       }
     }, 800);

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockProducts, mockShops, staticCategories, fetchProducts, supabase, legacyCategoryMapping } from "@/lib/supabase";
+import { fetchProductByNumericId, fetchRelatedProducts, staticCategories, fetchProducts, supabase, legacyCategoryMapping } from "@/lib/supabase";
 import { getActiveSession } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
@@ -170,14 +170,11 @@ export default function ListingClientWrapper({
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const allProducts = await fetchProducts();
-        setAllProductsList(allProducts);
-        setAllShopsList(mockShops);
-        const product = allProducts.find(
-          (p) => Number(p.numeric_id) === Number(numericId) || p.slug_translations?.[lang as 'en' | 'fr' | 'ar' | 'tz'] === productSlug
-        );
-
+        const product = await fetchProductByNumericId(numericId);
+        
         if (product) {
+          const related = await fetchRelatedProducts(product.category_id, product.id);
+          setAllProductsList(related);
           if (product.media_gallery && product.media_gallery.length > 0) {
             setActiveImage(product.media_gallery[0]);
           } else {
@@ -196,9 +193,6 @@ export default function ListingClientWrapper({
           }
           if (shopData) {
             setFetchedShop(shopData);
-          } else {
-            const shop = mockShops.find((s) => s.id === product.shop_id);
-            if (shop) setFetchedShop(shop);
           }
 
           // If product has variants, set the first variant as default
@@ -362,7 +356,13 @@ export default function ListingClientWrapper({
       <div className="flex justify-center items-center gap-2 text-sm text-black/40 font-medium flex-wrap">
         <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
         <span>/</span>
-        <span className="capitalize hover:text-black transition-colors cursor-default">{productCategoryName}</span>
+        {matchedCategory ? (
+          <Link href={`/${lang}/category/${matchedCategory.slug}`} className="capitalize hover:text-black transition-colors">
+            {productCategoryName}
+          </Link>
+        ) : (
+          <span className="capitalize hover:text-black transition-colors cursor-default">{productCategoryName}</span>
+        )}
         <span>/</span>
         <span className="text-black capitalize truncate max-w-[240px]">
           {fetchedProduct ? (fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en) : initialTitle}

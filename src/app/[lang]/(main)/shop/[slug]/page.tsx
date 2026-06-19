@@ -1,4 +1,4 @@
-import { fetchProducts, fetchShopBySlug, fetchProfile, fetchShopReviews } from "@/lib/supabase";
+import { fetchShopProducts, fetchShopBySlug, fetchProfile, fetchShopReviews } from "@/lib/supabase";
 import ShopClientWrapper from "./ShopClientWrapper";
 import type { Metadata } from "next";
 
@@ -38,8 +38,7 @@ export default async function ShopPage({ params }: PageProps) {
   const shop = await fetchShopBySlug(slug);
 
   // Filter products by this shop
-  const allProducts = await fetchProducts();
-  const shopProducts = allProducts.filter((p) => p.shop_id === shop.id);
+  const shopProducts = await fetchShopProducts(shop.id);
 
   let owner = null;
   try {

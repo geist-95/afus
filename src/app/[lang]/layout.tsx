@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/next";
 import LanguageModal from "@/components/ui/LanguageModal";
 import { Readex_Pro, Instrument_Sans, Noto_Sans_Tifinagh } from 'next/font/google';
 import { Toaster } from "sonner";
-import AutoPublisher from "@/components/ui/AutoPublisher";
 import "../globals.css";
 
 const readexPro = Readex_Pro({
@@ -140,7 +139,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <WishlistProvider>
         <CartProvider>
           <LanguageModal currentLang={lang} />
-          <AutoPublisher />
           {children}
           <Toaster position="top-center" richColors />
           <SpeedInsights />

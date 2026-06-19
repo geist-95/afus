@@ -639,3 +639,25 @@ ALTER TABLE beta_reports ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow anonymous inserts to beta_reports" ON beta_reports FOR INSERT WITH CHECK (true);
 -- Restrict reads (only admin or service role can read)
 CREATE POLICY "Restrict beta_reports reads" ON beta_reports FOR SELECT USING (false);
+
+-- 10. COLLECTIONS Table
+CREATE TABLE collections (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
+    name_translations JSONB NOT NULL DEFAULT '{}'::jsonb, -- translations for ar, fr, en
+    product_ids UUID[] NOT NULL DEFAULT '{}'::UUID[], -- list of products in the collection
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+ALTER TABLE collections ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public read access to collections" ON collections
+    FOR SELECT USING (true);
+
+CREATE POLICY "Allow shop owners to manage collections" ON collections
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM shops 
+            WHERE shops.id = collections.shop_id AND shops.owner_id = auth.uid()
+        )
+    );

@@ -18,32 +18,7 @@ interface ProductGridProps {
 
 export function SimpleProductCard({ product, lang, shop, className }: { product: any; lang: string; shop?: any; className?: string }) {
   const [isHovered, setIsHovered] = useState(false);
-  const [reviews, setReviews] = useState<any[]>(product?.reviews || []);
-  const [loading, setLoading] = useState(!product?.reviews);
-
-  useEffect(() => {
-    if (product?.reviews) {
-      setReviews(product.reviews);
-      return;
-    }
-    let active = true;
-    async function loadReviews() {
-      try {
-        const data = await fetchProductReviews(product.id);
-        if (active) {
-          setReviews(data);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    loadReviews();
-    return () => {
-      active = false;
-    };
-  }, [product.id, product.reviews]);
+  const reviews: any[] = product?.reviews || [];
 
   const reviewCount = reviews.length;
   const averageRating = reviewCount > 0 
@@ -142,32 +117,7 @@ export function ProductCard({
   const [isHovered, setIsHovered] = useState(false);
   const { addItem } = useCart();
 
-  const [reviews, setReviews] = useState<any[]>(product?.reviews || []);
-  const [loading, setLoading] = useState(!product?.reviews);
-
-  useEffect(() => {
-    if (product?.reviews) {
-      setReviews(product.reviews);
-      return;
-    }
-    let active = true;
-    async function loadReviews() {
-      try {
-        const data = await fetchProductReviews(product.id);
-        if (active) {
-          setReviews(data);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    loadReviews();
-    return () => {
-      active = false;
-    };
-  }, [product.id, product.reviews]);
+  const reviews: any[] = product?.reviews || [];
 
   const reviewCount = reviews.length;
   const averageRating = reviewCount > 0 
@@ -354,22 +304,6 @@ export default function ProductGrid({
 
   useEffect(() => {
     let all = [...initialProducts];
-    
-    // Load client-published items from localStorage
-    const localRaw = localStorage.getItem('local_products');
-    if (localRaw) {
-      try {
-        const localProducts = JSON.parse(localRaw);
-        if (Array.isArray(localProducts) && localProducts.length > 0) {
-          const validLocal = localProducts.filter(
-            (p) => p && typeof p === 'object' && p.title_translations
-          );
-          all = [...validLocal, ...initialProducts];
-        }
-      } catch (e) {
-        console.error('Failed to parse local_products:', e);
-      }
-    }
 
     if (categoryFilterId) {
       all = all.filter((p) => {

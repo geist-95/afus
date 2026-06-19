@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
-import { supabase, isPlaceholder } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { getDictionary } from '@/lib/i18n';
 import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload, Bell } from 'lucide-react';
 import Link from 'next/link';
@@ -111,42 +111,6 @@ export default function SettingsPage({ params }: SettingsPageProps) {
       announcement,
       announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : lang === 'tz' ? 'tz' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
     };
-
-    const isMockMode = isPlaceholder || !isUUID(session.id) || (session.shop && !isUUID(session.shop.id));
-
-    if (isMockMode) {
-      setTimeout(() => {
-        if (session.shop) {
-          const updatedSession = {
-            ...session,
-            shop: {
-              ...session.shop,
-              name: shopName,
-              slug: shopSlug || session.shop.slug,
-              merchant_city: city,
-              pickup_address_street: address,
-              faq_translations: faqs,
-              metadata,
-              logo_url: logoUrl,
-              banner_url: coverUrl,
-              description_translations: {
-                en: description,
-                fr: description,
-                ar: description
-              }
-            },
-            email_notifications_orders: emailOrders,
-            email_notifications_messages: emailMessages
-          };
-          localStorage.setItem('afus_session_user', JSON.stringify(updatedSession));
-          setSession(updatedSession as UserSession);
-        }
-        setSuccess('Shop updated successfully.');
-        setLoading(false);
-        setTimeout(() => setSuccess(''), 4000);
-      }, 500);
-      return;
-    }
 
     try {
 
@@ -286,7 +250,6 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           email_notifications_orders: emailOrders,
           email_notifications_messages: emailMessages
         };
-        localStorage.setItem('afus_session_user', JSON.stringify(updatedSession));
         setSession(updatedSession as UserSession);
       }
       
@@ -313,7 +276,6 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           email_notifications_orders: emailOrders,
           email_notifications_messages: emailMessages
         };
-        localStorage.setItem('afus_session_user', JSON.stringify(updatedSession));
         setSession(updatedSession as UserSession);
       }
     } catch (err: any) {

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { getActiveSession, logoutUser, UserSession } from '@/lib/auth';
 import { useCart } from '@/lib/cart';
 import { useWishlist } from '@/lib/wishlist';
-import { staticCategories, fetchProducts } from '@/lib/supabase';
+import { staticCategories, fetchRecentProductsForShops } from '@/lib/supabase';
 import { getFollowedShops, getLastCheckedNotifications, updateLastCheckedNotifications } from '@/lib/followers';
 import LoginModal from './LoginModal';
 import StoreOnboardingModal from './StoreOnboardingModal';
@@ -79,12 +79,7 @@ export default function NavBar({ lang }: NavBarProps) {
       const lastCheckedStr = getLastCheckedNotifications();
       const lastChecked = new Date(lastCheckedStr).getTime();
       
-      const allProds = await fetchProducts();
-      const recent = allProds.filter(p => {
-        if (!followed.includes(p.shop_id)) return false;
-        const createdAt = new Date(p.created_at).getTime();
-        return createdAt > lastChecked;
-      });
+      const recent = await fetchRecentProductsForShops(followed, lastChecked);
       setNewAlerts(recent);
     }
     // Only fetch/check if modal is closed so we don't clear alerts while viewing them

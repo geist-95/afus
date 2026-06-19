@@ -30,14 +30,14 @@ export default function ProductsManagerPage({ params }: PageProps) {
         return;
       }
       setSession(activeUser);
-      setAuthLoading(false);
 
       if (activeUser.shop) {
-        const { fetchProducts } = await import('@/lib/supabase');
-        const all = await fetchProducts();
-        const filtered = all.filter((p) => p.shop_id === activeUser.shop.id);
-        setShopProducts(filtered);
+        const { fetchShopProducts } = await import('@/lib/supabase');
+        const shopProducts = await fetchShopProducts(activeUser.shop.id);
+        setShopProducts(shopProducts);
       }
+      
+      setAuthLoading(false);
     }
     
     checkAuth();
@@ -118,13 +118,17 @@ export default function ProductsManagerPage({ params }: PageProps) {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={async () => {
                           const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette annonce ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟' : 'Are you sure you want to delete this listing?';
                           if (confirm(confirmMsg)) {
-                            const localProducts = JSON.parse(localStorage.getItem('local_products') || '[]');
-                            const updated = localProducts.filter((item: any) => item.id !== p.id && item.numeric_id !== Number(p.id) && item.numeric_id !== p.numeric_id);
-                            localStorage.setItem('local_products', JSON.stringify(updated));
-                            setShopProducts(prev => prev.filter(item => item.id !== p.id && item.numeric_id !== p.numeric_id));
+                            const { supabase } = await import('@/lib/supabase');
+                            const { error } = await supabase.from('products').delete().eq('id', p.id);
+                            if (error) {
+                              console.error('Failed to delete product', error);
+                              alert('Failed to delete product');
+                            } else {
+                              setShopProducts(prev => prev.filter(item => item.id !== p.id));
+                            }
                           }
                         }}
                         className="flex-1 text-red-600 hover:bg-red-50 border border-neutral-200 hover:border-red-200 px-2 py-2 rounded-lg transition-colors text-xs font-bold"

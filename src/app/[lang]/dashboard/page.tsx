@@ -5,6 +5,7 @@ import { getActiveSession, UserSession } from '@/lib/auth';
 import { getDictionary } from '@/lib/i18n';
 import Link from 'next/link';
 import { Plus, Package, MoreHorizontal, Wallet, Store } from 'lucide-react';
+import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 
 interface DashboardPageProps {
   params: Promise<{ lang: string }>;
@@ -17,6 +18,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   const [productsCount, setProductsCount] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [revenue, setRevenue] = useState(0);
+  const [authLoading, setAuthLoading] = useState(true);
   const t = getDictionary(lang).dashboard;
 
   useEffect(() => {
@@ -25,9 +27,8 @@ export default function DashboardPage({ params }: DashboardPageProps) {
       setSession(user);
       if (user && user.shop) {
         // Load real product count
-        const { fetchProducts, fetchOrders } = await import('@/lib/supabase');
-        const allProducts = await fetchProducts();
-        const shopProducts = allProducts.filter((p) => p.shop_id === user.shop.id);
+        const { fetchShopProducts, fetchOrders } = await import('@/lib/supabase');
+        const shopProducts = await fetchShopProducts(user.shop.id);
         setProductsCount(shopProducts.length);
         setProducts(shopProducts);
 
@@ -41,10 +42,12 @@ export default function DashboardPage({ params }: DashboardPageProps) {
           console.warn('Failed to load orders for dashboard stats:', e);
         }
       }
+      setAuthLoading(false);
     }
     load();
   }, []);
 
+  if (authLoading) return <DashboardPageSkeleton />;
   if (!session) return null;
 
   const shopName = session.shop ? session.shop.name : session.full_name;

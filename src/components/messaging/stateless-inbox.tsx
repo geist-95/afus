@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { mockChats, mockProducts } from '@/lib/supabase';
+const mockProducts: any[] = [];
+const mockChats: any[] = [];
 
 interface Message {
   id: string;
@@ -36,10 +37,10 @@ export default function StatelessInbox({ currentUserId = 'b1', lang = 'en' }) {
   // Load initial chat rooms
   useEffect(() => {
     // Inject mock details into initial state
-    const formattedRooms = mockChats.map((chat) => {
-      const messagesWithImages = chat.messages.map((msg) => {
+    const formattedRooms = mockChats.map((chat: any) => {
+      const messagesWithImages = chat.messages.map((msg: any) => {
         if (msg.product_context) {
-          const prod = mockProducts.find((p) => p.id === msg.product_context?.product_id);
+          const prod = mockProducts.find((p: any) => p.id === msg.product_context?.product_id);
           return {
             ...msg,
             product_context: {

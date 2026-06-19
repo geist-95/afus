@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect } from 'react';
 import { useCart } from '@/lib/cart';
-import { placeCODCheckout, fetchProducts } from '@/lib/supabase';
+import { placeCODCheckout, fetchCategoryProducts } from '@/lib/supabase';
 import { getActiveSession } from '@/lib/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -137,7 +137,7 @@ export default function CartPage({ params }: CartPageProps) {
     }
     loadUser();
 
-    fetchProducts().then(res => {
+    fetchCategoryProducts('cat_jewelry').then(res => {
       if (res && Array.isArray(res)) {
         // Pick some random products for suggestions
         setSuggestions(res.slice(0, 4));

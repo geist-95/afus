@@ -58,47 +58,16 @@ export default function CollectionsPage({ params }: PageProps) {
       if (activeUser.shop) {
         const shopId = activeUser.shop.id;
         
-        // Fetch all products from remote/mock DB
-        const { fetchProducts } = await import('@/lib/supabase');
-        const allRemote = await fetchProducts();
-        const remoteFiltered = allRemote.filter((p) => p.shop_id === shopId);
+        // Fetch all products from remote DB
+        const { fetchShopProducts, fetchCollections } = await import('@/lib/supabase');
+        try {
+          const shopProducts = await fetchShopProducts(shopId);
+          setProducts(shopProducts);
 
-        // Fetch local products
-        const localRaw = localStorage.getItem('local_products');
-        let localFiltered: any[] = [];
-        if (localRaw) {
-          try {
-            const parsed = JSON.parse(localRaw);
-            if (Array.isArray(parsed)) {
-              localFiltered = parsed.filter((p: any) => p && p.shop_id === shopId);
-            }
-          } catch (e) {
-            console.error('Failed to parse local products:', e);
-          }
-        }
-
-        // Merge products
-        const mergedMap = new Map();
-        [...localFiltered, ...remoteFiltered].forEach((p) => {
-          const key = p.id || p.numeric_id?.toString();
-          if (key && !mergedMap.has(key)) {
-            mergedMap.set(key, p);
-          }
-        });
-        setProducts(Array.from(mergedMap.values()));
-
-        // Fetch local collections
-        const collectionsRaw = localStorage.getItem('local_collections');
-        if (collectionsRaw) {
-          try {
-            const parsedCollections = JSON.parse(collectionsRaw);
-            if (Array.isArray(parsedCollections)) {
-              const shopCollections = parsedCollections.filter((c: any) => c.shop_id === shopId);
-              setCollections(shopCollections);
-            }
-          } catch (e) {
-            console.error('Failed to parse local collections:', e);
-          }
+          const shopCollections = await fetchCollections(shopId);
+          setCollections(shopCollections);
+        } catch (e) {
+          console.error('Failed to load shop data:', e);
         }
       }
     }
@@ -111,7 +80,7 @@ export default function CollectionsPage({ params }: PageProps) {
     );
   };
 
-  const handleCreateCollection = (e: React.FormEvent) => {
+  const handleCreateCollection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn.trim()) {
       const alertMsg = lang === 'fr' ? 'Le nom anglais est requis' : lang === 'ar' ? 'الاسم بالإنجليزية مطلوب' : 'English name is required';
@@ -120,32 +89,25 @@ export default function CollectionsPage({ params }: PageProps) {
     }
     if (!session?.shop?.id) return;
 
-    const newCollection: Collection = {
-      id: `col_${Math.floor(100000 + Math.random() * 900000)}`,
-      shop_id: session.shop.id,
-      name_translations: {
-        en: nameEn.trim(),
-        fr: nameFr.trim() || nameEn.trim(),
-        ar: nameAr.trim() || nameEn.trim(),
-      },
-      product_ids: selectedProductIds,
-    };
-
-    // Save to local collections list
-    const allCollectionsRaw = localStorage.getItem('local_collections') || '[]';
-    let allCollections: Collection[] = [];
+    const { createCollection } = await import('@/lib/supabase');
     try {
-      allCollections = JSON.parse(allCollectionsRaw);
-      if (!Array.isArray(allCollections)) allCollections = [];
-    } catch {
-      allCollections = [];
+      const created = await createCollection({
+        shop_id: session.shop.id,
+        name_translations: {
+          en: nameEn.trim(),
+          fr: nameFr.trim() || nameEn.trim(),
+          ar: nameAr.trim() || nameEn.trim(),
+        },
+        product_ids: selectedProductIds,
+      });
+
+      // Update state
+      setCollections((prev) => [created, ...prev]);
+    } catch (e) {
+      console.error('Failed to create collection', e);
+      alert('Failed to create collection');
+      return;
     }
-
-    allCollections.unshift(newCollection);
-    localStorage.setItem('local_collections', JSON.stringify(allCollections));
-
-    // Update state
-    setCollections((prev) => [newCollection, ...prev]);
 
     // Reset Form
     setNameEn('');
@@ -157,22 +119,18 @@ export default function CollectionsPage({ params }: PageProps) {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleDeleteCollection = (id: string) => {
+  const handleDeleteCollection = async (id: string) => {
     const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette collection ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذه المجموعة؟' : 'are you sure you want to delete this collection?';
     if (!confirm(confirmMsg)) return;
     
-    const allCollectionsRaw = localStorage.getItem('local_collections') || '[]';
-    let allCollections: Collection[] = [];
+    const { deleteCollection } = await import('@/lib/supabase');
     try {
-      allCollections = JSON.parse(allCollectionsRaw);
-    } catch {
-      allCollections = [];
+      await deleteCollection(id);
+      setCollections((prev) => prev.filter((c) => c.id !== id));
+    } catch (e) {
+      console.error('Failed to delete collection', e);
+      alert('Failed to delete collection');
     }
-
-    const updated = allCollections.filter((c) => c.id !== id);
-    localStorage.setItem('local_collections', JSON.stringify(updated));
-
-    setCollections((prev) => prev.filter((c) => c.id !== id));
   };
 
   if (authLoading) {

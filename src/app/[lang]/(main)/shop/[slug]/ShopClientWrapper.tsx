@@ -115,6 +115,7 @@ export default function ShopClientWrapper({
       catalog: "Shop Collection",
       contact: "Contact",
       subscribe: "Subscribe",
+      founder: "Founder",
     },
     fr: {
       verified: "Artisan Vérifié",
@@ -126,6 +127,7 @@ export default function ShopClientWrapper({
       catalog: "Collection de la boutique",
       contact: "Contact",
       subscribe: "S'abonner",
+      founder: "Fondateur",
     },
     ar: {
       verified: "حرفي موثق",
@@ -137,6 +139,7 @@ export default function ShopClientWrapper({
       catalog: "مجموعة المتجر",
       contact: "تواصل",
       subscribe: "متابعة",
+      founder: "مؤسس",
     }
   };
 
@@ -154,10 +157,10 @@ export default function ShopClientWrapper({
     <div className="w-full pb-12">
       {/* Shop Banner with Info */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="arabic-frame bg-neutral-200 p-[1px]">
-          <div 
-            className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame bg-white"
-          >
+        <div 
+          className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame bg-white"
+          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)" }}
+        >
             {/* Left: Shop Info */}
             <div className="flex-1 flex flex-col items-start justify-center px-6 md:px-12 py-10 z-10 text-left">
               
@@ -178,16 +181,6 @@ export default function ShopClientWrapper({
                 
                 {/* Badges */}
                 <div className="flex items-center gap-2">
-                  {shop.is_verified && (
-                    <div className="group relative flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 backdrop-blur-sm border border-blue-400/20 cursor-help">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-blue-600">
-                        <path fillRule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 11.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-                      </svg>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-2.5 py-1 bg-black/80 text-white text-[11px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                        {lang === 'fr' ? 'Vendeur Vérifié' : lang === 'ar' ? 'بائع موثق' : 'Verified Seller'}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
               
@@ -293,7 +286,6 @@ export default function ShopClientWrapper({
             )}
           </div>
         </div>
-      </div>
 
       {/* Main Content Area */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">

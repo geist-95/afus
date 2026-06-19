@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { fetchProducts, fetchShops, staticCategories, legacyCategoryMapping } from "@/lib/supabase";
+import { fetchCategoryProducts, fetchShops, staticCategories, legacyCategoryMapping } from "@/lib/supabase";
 import ProductGrid from "@/components/ui/ProductGrid";
 import type { Metadata } from "next";
+
+export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ lang: string; slug: string }>;
@@ -39,15 +41,8 @@ export default async function CategoryPage({ params }: PageProps) {
     : slug;
 
   // Fetch live products and shops
-  const allProducts = await fetchProducts();
+  const matchingProducts = activeCategory ? await fetchCategoryProducts(activeCategory.id) : [];
   const shops = await fetchShops();
-
-  // Filter products
-  const matchingProducts = allProducts.filter((p) => {
-    const isDirectMatch = p.category_id === activeCategory?.id;
-    const legacyMappedId = legacyCategoryMapping[p.category_id] || p.category_id;
-    return isDirectMatch || legacyMappedId === activeCategory?.id;
-  });
 
   const labels: Record<string, Record<string, string>> = {
     en: {

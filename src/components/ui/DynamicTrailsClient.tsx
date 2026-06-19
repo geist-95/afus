@@ -102,15 +102,19 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const [recentCategoryId, setRecentCategoryId] = useState<string | null>(null);
   const [allProducts, setAllProducts] = useState<any[]>(products);
   const newArrivalsRef = useRef<HTMLDivElement>(null);
+  const recentlyViewedRef = useRef<HTMLDivElement>(null);
+  const under100Ref = useRef<HTMLDivElement>(null);
+  const freeShippingRef = useRef<HTMLDivElement>(null);
+  const newestStoresRef = useRef<HTMLDivElement>(null);
 
-  const scrollNewArrivals = (direction: 'left' | 'right') => {
-    if (!newArrivalsRef.current) return;
+  const scrollContainer = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+    if (!ref.current) return;
     const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
     let scrollAmount = direction === 'left' ? -400 : 400;
     if (isRtl) {
       scrollAmount = -scrollAmount;
     }
-    newArrivalsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -137,9 +141,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       exploreCitiesSub: "Click a city to discover its historic specialty guilds",
       newestStores: "Meet Our Newest Stores",
       newestStoresSub: "Support emerging Moroccan independent artisans",
+      under100: "Finds Under 100 MAD",
+      under100Sub: "Great artisanal deals that won't break the bank",
+      freeShipping: "Free Delivery Items",
+      freeShippingSub: "Enjoy complimentary shipping on these orders",
       mad: "MAD",
       emptyProducts: "No products available in this section.",
-      visitShop: "Visit Shop",
+      contact: "Contact",
+      follow: "Follow",
+      founder: "Founder",
       faqTitle: "Frequently Asked Questions",
       faq1Q: "What is afus?",
       faq1A: "afus is a curated multi-vendor marketplace designed to connect authentic Moroccan artisans directly with consumers. We highlight regional heritage crafts and handle cash-on-delivery transactions securely.",
@@ -161,9 +171,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       exploreCitiesSub: "Cliquez sur une ville pour découvrir ses corporations historiques",
       newestStores: "Découvrez nos nouvelles boutiques",
       newestStoresSub: "Soutenez les artisans indépendants marocains émergents",
+      under100: "Trouvailles à moins de 100 DH",
+      under100Sub: "Superbes offres artisanales à petit prix",
+      freeShipping: "Articles avec livraison gratuite",
+      freeShippingSub: "Profitez de la livraison offerte sur ces articles",
       mad: "DH",
       emptyProducts: "Aucun produit disponible dans cette section.",
-      visitShop: "Voir la boutique",
+      contact: "Contact",
+      follow: "S'abonner",
+      founder: "Fondateur",
       faqTitle: "Questions fréquemment posées",
       faq1Q: "Qu'est-ce que afus?",
       faq1A: "afus est une place de marché multi-vendeurs conçue pour connecter directement les artisans marocains authentiques avec les consommateurs. Nous mettons en valeur l'artisanat régional et gérons les paiements à la livraison en toute sécurité.",
@@ -185,9 +201,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       exploreCitiesSub: "انقر فوق مدينة لاكتشاف تخصصات نقابات الحرف التقليدية فيها",
       newestStores: "تعرف على متاجرنا الجديدة",
       newestStoresSub: "ادعم الحرفيين المستقلين الصاعدين في المغرب",
+      under100: "اكتشافات أقل من 100 درهم",
+      under100Sub: "عروض حرفية رائعة بأسعار مناسبة",
+      freeShipping: "منتجات بتوصيل مجاني",
+      freeShippingSub: "استمتع بشحن مجاني على هذه الطلبات",
       mad: "درهم",
       emptyProducts: "لا توجد منتجات متوفرة في هذا القسم.",
-      visitShop: "زيارة المتجر",
+      contact: "اتصال",
+      follow: "متابعة",
+      founder: "مؤسس",
       faqTitle: "الأسئلة الشائعة",
       faq1Q: "ما هو afus؟",
       faq1A: "أفوس عبارة عن منصة تسوق تربط الصناع التقليديين المغاربة الموثوقين بالزبناء مباشرة. نحرص على إبراز التراث الحرفي الإقليمي ونوفر خدمة الدفع عند الاستلام بشكل آمن.",
@@ -209,9 +231,15 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       exploreCitiesSub: "ⴽⵍⵉⴽⵉ ⵅⴼ ⵢⴰⵜ ⵜⵖⵔⵎⵜ ⴰⴷ ⵜⴰⴼⴷ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⵙ ⵜⵉⵎⵣⵔⴰⵢⵉⵏ",
       newestStores: "ⵙⵙⵏ ⵜⵉⵃⴰⵏⵓⵜⵉⵏ ⵏⵏⵖ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ",
       newestStoresSub: "ⴰⵡⵙ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵉⵙⵉⵎⴰⵏⵏ ⵉⵎⴰⵢⵏⵓⵜⵏ",
+      under100: "ⵜⵉⴳⴰⵡⵉⵏ ⴷⴷⴰⵡ 100 ⴷⵔⵀⵎ",
+      under100Sub: "ⵜⵉⴳⴰⵡⵉⵏ ⵉⴼⵓⵍⴽⵉⵏ ⵙ ⵡⴰⵜⵉⴳ ⵉⵎⵥⵥⵉⵏ",
+      freeShipping: "ⴰⵙⵉⵡⴹ ⴱⴰⵟⵍ",
+      freeShippingSub: "ⵉⵜⵜⵓⵙⵉⵡⴹ ⴱⴰⵟⵍ ⵅⴼ ⵜⴳⴰⵡⵉⵏ ⴰⴷ",
       mad: "ⴷⵔⵀⵎ",
       emptyProducts: "ⵓⵔ ⵍⵍⵉⵏⵜ ⵜⴳⴰⵡⵉⵏ ⴳ ⵓⴷⵖⴰⵔ ⴰ.",
-      visitShop: "ⵔⵣⴼ ⵜⴰⵃⴰⵏⵓⵜ",
+      contact: "ⴰⵎⵢⴰⵡⴰⴹ",
+      follow: "ⴹⴼⵕ",
+      founder: "ⴰⵎⵙⵔⵙⵍ",
       faqTitle: "ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ",
       faq1Q: "ⵎⴰ ⵉⴳⴰⵏ ⴰⴼⵓⵙ?",
       faq1A: "ⴰⴼⵓⵙ ⵉⴳⴰ ⵢⴰⵜ ⵜⴰⵙⵓⵇⵜ ⵉⵜⵜⵓⵙⴽⴰⵔⵏ ⴰⴷ ⵜⵙⵎⵓⵏ ⵉⵎⵙⴽⴰⵔⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⴷ ⵉⵎⵙⴰⵖⵏ ⵙ ⵓⵙⵔⵉⴷ. ⵏⵙⵙⵎⵖⵓⵔ ⵜⴰⴳⴰⵡⵜ ⵜⴰⴷⵖⴰⵔⴰⵏⵜ ⴷ ⵏⵙⵙⵓⴷⵙ ⴰⵙⵖⵏ ⴳ ⵓⵙⵉⵡⴹ ⵙ ⵜⵏⴼⵔⵓⵜ.",
@@ -249,6 +277,19 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       return 0;
     });
 
+  const under100Products = [...allProducts]
+    .filter(p => {
+       const activePrice = (p.sale_price_mad !== null && p.sale_price_mad !== undefined && (!p.sale_expires_at || new Date(p.sale_expires_at) > new Date())) 
+           ? p.sale_price_mad 
+           : p.base_price_mad;
+       return activePrice > 0 && activePrice < 100;
+    })
+    .slice(0, 10);
+
+  const freeShippingProducts = [...allProducts]
+    .filter(p => p.metadata?.shipping?.amana === true || p.metadata?.free_shipping === true || p.shipping_cost === 0)
+    .slice(0, 10);
+
   return (
     <div className="space-y-16">
 
@@ -261,10 +302,10 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
               <p className="text-xs text-neutral-500 mt-1">{t.newItemsSub}</p>
             </div>
             <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-              <button onClick={() => scrollNewArrivals('left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <button onClick={() => scrollContainer(newArrivalsRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
               </button>
-              <button onClick={() => scrollNewArrivals('right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <button onClick={() => scrollContainer(newArrivalsRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
               </button>
             </div>
@@ -281,64 +322,135 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       {/* 4. Recently Viewed Category Trail */}
       {recentCategoryName && recentCategoryProducts.length > 0 && (
         <section className="space-y-4">
-          <div className="mb-4 md:mb-[30px]">
-            <h2 className="text-xl md:text-3xl font-bold text-start !text-black">
-              {t.recentlyViewed} ({recentCategoryName})
-            </h2>
-            <p className="text-xs text-neutral-500 mt-1 text-start">{t.recentlyViewedSub}</p>
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">
+                {t.recentlyViewed} ({recentCategoryName})
+              </h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.recentlyViewedSub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(recentlyViewedRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(recentlyViewedRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
           </div>
-          <ScrollableTrail>
+          <div ref={recentlyViewedRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {recentCategoryProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
               return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
             })}
-          </ScrollableTrail>
+          </div>
+        </section>
+      )}
+
+      {/* Under 100 DH Trail */}
+      {under100Products.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.under100}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.under100Sub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(under100Ref, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(under100Ref, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={under100Ref} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {under100Products.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Free Shipping Trail */}
+      {freeShippingProducts.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.freeShipping}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.freeShippingSub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(freeShippingRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(freeShippingRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={freeShippingRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {freeShippingProducts.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
         </section>
       )}
 
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
-        <div className="mb-4 md:mb-[30px]">
-          <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.newestStores}</h2>
-          <p className="text-xs text-neutral-500 mt-1 text-start">{t.newestStoresSub}</p>
+        <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+          <div>
+            <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.newestStores}</h2>
+            <p className="text-xs text-neutral-500 mt-1 text-start">{t.newestStoresSub}</p>
+          </div>
+          <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+            <button onClick={() => scrollContainer(newestStoresRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+            </button>
+            <button onClick={() => scrollContainer(newestStoresRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+            </button>
+          </div>
         </div>
-        <ScrollableTrail>
+        <div ref={newestStoresRef} className="flex gap-4 overflow-x-auto pt-[2px] pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:-mx-[2px] sm:px-[2px]">
           {newestStores.map((store) => (
-            <div
-              key={store.id}
-              className={`flex-shrink-0 snap-start w-56 aspect-square bg-neutral-50 p-4 arabic-frame flex flex-col items-center justify-between text-center transition-colors ${store.is_placeholder ? 'opacity-50' : ''}`}
+            <Link 
+              href={store.is_placeholder ? '#' : `/${lang}/shop/${store.slug}`}
+              key={store.id} 
+              className={`block flex-shrink-0 snap-start w-[280px] md:w-[320px] transition-all hover:opacity-90 ${store.is_placeholder ? 'opacity-50' : ''}`}
+              style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)" }}
             >
-              <div className="relative w-16 h-16 rounded-full border border-neutral-100 overflow-hidden bg-neutral-50 flex items-center justify-center text-neutral-400">
-                {store.logo_url ? (
-                  <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8">
-                    <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
-                  </svg>
-                )}
-                {store.is_verified && (
-                  <span className="absolute bottom-0 right-0 bg-neutral-900 border border-white text-white text-[8px] rounded-full p-0.5" title="Verified">
-                    ✓
-                  </span>
-                )}
+              <div className="bg-white arabic-frame p-6 flex flex-col justify-between h-full w-full">
+              <div className="flex flex-col items-start text-start space-y-4">
+                <div className="relative w-20 h-20 rounded-full border border-neutral-100 overflow-hidden bg-neutral-50 flex items-center justify-center text-neutral-400 shrink-0">
+                  {store.logo_url ? (
+                    <img src={store.logo_url} alt={store.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10">
+                      <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+                
+                <div className="space-y-1 w-full">
+                  <div className="flex items-start gap-2 flex-wrap">
+                    <span className="block font-ariom text-neutral-900 text-xl leading-tight">
+                      {store.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-neutral-600 text-sm font-medium">
+                    <svg className="w-4 h-4 shrink-0 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                    <span className="truncate">{store.merchant_city || "Morocco"}</span>
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 space-y-1">
-                <span className="block font-bold text-neutral-800 text-sm leading-tight max-w-[180px] truncate">
-                  {store.name}
-                </span>
-                <span className="block text-[10px] text-neutral-400">
-                  {store.merchant_city}
-                </span>
               </div>
-              <Link
-                href={store.is_placeholder ? '#' : `/${lang}/shop/${store.slug}`}
-                className="mt-4 w-full block border border-neutral-800 text-neutral-800 font-bold text-[11px] py-1.5 rounded-full hover:bg-neutral-50 transition-colors"
-              >
-                {t.visitShop}
-              </Link>
-            </div>
+            </Link>
           ))}
-        </ScrollableTrail>
+        </div>
       </section>
 
 

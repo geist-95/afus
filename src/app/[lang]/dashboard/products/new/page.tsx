@@ -642,17 +642,12 @@ export default function NewListingPage({ params }: PageProps) {
       setAuthLoading(false);
 
       if (activeUser.shop) {
-        const collectionsRaw = localStorage.getItem('local_collections');
-        if (collectionsRaw) {
-          try {
-            const parsed = JSON.parse(collectionsRaw);
-            if (Array.isArray(parsed)) {
-              const shopCollections = parsed.filter((c: any) => c.shop_id === activeUser.shop.id);
-              setCollections(shopCollections);
-            }
-          } catch (e) {
-            console.error('Failed to parse local collections:', e);
-          }
+        const { fetchCollections } = await import('@/lib/supabase');
+        try {
+          const shopCollections = await fetchCollections(activeUser.shop.id);
+          setCollections(shopCollections);
+        } catch (e) {
+          console.error('Failed to fetch collections:', e);
         }
       }
     }
@@ -766,37 +761,21 @@ export default function NewListingPage({ params }: PageProps) {
 
     const result = await createProductListing(payload);
     if (result) {
-      // Add featured flag on local mock object
-      const mockResult = { ...result, featured: featureListing };
-      const productId = result.id || result.numeric_id?.toString();
-
       // If a shop section (collection) was selected, add the product to that collection
       if (shopSection) {
-        const collectionsRaw = localStorage.getItem('local_collections');
-        if (collectionsRaw) {
-          try {
-            const allCols = JSON.parse(collectionsRaw);
-            if (Array.isArray(allCols)) {
-              const updatedCols = allCols.map((c: any) => {
-                if (c.id === shopSection) {
-                  const pIds = Array.isArray(c.product_ids) ? c.product_ids : [];
-                  if (!pIds.includes(productId)) {
-                    return { ...c, product_ids: [...pIds, productId] };
-                  }
-                }
-                return c;
-              });
-              localStorage.setItem('local_collections', JSON.stringify(updatedCols));
+        const { supabase } = await import('@/lib/supabase');
+        try {
+          const { data: collection } = await supabase.from('collections').select('product_ids').eq('id', shopSection).single();
+          if (collection) {
+            const pIds = Array.isArray(collection.product_ids) ? collection.product_ids : [];
+            if (!pIds.includes(result.id)) {
+              await supabase.from('collections').update({ product_ids: [...pIds, result.id] }).eq('id', shopSection);
             }
-          } catch (e) {
-            console.error('Failed to update collection with new product:', e);
           }
+        } catch (e) {
+          console.error('Failed to update collection with new product:', e);
         }
       }
-
-      const localProducts = JSON.parse(localStorage.getItem('local_products') || '[]');
-      localProducts.unshift(mockResult);
-      localStorage.setItem('local_products', JSON.stringify(localProducts));
 
       router.push(`/${lang}/dashboard/products`);
     }

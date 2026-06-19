@@ -15,38 +15,16 @@ export default function ShopCatalogClient({ initialProducts, shop, lang }: ShopC
   const [products, setProducts] = useState<any[]>(initialProducts);
 
   useEffect(() => {
-    // Load collections from localStorage for this shop
-    const localColRaw = localStorage.getItem('local_collections');
-    if (localColRaw) {
+    async function loadData() {
+      const { fetchCollections } = await import('@/lib/supabase');
       try {
-        const parsed = JSON.parse(localColRaw);
-        if (Array.isArray(parsed)) {
-          const shopCols = parsed.filter((c: any) => c.shop_id === shop.id);
-          setCollections(shopCols);
-        }
+        const shopCols = await fetchCollections(shop.id);
+        setCollections(shopCols);
       } catch (e) {
-        console.error('Failed to parse local collections:', e);
+        console.error('Failed to load collections:', e);
       }
     }
-
-    // Load local products to make sure we filter accurately if a new product is uploaded
-    const localRaw = localStorage.getItem('local_products');
-    if (localRaw) {
-      try {
-        const localProducts = JSON.parse(localRaw);
-        if (Array.isArray(localProducts)) {
-          const shopLocals = localProducts.filter((p) => p && p.shop_id === shop.id);
-          const mergedMap = new Map();
-          [...shopLocals, ...initialProducts].forEach((p) => {
-            const key = p.id || p.numeric_id?.toString();
-            if (key) mergedMap.set(key, p);
-          });
-          setProducts(Array.from(mergedMap.values()));
-        }
-      } catch (e) {
-        console.error('Failed to parse local products:', e);
-      }
-    }
+    loadData();
   }, [initialProducts, shop.id]);
 
   // Determine featured products

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { fetchProducts, fetchShops } from "@/lib/supabase";
+import { fetchCityProducts, fetchShops } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import { SimpleProductCard } from "@/components/ui/ProductGrid";
 
@@ -117,18 +117,10 @@ export default async function CityPage({ params }: PageProps) {
 
   if (!city) notFound();
 
-  const [allProducts, allShops] = await Promise.all([fetchProducts(), fetchShops()]);
+  const [cityProducts, allShops] = await Promise.all([fetchCityProducts(slug), fetchShops()]);
   const desc = city.description[lang as keyof typeof city.description] ?? city.description.en;
 
-  // Filter products/shops by city (best-effort via merchant_city)
-  const cityShops = allShops.filter(
-    (s: any) => (s.merchant_city ?? "").toLowerCase() === slug.toLowerCase()
-  );
-  const cityShopIds = new Set(cityShops.map((s: any) => s.id));
-  const cityProducts = allProducts.filter((p: any) => cityShopIds.has(p.shop_id));
-
-  // Fallback: show all if nothing found for demo
-  const displayProducts = cityProducts.length > 0 ? cityProducts : allProducts.slice(0, 6);
+  const displayProducts = cityProducts;
 
   return (
     <div className="space-y-12">
