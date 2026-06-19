@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getActiveSession } from '@/lib/auth';
-import { createProductListing } from '@/lib/supabase';
+import { createProductListing, reverseCategoryMapping } from '@/lib/supabase';
 import { taxonomy, suggestCategories, translateCategory, translateSubcategory } from '@/lib/categories';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 import { X, Search, Package, FileText, ChevronLeft, Info, HelpCircle, Plus, ExternalLink, Copy, MoreHorizontal } from 'lucide-react';
@@ -706,14 +706,6 @@ export default function NewListingPage({ params }: PageProps) {
   const handleCreateListing = async () => {
     setIsSubmitting(true);
 
-    const reverseCategoryMapping: Record<string, string> = {
-      'cat_jewelry': '1a111111-1111-1111-1111-111111111111',
-      'cat_art_collectibles': '2b222222-2222-2222-2222-222222222222',
-      'cat_bath_beauty': '3c333333-3333-3333-3333-333333333333',
-      'cat_clothing': '4d444444-4444-4444-4444-444444444444',
-      'cat_bags_purses': '5e555555-5555-5555-5555-555555555555',
-      'cat_home_living': '6f666666-6666-6666-6666-666666666666',
-    };
     const dbCategoryId = reverseCategoryMapping[selectedCatId] || selectedCatId || '1a111111-1111-1111-1111-111111111111';
 
     const activeTitle = titleEn || titleFr || titleAr || titleTz;

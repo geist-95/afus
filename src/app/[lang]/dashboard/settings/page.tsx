@@ -467,10 +467,13 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       </div>
                     )}
                     <input
-                      type="text"
-                      placeholder={t.header.logoPlaceholder}
-                      value={logoUrl}
-                      onChange={(e) => setLogoUrl(e.target.value)}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setLogoUrl(URL.createObjectURL(e.target.files[0]));
+                        }
+                      }}
                       className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
                     />
                   </div>
@@ -492,10 +495,13 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                     </div>
                   )}
                   <input
-                    type="text"
-                    placeholder={t.header.coverPlaceholder}
-                    value={coverUrl}
-                    onChange={(e) => setCoverUrl(e.target.value)}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setCoverUrl(URL.createObjectURL(e.target.files[0]));
+                      }
+                    }}
                     className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
                   />
                 </div>

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/cart';
-import { fetchProductReviews } from '@/lib/supabase';
+import { Heart, Tag, MapPin, Search } from 'lucide-react';
+import { fetchProductReviews, legacyCategoryMapping } from '@/lib/supabase';
 
 interface ProductGridProps {
   initialProducts: any[];
@@ -352,6 +353,8 @@ export default function ProductGrid({
   const [products, setProducts] = useState<any[]>(initialProducts);
 
   useEffect(() => {
+    let all = [...initialProducts];
+    
     // Load client-published items from localStorage
     const localRaw = localStorage.getItem('local_products');
     if (localRaw) {
@@ -361,41 +364,35 @@ export default function ProductGrid({
           const validLocal = localProducts.filter(
             (p) => p && typeof p === 'object' && p.title_translations
           );
-          let all = [...validLocal, ...initialProducts];
-
-          if (categoryFilterId) {
-            all = all.filter((p) => {
-              const isDirectMatch = p.category_id === categoryFilterId;
-              const legacyMappedId = p.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
-                : p.category_id === '2b222222-2222-2222-2222-222222222222' ? 'cat_art_collectibles'
-                  : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
-                    : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
-                      : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
-                        : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
-                          : p.category_id;
-              return isDirectMatch || legacyMappedId === categoryFilterId;
-            });
-          }
-
-          if (shopFilterId) {
-            all = all.filter((p) => p.shop_id === shopFilterId);
-          }
-
-          const seen = new Set();
-          const unique = all.filter((p) => {
-            const key = p.numeric_id || p.id;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          });
-
-          setProducts(unique);
+          all = [...validLocal, ...initialProducts];
         }
       } catch (e) {
         console.error('Failed to parse local_products:', e);
       }
     }
-  }, [initialProducts, categoryFilterId]);
+
+    if (categoryFilterId) {
+      all = all.filter((p) => {
+        const isDirectMatch = p.category_id === categoryFilterId;
+        const legacyMappedId = legacyCategoryMapping[p.category_id] || p.category_id;
+        return isDirectMatch || legacyMappedId === categoryFilterId;
+      });
+    }
+
+    if (shopFilterId) {
+      all = all.filter((p) => p.shop_id === shopFilterId);
+    }
+
+    const seen = new Set();
+    const unique = all.filter((p) => {
+      const key = p.numeric_id || p.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    setProducts(unique);
+  }, [initialProducts, categoryFilterId, shopFilterId]);
 
   const labels: Record<string, Record<string, string>> = {
     en: {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ProductCard, SimpleProductCard } from './ProductGrid';
-import { staticCategories } from '@/lib/supabase';
+import { staticCategories, legacyCategoryMapping } from '@/lib/supabase';
 
 interface DynamicTrailsClientProps {
   products: any[];
@@ -235,13 +235,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || matchedCategory?.name.en || "";
   const recentCategoryProducts = allProducts.filter((p) => {
     const isDirectMatch = p.category_id === recentCategoryId;
-    const legacyMappedId = p.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
-      : p.category_id === '2b222222-2222-2222-2222-222222222222' ? 'cat_art_collectibles'
-        : p.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
-          : p.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
-            : p.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
-              : p.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
-                : p.category_id;
+    const legacyMappedId = legacyCategoryMapping[p.category_id] || p.category_id;
     return isDirectMatch || legacyMappedId === recentCategoryId;
   })
   .filter(p => p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119'))

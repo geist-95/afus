@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockProducts, mockShops, staticCategories, fetchProducts, supabase } from "@/lib/supabase";
+import { mockProducts, mockShops, staticCategories, fetchProducts, supabase, legacyCategoryMapping } from "@/lib/supabase";
 import { getActiveSession } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { useWishlist } from "@/lib/wishlist";
@@ -324,13 +324,7 @@ export default function ListingClientWrapper({
 
   const matchedCategory = staticCategories.find(c => {
     const isDirectMatch = c.id === fetchedProduct?.category_id;
-    const legacyMappedId = fetchedProduct?.category_id === '1a111111-1111-1111-1111-111111111111' ? 'cat_jewelry'
-      : fetchedProduct?.category_id === '2b222222-2222-2222-2222-222222222222' ? 'cat_art_collectibles'
-      : fetchedProduct?.category_id === '3c333333-3333-3333-3333-333333333333' ? 'cat_bath_beauty'
-      : fetchedProduct?.category_id === '4d444444-4444-4444-4444-444444444444' ? 'cat_clothing'
-      : fetchedProduct?.category_id === '5e555555-5555-5555-5555-555555555555' ? 'cat_bags_purses'
-      : fetchedProduct?.category_id === '6f666666-6666-6666-6666-666666666666' ? 'cat_home_living'
-      : fetchedProduct?.category_id;
+    const legacyMappedId = legacyCategoryMapping[fetchedProduct?.category_id || ''] || fetchedProduct?.category_id;
     return isDirectMatch || c.id === legacyMappedId;
   });
   const productCategoryName = matchedCategory

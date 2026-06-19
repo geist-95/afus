@@ -33,7 +33,22 @@ export const legacyCategoryMapping: Record<string, string> = {
   '4d444444-4444-4444-4444-444444444444': 'cat_clothing',
   '5e555555-5555-5555-5555-555555555555': 'cat_bags_purses',
   '6f666666-6666-6666-6666-666666666666': 'cat_home_living',
+  '7a777777-7777-7777-7777-777777777777': 'cat_craft_supplies',
+  '8b888888-8888-8888-8888-888888888888': 'cat_accessories',
+  '9c999999-9999-9999-9999-999999999999': 'cat_weddings',
+  '0a000000-0000-0000-0000-000000000000': 'cat_toys_games',
+  '1b111111-1111-1111-1111-111111111112': 'cat_kids_baby',
+  '2c222222-2222-2222-2222-222222222223': 'cat_paper_party',
+  '3d333333-3333-3333-3333-333333333334': 'cat_electronics',
+  '4e444444-4444-4444-4444-444444444445': 'cat_pet_supplies',
+  '5f555555-5555-5555-5555-555555555556': 'cat_shoes',
+  '6a666666-6666-6666-6666-666666666667': 'cat_books_media',
+  '7b777777-7777-7777-7777-777777777778': 'cat_gifts',
 };
+
+export const reverseCategoryMapping: Record<string, string> = Object.fromEntries(
+  Object.entries(legacyCategoryMapping).map(([k, v]) => [v, k])
+);
 
 
 // Mock database for offline fallback
@@ -667,6 +682,11 @@ export async function createProductListing(productData: {
   stock_quantity: number;
 }) {
   const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+  
+  // Map standard cat_ slugs to their UUIDs
+  if (reverseCategoryMapping[productData.category_id]) {
+    productData.category_id = reverseCategoryMapping[productData.category_id];
+  }
 
   if (!isUUID(productData.shop_id) || !isUUID(productData.category_id)) {
     const newProduct = {

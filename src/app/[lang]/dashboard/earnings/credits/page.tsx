@@ -25,12 +25,7 @@ export default function EarningsCreditsPage() {
     }
     loadData();
   }, []);
-  const payouts = [
-    { id: '#PO-1042', date: 'June 01, 2026', amount: '8,500.00 MAD', account: '•••• 4589', status: 'Completed' },
-    { id: '#PO-1041', date: 'May 15, 2026', amount: '12,400.00 MAD', account: '•••• 4589', status: 'Completed' },
-    { id: '#PO-1040', date: 'May 01, 2026', amount: '3,250.00 MAD', account: '•••• 4589', status: 'Completed' },
-    { id: '#PO-1039', date: 'April 15, 2026', amount: '5,800.00 MAD', account: '•••• 4589', status: 'Completed' },
-  ];
+  const payouts: any[] = [];
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#F9F9F9] flex flex-col font-sans p-6 md:p-8">

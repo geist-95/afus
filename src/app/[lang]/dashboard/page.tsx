@@ -146,7 +146,15 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                       </div>
                     );
                   })
-                ) : (
+                ) : null}
+                {products.length > 3 && (
+                  <Link href={`/${lang}/dashboard/products`} className="w-full">
+                    <button className="w-full mt-2 py-2.5 rounded-lg border border-neutral-200 bg-neutral-50 hover:bg-neutral-100 text-sm font-semibold text-neutral-700 transition-colors">
+                      {lang === 'fr' ? 'Plus' : lang === 'ar' ? 'المزيد' : 'More'}
+                    </button>
+                  </Link>
+                )}
+                {products.length === 0 ? (
                   [1, 2, 3].map((num) => (
                     <div key={num} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between opacity-60">
                       <div className="flex items-center gap-4">
