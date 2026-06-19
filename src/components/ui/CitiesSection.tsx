@@ -126,6 +126,7 @@ export default function CitiesSection({ lang }: { lang: string }) {
                 src={city.image}
                 alt={city.name}
                 fill
+                sizes="(max-width: 768px) 200px, 300px"
                 className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
               />
 
