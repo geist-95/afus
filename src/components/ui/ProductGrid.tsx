@@ -65,14 +65,12 @@ export function SimpleProductCard({ product, lang, shop, className }: { product:
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <img
+          <Image
             src={activeMedia}
             alt={title}
-            width={300}
-            height={300}
-            loading="lazy"
-            decoding="async"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
         )}
       </div>
@@ -177,14 +175,12 @@ export function ProductCard({
                 className="w-full h-full object-cover rounded-2xl"
               />
             ) : (
-              <img
+              <Image
                 src={secondMedia}
                 alt={title}
-                width={300}
-                height={288}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover rounded-2xl transition-opacity duration-300"
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                className="object-cover rounded-2xl transition-opacity duration-300"
               />
             )
           ) : isHovered && isVideo(firstMedia) ? (
@@ -197,14 +193,12 @@ export function ProductCard({
               className="w-full h-full object-cover rounded-2xl"
             />
           ) : (
-            <img
+            <Image
               src={firstMedia}
               alt={title}
-              width={300}
-              height={288}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover rounded-2xl"
+              fill
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+              className="object-cover rounded-2xl"
             />
           )}
         </Link>

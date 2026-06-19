@@ -46,7 +46,7 @@ export default async function CategoryPage({ params }: PageProps) {
   const allShops = await fetchShops();
 
   // Drastically reduce RSC payload size by stripping massive descriptions, raw metadata, and unused fields
-  const matchingProducts = optimizeProducts(rawProducts);
+  const matchingProducts = optimizeProducts(rawProducts).slice(0, 48);
   const activeShopIds = new Set(matchingProducts.map(p => p.shop_id));
   const shops = optimizeShops(allShops, activeShopIds);
 
