@@ -70,9 +70,37 @@ export default async function HomePage({ params }: PageProps) {
   const rawProducts = await fetchProducts();
   const allShops = await fetchShops();
 
-  // Drastically reduce RSC payload size by stripping massive descriptions, raw metadata, and unused fields
   const products = optimizeProducts(rawProducts);
   const shops = optimizeShops(allShops);
+
+  // Compute trails on server to avoid massive RSC payloads
+  const newProducts = [...products]
+    .filter(p => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(p.id)))
+    .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+    .slice(0, 8);
+
+  const under100Products = [...products]
+    .filter(p => {
+       const activePrice = (p.sale_price_mad !== null && p.sale_price_mad !== undefined && (!p.sale_expires_at || new Date(p.sale_expires_at) > new Date())) 
+           ? p.sale_price_mad 
+           : p.base_price_mad;
+       return activePrice > 0 && activePrice < 100;
+    })
+    .slice(0, 10);
+
+  const freeShippingProducts = [...products]
+    .filter(p => p.metadata?.free_shipping === true)
+    .slice(0, 10);
+
+  const categoryMap: Record<string, any[]> = {};
+  products.forEach(p => {
+    const catId = p.category_id;
+    if (!catId) return;
+    if (!categoryMap[catId]) categoryMap[catId] = [];
+    if (categoryMap[catId].length < 8 && p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119')) {
+      categoryMap[catId].push(p);
+    }
+  });
 
   // Trilingual hero translation strings
   const pageLabels: Record<string, Record<string, string>> = {
@@ -149,7 +177,14 @@ export default async function HomePage({ params }: PageProps) {
       <CitiesSection lang={lang} />
 
       {/* Dynamic Trails & FAQ section */}
-      <DynamicTrailsClient products={products} shops={shops} lang={lang} />
+      <DynamicTrailsClient 
+        newProducts={newProducts} 
+        under100Products={under100Products} 
+        freeShippingProducts={freeShippingProducts} 
+        categoryMap={categoryMap} 
+        shops={shops} 
+        lang={lang} 
+      />
 
       {/* Trust Banner */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8">

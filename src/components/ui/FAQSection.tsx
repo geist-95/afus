@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   Accordion,
@@ -111,7 +112,7 @@ export default function FAQSection({ lang, alwaysShow = false }: { lang: string,
         <div className="flex flex-col md:flex-row gap-8 lg:gap-16 items-end">
           <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col space-y-4">
             <div className="relative">
-              <img src="/faq-girl.png" alt="FAQ" width={400} height={400} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
+              <Image src="/faq-girl.png" alt="FAQ" width={400} height={400} loading="lazy" decoding="async" className="w-full h-auto object-contain" />
             </div>
             <p className="text-sm text-neutral-600 leading-relaxed pt-2">
               {t.faqSub}

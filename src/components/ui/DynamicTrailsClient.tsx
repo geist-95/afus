@@ -6,7 +6,10 @@ import { ProductCard, SimpleProductCard } from './ProductGrid';
 import { staticCategories, legacyCategoryMapping } from '@/lib/supabase';
 
 interface DynamicTrailsClientProps {
-  products: any[];
+  newProducts: any[];
+  under100Products: any[];
+  freeShippingProducts: any[];
+  categoryMap: Record<string, any[]>;
   shops: any[];
   lang: string;
 }
@@ -98,9 +101,8 @@ function AccordionItem({ question, answer }: { question: string; answer: string 
   );
 }
 
-export default function DynamicTrailsClient({ products, shops, lang }: DynamicTrailsClientProps) {
+export default function DynamicTrailsClient({ newProducts, under100Products, freeShippingProducts, categoryMap, shops, lang }: DynamicTrailsClientProps) {
   const [recentCategoryId, setRecentCategoryId] = useState<string | null>(null);
-  const [allProducts, setAllProducts] = useState<any[]>(products);
   const newArrivalsRef = useRef<HTMLDivElement>(null);
   const recentlyViewedRef = useRef<HTMLDivElement>(null);
   const under100Ref = useRef<HTMLDivElement>(null);
@@ -125,8 +127,11 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   }, []);
 
   useEffect(() => {
-    setAllProducts(products);
-  }, [products]);
+    if (typeof window !== 'undefined') {
+      const storedCatId = localStorage.getItem('recently_viewed_category_id');
+      setRecentCategoryId(storedCatId || 'cat_home_living');
+    }
+  }, []);
 
   // Labels & translations
   const labels: Record<string, Record<string, string>> = {
@@ -254,20 +259,14 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
 
   const t = labels[lang] || labels.en;
 
-  const newProducts = [...allProducts]
-    .filter(p => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(p.id)))
-    .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
-    .slice(0, 8);
-
   const matchedCategory = staticCategories.find(c => c.id === recentCategoryId || c.slug === recentCategoryId);
   const recentCategoryName = matchedCategory?.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || matchedCategory?.name.en || "";
-  const recentCategoryProducts = allProducts.filter((p) => {
+
+  const recentCategoryProducts = Object.values(categoryMap).flat().filter((p) => {
     const isDirectMatch = p.category_id === recentCategoryId;
     const legacyMappedId = legacyCategoryMapping[p.category_id] || p.category_id;
     return isDirectMatch || legacyMappedId === recentCategoryId;
-  })
-  .filter(p => p.media_gallery?.[0] && !p.media_gallery[0].includes('1579783900882-c0d3dad7b119'))
-  .slice(0, 8);
+  }).slice(0, 8);
 
   const newestStores = [...shops]
     .filter(store => !store.is_placeholder)
@@ -277,18 +276,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
       return 0;
     });
 
-  const under100Products = [...allProducts]
-    .filter(p => {
-       const activePrice = (p.sale_price_mad !== null && p.sale_price_mad !== undefined && (!p.sale_expires_at || new Date(p.sale_expires_at) > new Date())) 
-           ? p.sale_price_mad 
-           : p.base_price_mad;
-       return activePrice > 0 && activePrice < 100;
-    })
-    .slice(0, 10);
 
-  const freeShippingProducts = [...allProducts]
-    .filter(p => p.metadata?.shipping?.amana === true || p.metadata?.free_shipping === true || p.shipping_cost === 0)
-    .slice(0, 10);
 
   return (
     <div className="space-y-16">
