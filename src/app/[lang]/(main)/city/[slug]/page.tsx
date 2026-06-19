@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { fetchCityProducts, fetchShops } from "@/lib/supabase";
+import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { SimpleProductCard } from "@/components/ui/ProductGrid";
 
@@ -117,8 +118,13 @@ export default async function CityPage({ params }: PageProps) {
 
   if (!city) notFound();
 
-  const [cityProducts, allShops] = await Promise.all([fetchCityProducts(slug), fetchShops()]);
+  const [rawCityProducts, allShops] = await Promise.all([fetchCityProducts(slug), fetchShops()]);
   const desc = city.description[lang as keyof typeof city.description] ?? city.description.en;
+
+  // Drastically reduce RSC payload size by stripping massive descriptions, raw metadata, and unused fields
+  const cityProducts = optimizeProducts(rawCityProducts);
+  const activeShopIds = new Set(cityProducts.map(p => p.shop_id));
+  const shops = optimizeShops(allShops, activeShopIds);
 
   const displayProducts = cityProducts;
 

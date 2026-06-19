@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fetchCategoryProducts, fetchShops, staticCategories, legacyCategoryMapping } from "@/lib/supabase";
+import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import ProductGrid from "@/components/ui/ProductGrid";
 import type { Metadata } from "next";
 
@@ -41,8 +42,13 @@ export default async function CategoryPage({ params }: PageProps) {
     : slug;
 
   // Fetch live products and shops
-  const matchingProducts = activeCategory ? await fetchCategoryProducts(activeCategory.id) : [];
-  const shops = await fetchShops();
+  const rawProducts = activeCategory ? await fetchCategoryProducts(activeCategory.id) : [];
+  const allShops = await fetchShops();
+
+  // Drastically reduce RSC payload size by stripping massive descriptions, raw metadata, and unused fields
+  const matchingProducts = optimizeProducts(rawProducts);
+  const activeShopIds = new Set(matchingProducts.map(p => p.shop_id));
+  const shops = optimizeShops(allShops, activeShopIds);
 
   const labels: Record<string, Record<string, string>> = {
     en: {

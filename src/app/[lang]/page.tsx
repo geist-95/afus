@@ -6,6 +6,7 @@ import MainLayout from "./(main)/layout";
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 import { fetchProducts, fetchShops } from "@/lib/supabase";
+import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";
 import HomeCarousel from "@/components/ui/HomeCarousel";
 import BrowseByCategory from "@/components/ui/BrowseByCategory";
@@ -66,8 +67,12 @@ export default async function HomePage({ params }: PageProps) {
   }
   */
 
-  const products = await fetchProducts();
-  const shops = await fetchShops();
+  const rawProducts = await fetchProducts();
+  const allShops = await fetchShops();
+
+  // Drastically reduce RSC payload size by stripping massive descriptions, raw metadata, and unused fields
+  const products = optimizeProducts(rawProducts);
+  const shops = optimizeShops(allShops);
 
   // Trilingual hero translation strings
   const pageLabels: Record<string, Record<string, string>> = {
