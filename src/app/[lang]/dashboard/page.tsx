@@ -154,7 +154,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                     </button>
                   </Link>
                 )}
-                {products.length === 0 ? (
+                {products.length === 0 && (
                   [1, 2, 3].map((num) => (
                     <div key={num} className="w-full rounded-lg border border-neutral-200 bg-white p-4 flex items-center justify-between opacity-60">
                       <div className="flex items-center gap-4">
