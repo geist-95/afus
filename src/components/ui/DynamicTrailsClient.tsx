@@ -107,7 +107,7 @@ export default function DynamicTrailsClient({ products, shops, lang }: DynamicTr
   const freeShippingRef = useRef<HTMLDivElement>(null);
   const newestStoresRef = useRef<HTMLDivElement>(null);
 
-  const scrollContainer = (ref: React.RefObject<HTMLDivElement>, direction: 'left' | 'right') => {
+  const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
     if (!ref.current) return;
     const isRtl = typeof document !== 'undefined' && document.documentElement.dir === 'rtl';
     let scrollAmount = direction === 'left' ? -400 : 400;
