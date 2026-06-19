@@ -4,7 +4,7 @@ import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import ProductGrid from "@/components/ui/ProductGrid";
 import type { Metadata } from "next";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{ lang: string; slug: string }>;
