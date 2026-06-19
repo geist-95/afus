@@ -63,7 +63,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
     fr: {
       openShop: "Ouvrez votre boutique",
       manageShop: "Gérer ma boutique",
-      videoTitle: "Transformez votre art en une activité prospère",
+      videoTitle: "Valorisez votre art.",
       slides: [
         {
           bg: "bg-[#1b0f2b]",
@@ -296,7 +296,6 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
                   muted
                   playsInline
                   preload="metadata"
-                  poster="/onboarding.jpg"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
@@ -415,7 +414,6 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
             muted
             playsInline
             preload="metadata"
-            poster="/onboarding.jpg"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 z-20 flex flex-col justify-end px-6 pb-5">
