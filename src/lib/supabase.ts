@@ -320,3 +320,23 @@ export async function deleteCollection(id: string) {
   if (error) throw error;
   return { success: true };
 }
+
+// STORAGE APIS
+export async function uploadImage(file: File | Blob, bucket: string = 'media'): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('bucket', bucket);
+
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Upload failed');
+  }
+
+  const data = await res.json();
+  return data.publicUrl;
+}

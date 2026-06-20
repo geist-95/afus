@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
-import { supabase } from '@/lib/supabase';
+import { supabase, uploadImage } from '@/lib/supabase';
 import { getDictionary } from '@/lib/i18n';
 import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload, Bell } from 'lucide-react';
 import Link from 'next/link';
@@ -28,6 +28,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   // Header State
   const [logoUrl, setLogoUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [bannerBgColor, setBannerBgColor] = useState('#f0e4f6');
   const [announcement, setAnnouncement] = useState('');
 
@@ -98,21 +100,31 @@ export default function SettingsPage({ params }: SettingsPageProps) {
 
     const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
-    const metadata = {
-      description,
-      logo_url: logoUrl,
-      cover_url: coverUrl,
-      phone,
-      email,
-      whatsapp,
-      instagram,
-      facebook,
-      banner_bg_color: bannerBgColor,
-      announcement,
-      announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : lang === 'tz' ? 'tz' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
-    };
-
     try {
+      let finalLogoUrl = logoUrl;
+      if (logoFile) {
+        finalLogoUrl = await uploadImage(logoFile);
+        setLogoUrl(finalLogoUrl);
+      }
+      let finalCoverUrl = coverUrl;
+      if (coverFile) {
+        finalCoverUrl = await uploadImage(coverFile);
+        setCoverUrl(finalCoverUrl);
+      }
+
+      const metadata = {
+        description,
+        logo_url: finalLogoUrl,
+        cover_url: finalCoverUrl,
+        phone,
+        email,
+        whatsapp,
+        instagram,
+        facebook,
+        banner_bg_color: bannerBgColor,
+        announcement,
+        announcement_updated_at: new Date().toLocaleDateString(lang === 'fr' ? 'fr' : lang === 'ar' ? 'ar' : lang === 'tz' ? 'tz' : 'en', { year: 'numeric', month: 'short', day: 'numeric' })
+      };
 
       // Update profiles (notifications)
       try {
@@ -139,8 +151,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           merchant_city: city,
           pickup_address_street: address,
           faq_translations: faqs,
-          logo_url: logoUrl,
-          banner_url: coverUrl,
+          logo_url: finalLogoUrl,
+          banner_url: finalCoverUrl,
           description_translations: {
             en: description,
             fr: description,
@@ -189,8 +201,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
           ice_number: '123456789012345',
           is_verified: true,
           faq_translations: faqs,
-          logo_url: logoUrl,
-          banner_url: coverUrl,
+          logo_url: finalLogoUrl,
+          banner_url: finalCoverUrl,
           description_translations: {
             en: description,
             fr: description,
@@ -265,8 +277,8 @@ export default function SettingsPage({ params }: SettingsPageProps) {
             pickup_address_street: address,
             faq_translations: faqs,
             metadata,
-            logo_url: logoUrl,
-            banner_url: coverUrl,
+            logo_url: finalLogoUrl,
+            banner_url: finalCoverUrl,
             description_translations: {
               en: description,
               fr: description,
@@ -433,7 +445,9 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                       accept="image/*"
                       onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
-                          setLogoUrl(URL.createObjectURL(e.target.files[0]));
+                          const file = e.target.files[0];
+                          setLogoFile(file);
+                          setLogoUrl(URL.createObjectURL(file));
                         }
                       }}
                       className="flex-1 border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"
@@ -461,7 +475,9 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                     accept="image/*"
                     onChange={(e) => {
                       if (e.target.files && e.target.files[0]) {
-                        setCoverUrl(URL.createObjectURL(e.target.files[0]));
+                        const file = e.target.files[0];
+                        setCoverFile(file);
+                        setCoverUrl(URL.createObjectURL(file));
                       }
                     }}
                     className="w-full border border-neutral-200 p-2.5 bg-white focus:outline-none rounded-lg text-sm"

@@ -141,6 +141,7 @@ export async function registerUser(payload: {
   phone: string;
   role?: 'buyer' | 'seller';
   shopName?: string;
+  logoUrl?: string;
 }): Promise<UserSession> {
   const redirectTo = typeof window !== 'undefined'
     ? `${window.location.origin}/auth/callback`
@@ -187,6 +188,7 @@ export async function registerUser(payload: {
         pickup_address_street: 'Derb Snan, Marrakech',
         ice_number: '123456789012345',
         is_verified: true,
+        logo_url: payload.logoUrl,
       })
       .select()
       .single();
@@ -241,6 +243,7 @@ export async function createShopForExistingUser(payload: {
   shopName: string;
   merchantCity: string;
   pickupAddress?: string;
+  logoUrl?: string;
 }): Promise<UserSession> {
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -266,6 +269,7 @@ export async function createShopForExistingUser(payload: {
       pickup_address_street: payload.pickupAddress || 'Derb Snan, Marrakech',
       ice_number: '123456789012345',
       is_verified: true,
+      logo_url: payload.logoUrl,
     })
     .select()
     .single();

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, DragEvent } from 'react';
+import { uploadImage } from '@/lib/supabase';
 
 interface UploaderProps {
   onUploadComplete?: (urls: string[]) => void;
@@ -59,19 +60,24 @@ export default function MediaUploader({ onUploadComplete, maxFiles = 5 }: Upload
 
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Compress to JPEG with 75% quality
-          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
-          
-          // Estimate compressed size in bytes from base64 length
-          const compressedSize = Math.round((compressedDataUrl.length * 3) / 4);
-
-          resolve({
-            id: Math.random().toString(36).substring(7),
-            name: file.name,
-            originalSize: file.size,
-            compressedSize,
-            dataUrl: compressedDataUrl,
-          });
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              reject(new Error('canvas toBlob failed'));
+              return;
+            }
+            try {
+              const publicUrl = await uploadImage(blob);
+              resolve({
+                id: Math.random().toString(36).substring(7),
+                name: file.name,
+                originalSize: file.size,
+                compressedSize: blob.size,
+                dataUrl: publicUrl,
+              });
+            } catch (err) {
+              reject(err);
+            }
+          }, 'image/jpeg', 0.75);
         };
         img.onerror = () => reject(new Error('image loading failed'));
         img.src = event.target?.result as string;

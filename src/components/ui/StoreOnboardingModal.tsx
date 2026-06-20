@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { registerUser, loginUser, getActiveSession, createShopForExistingUser } from '@/lib/auth';
-import { checkShopSlugAvailable } from '@/lib/supabase';
+import { getActiveSession, loginUser, registerUser, createShopForExistingUser, UserSession } from '@/lib/auth';
+import { checkShopSlugAvailable, uploadImage } from '@/lib/supabase';
 import {
   IconX,
   IconBuildingStore,
@@ -301,6 +301,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
   const [address, setAddress] = useState('');
 
   const [shopLogoPreview, setShopLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
   const [createdShopSlug, setCreatedShopSlug] = useState('');
   const [reviewIdx, setReviewIdx] = useState(0);
@@ -352,6 +353,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       setShopName(''); setShopDesc('');
       setCity(''); setAddress('');
       setShopLogoPreview(null);
+      setLogoFile(null);
       setReviewIdx(0);
 
       getActiveSession().then((session) => {
@@ -447,6 +449,11 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     if (!city) { setError('Please select your city.'); return; }
     setLoading(true); setError('');
     try {
+      let finalLogoUrl = undefined;
+      if (logoFile) {
+        finalLogoUrl = await uploadImage(logoFile);
+      }
+
       if (hasSession) {
         const active = await getActiveSession();
         if (!active) {
@@ -459,6 +466,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
           shopName,
           merchantCity: city,
           pickupAddress: address,
+          logoUrl: finalLogoUrl,
         });
         setCreatedShopSlug(result.shop?.slug || '');
       } else {
@@ -469,6 +477,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
           phone: phone || '',
           role: 'seller',
           shopName,
+          logoUrl: finalLogoUrl,
         });
         setCreatedShopSlug(result.shop?.slug || '');
       }
@@ -797,7 +806,9 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             className="absolute inset-0 opacity-0 cursor-pointer"
                             onChange={(e) => {
                               if (e.target.files && e.target.files[0]) {
-                                setShopLogoPreview(URL.createObjectURL(e.target.files[0]));
+                                const file = e.target.files[0];
+                                setLogoFile(file);
+                                setShopLogoPreview(URL.createObjectURL(file));
                               }
                             }}
                           />
