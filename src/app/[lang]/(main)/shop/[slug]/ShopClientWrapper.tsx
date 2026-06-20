@@ -165,7 +165,7 @@ export default function ShopClientWrapper({
             <div className="flex-1 flex flex-col items-start justify-center px-6 md:px-12 py-10 z-10 text-left">
               
               {/* Avatar */}
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-neutral-200 border border-neutral-300 flex-shrink-0 mb-4 shadow-sm flex items-center justify-center text-neutral-400 font-bold text-2xl rounded-full overflow-hidden">
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-[#493b54] border border-[#493b54] flex-shrink-0 mb-4 flex items-center justify-center text-white font-bold text-3xl rounded-full overflow-hidden">
                 {hasLogo ? (
                   <img src={logoUrl} alt="shop logo" className="w-full h-full object-cover" />
                 ) : (
