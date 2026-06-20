@@ -28,7 +28,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   // Header State
   const [logoUrl, setLogoUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
-  const [bannerBgColor, setBannerBgColor] = useState('#2a0a1e');
+  const [bannerBgColor, setBannerBgColor] = useState('#e5e7eb');
   const [announcement, setAnnouncement] = useState('');
 
   // FAQ State
@@ -79,7 +79,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
            setWhatsapp(meta.whatsapp || '');
            setInstagram(meta.instagram || '');
            setFacebook(meta.facebook || '');
-           setBannerBgColor(meta.banner_bg_color || '#2a0a1e');
+           setBannerBgColor(meta.banner_bg_color || '#e5e7eb');
            setAnnouncement(meta.announcement || '');
         } catch(e) {
            // ignore
@@ -469,6 +469,22 @@ export default function SettingsPage({ params }: SettingsPageProps) {
                 </div>
               </div>
 
+
+              <div className="border-t border-neutral-100 pt-8 space-y-3">
+                <div>
+                  <h3 className="font-bold text-neutral-800 text-lg">{lang === 'fr' ? 'Couleur de fond' : lang === 'ar' ? 'لون الخلفية' : 'Background Color'}</h3>
+                  <p className="text-sm text-neutral-500">{lang === 'fr' ? 'Choisissez une couleur pour le fond de la bannière.' : lang === 'ar' ? 'اختر لونًا لخلفية اللافتة.' : 'Choose a color for the banner background.'}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="color"
+                    value={bannerBgColor}
+                    onChange={(e) => setBannerBgColor(e.target.value)}
+                    className="w-12 h-12 p-1 bg-white border border-neutral-200 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-sm font-medium text-neutral-700 uppercase">{bannerBgColor}</span>
+                </div>
+              </div>
 
               <div className="border-t border-neutral-100 pt-8 space-y-3">
                 <div>

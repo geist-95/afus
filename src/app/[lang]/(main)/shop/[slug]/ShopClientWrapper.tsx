@@ -259,7 +259,7 @@ export default function ShopClientWrapper({
 
             {/* Right: image or Tifinagh text if no cover */}
             {hasCover ? (
-              <div className="relative w-full md:w-[45%] lg:w-[50%] min-h-[200px] flex-shrink-0">
+              <div className="relative w-full md:w-[45%] lg:w-[50%] min-h-[200px] flex-shrink-0" style={{ backgroundColor: shop.metadata?.banner_bg_color || '#e5e7eb' }}>
                 <img
                   src={bannerUrl}
                   alt="shop banner"
@@ -269,6 +269,7 @@ export default function ShopClientWrapper({
             ) : (
               <div 
                 className="relative w-full md:w-[45%] lg:w-[50%] min-h-[250px] md:min-h-[300px] flex-shrink-0 flex items-center justify-center overflow-hidden"
+                style={{ backgroundColor: shop.metadata?.banner_bg_color || '#e5e7eb' }}
               >
                 <div 
                   className="font-black select-none whitespace-nowrap"
