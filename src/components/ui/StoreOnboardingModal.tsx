@@ -95,6 +95,17 @@ const labels: Record<string, Record<string, string>> = {
     loginPassword: 'Password',
     signinBtn: 'Sign in',
     switchToRegister: 'Create account',
+    errFillFields: 'Please fill all fields.',
+    errLoginFailed: 'Login failed.',
+    errFillRequired: 'Please fill all required fields.',
+    errPasswordLength: 'Password must be at least 6 characters.',
+    errShopNameEmpty: 'Please enter a shop name.',
+    errShopNameLength: 'Shop name must be between 4 and 20 characters.',
+    errShopNameFormat: 'Shop name can only contain letters and numbers (no spaces, special characters, or emojis).',
+    errShopNameTaken: 'This shop name is already taken.',
+    errVerifyingShop: 'Error verifying shop name.',
+    errSelectCity: 'Please select your city.',
+    errCreateShopFailed: 'Failed to create shop. Please try again.',
   },
   fr: {
     welcomeTitle: 'Commencez à vendre sur afus',
@@ -147,6 +158,17 @@ const labels: Record<string, Record<string, string>> = {
     loginPassword: 'Mot de passe',
     signinBtn: 'Se connecter',
     switchToRegister: 'Créer un compte',
+    errFillFields: 'Veuillez remplir tous les champs.',
+    errLoginFailed: 'Échec de la connexion.',
+    errFillRequired: 'Veuillez remplir tous les champs obligatoires.',
+    errPasswordLength: 'Le mot de passe doit comporter au moins 6 caractères.',
+    errShopNameEmpty: 'Veuillez entrer un nom de boutique.',
+    errShopNameLength: 'Le nom de la boutique doit comporter entre 4 et 20 caractères.',
+    errShopNameFormat: 'Le nom de la boutique ne peut contenir que des lettres et des chiffres (sans espaces, caractères spéciaux ou emojis).',
+    errShopNameTaken: 'Ce nom de boutique est déjà pris.',
+    errVerifyingShop: 'Erreur lors de la vérification du nom de la boutique.',
+    errSelectCity: 'Veuillez sélectionner votre ville.',
+    errCreateShopFailed: 'Échec de la création de la boutique. Veuillez réessayer.',
   },
   ar: {
     welcomeTitle: 'ابدأ البيع على أفوس',
@@ -199,6 +221,17 @@ const labels: Record<string, Record<string, string>> = {
     loginPassword: 'كلمة المرور',
     signinBtn: 'تسجيل الدخول',
     switchToRegister: 'إنشاء حساب',
+    errFillFields: 'يرجى ملء جميع الحقول.',
+    errLoginFailed: 'فشل تسجيل الدخول.',
+    errFillRequired: 'يرجى ملء جميع الحقول المطلوبة.',
+    errPasswordLength: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.',
+    errShopNameEmpty: 'يرجى إدخال اسم المتجر.',
+    errShopNameLength: 'يجب أن يتراوح طول اسم المتجر بين 4 و 20 حرفًا.',
+    errShopNameFormat: 'يمكن أن يحتوي اسم المتجر على أحرف وأرقام فقط (بدون مسافات أو رموز خاصة أو رموز تعبيرية).',
+    errShopNameTaken: 'اسم المتجر هذا مستخدم بالفعل.',
+    errVerifyingShop: 'خطأ في التحقق من اسم المتجر.',
+    errSelectCity: 'يرجى تحديد مدينتك.',
+    errCreateShopFailed: 'فشل في إنشاء المتجر. يرجى المحاولة مرة أخرى.',
   },
   tz: {
     welcomeTitle: 'ⵙⵏⵜⵉ ⴰⵣⵣⵏⵣⵉ ⴳ ⴰⴼⵓⵙ',
@@ -251,6 +284,17 @@ const labels: Record<string, Record<string, string>> = {
     loginPassword: 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⴰⵢ',
     signinBtn: 'ⴽⵛⵎ',
     switchToRegister: 'ⵙⵏⴼⵍ ⴰⵎⵉⴹⴰⵏ',
+    errFillFields: 'ⵎⵍⵍⵉ ⴰⴽⴽⵯ ⵉⴳⵔⴰⵏ.',
+    errLoginFailed: 'ⵓⵔ ⵉⵎⵓⵔⵙ ⵓⴽⵛⵛⵓⵎ.',
+    errFillRequired: 'ⵎⵍⵍⵉ ⴰⴽⴽⵯ ⵉⴳⵔⴰⵏ ⵉⵜⵜⵓⵙⵖⴰⵡⵙⴰⵏ.',
+    errPasswordLength: 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⴰⵢ ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵜⴳ ⵙⴳ 6 ⵏ ⵉⵙⴽⴽⵉⵍⵏ.',
+    errShopNameEmpty: 'ⵙⵔⵙ ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ.',
+    errShopNameLength: 'ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵉⵍⵉ ⴳⵔ 4 ⴷ 20 ⵏ ⵉⵙⴽⴽⵉⵍⵏ.',
+    errShopNameFormat: 'ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵉⵙⵎⵓⵏ ⵖⴰⵙ ⵉⵙⴽⴽⵉⵍⵏ ⴷ ⵉⵣⵡⵉⵍⵏ.',
+    errShopNameTaken: 'ⵉⵙⵎ ⴰⴷ ⵏ ⵜⵃⴰⵏⵓⵜ ⵉⵜⵜⵓⵢⴰⵎⵥ ⵢⴰⴷ.',
+    errVerifyingShop: 'ⴰⵣⴳⴰⵍ ⴳ ⵓⵙⵏⵇⴷ ⵏ ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ.',
+    errSelectCity: 'ⵙⵜⵉ ⵜⵉⵖⵔⵎⵜ ⵏⵏⴽ.',
+    errCreateShopFailed: 'ⵓⵔ ⵉⵎⵓⵔⵙ ⵓⵕⵥⵎ ⵏ ⵜⵃⴰⵏⵓⵜ. ⴰⵔⵎ ⴷⴰⵖ.',
   },
 };
 
@@ -386,14 +430,14 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginEmail || !loginPassword) { setError('Please fill all fields.'); return; }
+    if (!loginEmail || !loginPassword) { setError(t.errFillFields); return; }
     setLoading(true); setError('');
     try {
       await loginUser(loginEmail, loginPassword);
       onClose();
       window.location.reload();
     } catch (err: any) {
-      setError(err.message || 'Login failed.');
+      setError(err.message || t.errLoginFailed);
     } finally {
       setLoading(false);
     }
@@ -401,8 +445,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
   const handleAccountNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !email || !password) { setError('Please fill all required fields.'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
+    if (!fullName || !email || !password) { setError(t.errFillRequired); return; }
+    if (password.length < 6) { setError(t.errPasswordLength); return; }
     setError('');
     setStep('store');
   };
@@ -410,22 +454,22 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
   const handleStoreNext = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanName = shopName.trim();
-    if (!cleanName) { setError('Please enter a shop name.'); return; }
-    if (cleanName.length < 4 || cleanName.length > 20) { setError('Shop name must be between 4 and 20 characters.'); return; }
-    if (!/^[a-zA-Z0-9]+$/.test(cleanName)) { setError('Shop name can only contain letters and numbers (no spaces, special characters, or emojis).'); return; }
+    if (!cleanName) { setError(t.errShopNameEmpty); return; }
+    if (cleanName.length < 4 || cleanName.length > 20) { setError(t.errShopNameLength); return; }
+    if (!/^[a-zA-Z0-9]+$/.test(cleanName)) { setError(t.errShopNameFormat); return; }
     
     setLoading(true);
     try {
       const isAvailable = await checkShopSlugAvailable(cleanName.toLowerCase());
       if (!isAvailable) {
-        setError('This shop name is already taken.');
+        setError(t.errShopNameTaken);
         setLoading(false);
         return;
       }
       setError('');
       setStep('branding');
     } catch (err) {
-      setError('Error verifying shop name.');
+      setError(t.errVerifyingShop);
     } finally {
       setLoading(false);
     }
@@ -439,14 +483,13 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
   const handleLocationNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!city) { setError('Please select your city.'); return; }
+    if (!city) { setError(t.errSelectCity); return; }
     setError('');
     setStep('summary');
   };
 
-  const handleCreateShop = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!city) { setError('Please select your city.'); return; }
+  const handleCreateShop = async () => {
+    if (!city) { setError(t.errSelectCity); return; }
     setLoading(true); setError('');
     try {
       let finalLogoUrl = undefined;
@@ -483,7 +526,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       }
       setStep('success');
     } catch (err: any) {
-      setError(err.message || 'Failed to create shop. Please try again.');
+      console.error(err);
+      setError(err.message || t.errCreateShopFailed);
     } finally {
       setLoading(false);
     }
