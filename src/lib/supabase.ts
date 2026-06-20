@@ -96,7 +96,7 @@ export async function fetchCategoryProducts(categoryId: string) {
 
 export async function fetchCityProducts(city: string) {
   // First find shops in the city
-  const { data: shops, error: shopsError } = await supabase.from('shops').select('id').ilike('city', `%${city}%`);
+  const { data: shops, error: shopsError } = await supabase.from('shops').select('id').ilike('merchant_city', `%${city}%`);
   if (shopsError) throw shopsError;
   const shopIds = (shops || []).map(s => s.id);
   
