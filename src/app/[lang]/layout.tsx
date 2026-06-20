@@ -8,6 +8,10 @@ import { Readex_Pro, Instrument_Sans, Noto_Sans_Tifinagh } from 'next/font/googl
 import { Toaster } from "sonner";
 import "../globals.css";
 
+export function generateStaticParams() {
+  return [{ lang: 'en' }, { lang: 'fr' }, { lang: 'ar' }, { lang: 'tz' }];
+}
+
 const readexPro = Readex_Pro({
   subsets: ['arabic'],
   display: 'swap',
