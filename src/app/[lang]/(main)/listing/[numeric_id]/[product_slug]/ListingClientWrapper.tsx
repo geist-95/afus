@@ -448,7 +448,7 @@ export default function ListingClientWrapper({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <Link href={`/${lang}/shop/${fetchedShop?.id || ''}`}>
+                      <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`}>
                         <h3 className="text-xl font-bold text-black hover:underline">{fetchedShop?.name || initialShopName}</h3>
                       </Link>
                       <span className="text-sm text-neutral-500">{fetchedShop?.merchant_city || "Marrakech"}</span>
@@ -509,7 +509,7 @@ export default function ListingClientWrapper({
                 </h1>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-black/60">By</span>
-                  <Link href={`/${lang}/shop/${fetchedShop?.id || ''}`} className="font-bold text-primary hover:underline">
+                  <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`} className="font-bold text-primary hover:underline">
                     {fetchedShop?.name || initialShopName}
                   </Link>
                   <span className="text-black/30">•</span>

@@ -56,7 +56,14 @@ export async function fetchShops() {
 }
 
 export async function fetchShopBySlug(slug: string) {
-  const { data, error } = await supabase.from('shops').select('*').eq('slug', slug).single();
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+  let query = supabase.from('shops').select('*');
+  if (isUUID) {
+    query = query.eq('id', slug);
+  } else {
+    query = query.eq('slug', slug);
+  }
+  const { data, error } = await query.single();
   if (error) throw error;
   return data;
 }
