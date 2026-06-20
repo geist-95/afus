@@ -159,7 +159,7 @@ export default function ShopClientWrapper({
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div 
           className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame"
-          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)", backgroundColor: shop.metadata?.banner_bg_color || '#f3f4f6' }}
+          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)", backgroundColor: shop.metadata?.banner_bg_color || '#f0e4f6' }}
         >
             {/* Left: Shop Info */}
             <div className="flex-1 flex flex-col items-start justify-center px-6 md:px-12 py-10 z-10 text-left">
@@ -274,7 +274,7 @@ export default function ShopClientWrapper({
                   className="font-black select-none whitespace-nowrap"
                   style={{ 
                     transform: 'rotate(90deg)', 
-                    color: '#4b5563',
+                    color: 'rgba(103, 51, 153, 0.14)',
                     marginLeft: '350px',
                     fontSize: `${Math.min(680 / cityObj.tifinagh.length, 180)}px`,
                     lineHeight: 1,

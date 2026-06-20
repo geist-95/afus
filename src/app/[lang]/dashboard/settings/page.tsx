@@ -28,7 +28,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   // Header State
   const [logoUrl, setLogoUrl] = useState('');
   const [coverUrl, setCoverUrl] = useState('');
-  const [bannerBgColor, setBannerBgColor] = useState('#f3f4f6');
+  const [bannerBgColor, setBannerBgColor] = useState('#f0e4f6');
   const [announcement, setAnnouncement] = useState('');
 
   // FAQ State
@@ -79,7 +79,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
            setWhatsapp(meta.whatsapp || '');
            setInstagram(meta.instagram || '');
            setFacebook(meta.facebook || '');
-           setBannerBgColor(meta.banner_bg_color || '#f3f4f6');
+           setBannerBgColor(meta.banner_bg_color || '#f0e4f6');
            setAnnouncement(meta.announcement || '');
         } catch(e) {
            // ignore
