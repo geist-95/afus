@@ -158,8 +158,8 @@ export default function ShopClientWrapper({
       {/* Shop Banner with Info */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         <div 
-          className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame bg-white"
-          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)" }}
+          className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame"
+          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)", backgroundColor: shop.metadata?.banner_bg_color || '#e5e7eb' }}
         >
             {/* Left: Shop Info */}
             <div className="flex-1 flex flex-col items-start justify-center px-6 md:px-12 py-10 z-10 text-left">
@@ -259,7 +259,7 @@ export default function ShopClientWrapper({
 
             {/* Right: image or Tifinagh text if no cover */}
             {hasCover ? (
-              <div className="relative w-full md:w-[45%] lg:w-[50%] min-h-[200px] flex-shrink-0" style={{ backgroundColor: shop.metadata?.banner_bg_color || '#e5e7eb' }}>
+              <div className="relative w-full md:w-[45%] lg:w-[50%] min-h-[200px] flex-shrink-0">
                 <img
                   src={bannerUrl}
                   alt="shop banner"
@@ -269,7 +269,6 @@ export default function ShopClientWrapper({
             ) : (
               <div 
                 className="relative w-full md:w-[45%] lg:w-[50%] min-h-[250px] md:min-h-[300px] flex-shrink-0 flex items-center justify-center overflow-hidden"
-                style={{ backgroundColor: shop.metadata?.banner_bg_color || '#e5e7eb' }}
               >
                 <div 
                   className="font-black select-none whitespace-nowrap"
