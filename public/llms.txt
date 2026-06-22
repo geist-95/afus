@@ -1,0 +1,27 @@
+# afus
+
+> afus is a curated multi-vendor marketplace connecting authentic Moroccan artisans directly with consumers. It features regional heritage crafts (Berber rugs, zellige ceramics, leather) and supports national Cash on Delivery (COD) tracking.
+
+## Core Navigation
+
+- [afus Home (English)](https://afus.ma/en): The main English homepage showcasing featured crafts, newest stores, and artisan specialties.
+- [afus Home (French)](https://afus.ma/fr): The main French homepage.
+- [afus Home (Arabic)](https://afus.ma/ar): The main Arabic homepage.
+- [About Us](https://afus.ma/en/about): Information about afus, our mission to support independent weavers and makers, and our logistics network.
+- [Artisan Blog](https://afus.ma/en/blog): Stories, guides, and history of Moroccan craftsmanship, zellige tiling, Fez tanneries, and Berber rugs.
+- [Search Crafts](https://afus.ma/en/search): The product search interface with filters for price, location, and categories.
+
+## Historic Craft Guilds & Categories
+
+- [Berber Rugs & Textiles](https://afus.ma/en/category/home-living): Handwoven wool carpets (Beni Ourain, Boucherouite, Zanafi) direct from Atlas Mountain weavers.
+- [Zellige & Ceramics](https://afus.ma/en/category/art-collectibles): Traditional hand-painted pottery and mosaic tilework from Fez and Safi.
+- [Leather Goods](https://afus.ma/en/category/bags-purses): Hand-tooled leather bags, poufs, and slippers from ancient medina tanneries.
+- [Moroccan Jewelry](https://afus.ma/en/category/jewelry): Handcrafted filigree, silver, and traditional Amazigh jewelry.
+- [Clothing & Caftans](https://afus.ma/en/category/clothing): Artisanal textiles, embroidered tunics, and traditional wear.
+
+## Featured Blog Posts
+
+- [The Art of Moroccan Zellige](https://afus.ma/en/blog/art-of-moroccan-zellige): Deep dive into the geometry and colors of tilework.
+- [Weaving Stories: The Berber Rugs](https://afus.ma/en/blog/weaving-stories-berber-rugs): Symbolism and styles of Atlas mountain rugs.
+- [The Scent of the Medina: A Guide to Spices](https://afus.ma/en/blog/scent-of-the-medina-spices): Overview of Moroccan culinary spice markets.
+- [Leather Tanneries of Fes](https://afus.ma/en/blog/leather-tanneries-fes): A look into Chouara Tannery.

@@ -87,7 +87,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
         en: "/en",
         fr: "/fr",
         ar: "/ar",
-        tz: "/tz",
       } as any,
     },
     openGraph: {

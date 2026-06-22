@@ -115,7 +115,7 @@ export default function TrustBanner({ lang }: TrustBannerProps) {
         {/* People Image - bottom on mobile, right on desktop */}
         <div className="z-10 flex items-center justify-center md:justify-end mt-6 md:mt-0 md:pe-16 lg:pe-20 md:ms-auto md:h-full">
           <img
-            src="/people.png"
+            src="/people.jpg"
             alt="Moroccan Artisans"
             width={300}
             height={140}
