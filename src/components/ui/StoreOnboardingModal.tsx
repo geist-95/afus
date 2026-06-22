@@ -90,6 +90,7 @@ const labels: Record<string, Record<string, string>> = {
     // Success
     successTitle: 'Your shop is open!',
     successSubtitle: 'Congratulations! You are now a verified artisan on afus. Start adding your first products.',
+    viewMyProduct: 'View my product listing',
     addProduct: 'Add first product',
     goToDashboard: 'Go to dashboard',
     // Misc
@@ -161,6 +162,7 @@ const labels: Record<string, Record<string, string>> = {
     defaultShopDesc: 'Votre boutique d\'artisan sur afus',
     successTitle: 'Votre boutique est ouverte !',
     successSubtitle: 'Félicitations ! Vous êtes maintenant un artisan certifié sur afus.',
+    viewMyProduct: 'Voir mon produit',
     addProduct: 'Ajouter le premier produit',
     goToDashboard: 'Tableau de bord',
     back: 'Retour',
@@ -231,6 +233,7 @@ const labels: Record<string, Record<string, string>> = {
     defaultShopDesc: 'متجرك الحرفي على أفوس',
     successTitle: 'متجرك مفتوح!',
     successSubtitle: 'تهانينا! أنت الآن حرفي موثق على أفوس.',
+    viewMyProduct: 'عرض منتجي',
     addProduct: 'أضف أول منتج',
     goToDashboard: 'لوحة التحكم',
     back: 'رجوع',
@@ -376,6 +379,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
   const [productImageFile, setProductImageFile] = useState<File | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
   const [productCategory, setProductCategory] = useState('cat_home_living');
+  const [createdProduct, setCreatedProduct] = useState<any>(null);
 
   const [createdShopSlug, setCreatedShopSlug] = useState('');
   const [reviewIdx, setReviewIdx] = useState(0);
@@ -431,6 +435,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       setProductImageFile(null);
       setProductImagePreview(null);
       setProductCategory('cat_home_living');
+      setCreatedProduct(null);
       setReviewIdx(0);
 
       getActiveSession().then((session) => {
@@ -546,7 +551,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     setStep('summary');
   };
 
-  const handleCreateShop = async () => {
+  const handleCreateShop = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!city) { setError(t.errSelectCity); return; }
     setLoading(true); setError('');
     try {
@@ -584,34 +590,30 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
       // Create product if details and image are provided
       if (createdShop && productTitle && productPrice && productImageFile) {
-        let uploadedProductImageUrl = '';
-        try {
-          uploadedProductImageUrl = await uploadImage(productImageFile);
-        } catch (imgErr) {
-          console.error('Failed to upload product image during onboarding:', imgErr);
-        }
+        // Upload image — throw on failure so the user sees the error
+        const uploadedProductImageUrl = await uploadImage(productImageFile);
 
         if (uploadedProductImageUrl) {
-          try {
-            const productRes = await fetch('/api/products/onboarding', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                shop_id: createdShop.id,
-                category_id: productCategory || 'cat_home_living',
-                title: productTitle,
-                price: productPrice,
-                imageUrl: uploadedProductImageUrl,
-              }),
-            });
-            if (!productRes.ok) {
-              const errData = await productRes.json();
-              throw new Error(errData.error || 'Failed to create onboarding product');
-            }
-          } catch (prodErr) {
-            console.error('Failed to create first product listing during onboarding:', prodErr);
+          const productRes = await fetch('/api/products/onboarding', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              shop_id: createdShop.id,
+              category_id: productCategory || 'cat_home_living',
+              title: productTitle,
+              price: productPrice,
+              imageUrl: uploadedProductImageUrl,
+            }),
+          });
+          if (!productRes.ok) {
+            const errData = await productRes.json();
+            throw new Error(errData.error || 'Failed to create onboarding product');
+          }
+          const resData = await productRes.json();
+          if (resData.product) {
+            setCreatedProduct(resData.product);
           }
         }
       }
@@ -622,6 +624,20 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       setError(err.message || t.errCreateShopFailed);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSuccessRedirect = () => {
+    onClose();
+    if (createdProduct) {
+      const slug = createdProduct.slug_translations[lang] || createdProduct.slug_translations.en;
+      const title = createdProduct.title_translations[lang] || createdProduct.title_translations.en;
+      const price = createdProduct.base_price_mad;
+      const img = createdProduct.media_gallery?.[0] || '';
+      const shopNameParam = shopName;
+      window.location.href = `/${lang}/listing/${createdProduct.numeric_id}/${slug}?t=${encodeURIComponent(title)}&p=${price}&img=${encodeURIComponent(img)}&s=${encodeURIComponent(shopNameParam)}`;
+    } else {
+      window.location.href = `/${lang}/dashboard`;
     }
   };
 
@@ -638,7 +654,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
         className="fixed inset-0 bg-black/60 transition-opacity"
         onClick={() => {
           if (step === 'success') {
-            window.location.href = `/${lang}/dashboard`;
+            handleSuccessRedirect();
           } else {
             onClose();
           }
@@ -660,7 +676,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
             <button
               onClick={() => {
                 if (step === 'success') {
-                  window.location.href = `/${lang}/dashboard`;
+                  handleSuccessRedirect();
                 } else {
                   onClose();
                 }
@@ -1193,14 +1209,11 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                     <div className="space-y-4">
                       <button
                         type="button"
-                        onClick={() => {
-                          onClose();
-                          window.location.href = `/${lang}/dashboard/products`;
-                        }}
+                        onClick={handleSuccessRedirect}
                         className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all cursor-pointer"
                       >
                         <IconPackage className="w-5 h-5" strokeWidth={2} />
-                        {t.addProduct}
+                        {createdProduct ? t.viewMyProduct : t.addProduct}
                       </button>
                       <button
                         type="button"

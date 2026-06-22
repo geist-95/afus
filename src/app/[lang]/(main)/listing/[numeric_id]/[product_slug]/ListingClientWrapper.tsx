@@ -339,8 +339,40 @@ export default function ListingClientWrapper({
 
 
 
+  // Owner stripe translations
+  const ownerStripeText: Record<string, { msg: string; cta: string }> = {
+    en: { msg: "You own this item.", cta: "Click here to modify / personalize it" },
+    fr: { msg: "Vous possédez cet article.", cta: "Cliquez ici pour le modifier / personnaliser" },
+    ar: { msg: "أنت تملك هذا المنتج.", cta: "انقر هنا لتعديله / تخصيصه" },
+  };
+  const ownerText = ownerStripeText[lang] || ownerStripeText.en;
+
+  // Check if current session user owns this product (via shop_id)
+  const isOwner = !!(session?.shop?.id && fetchedProduct?.shop_id && session.shop.id === fetchedProduct.shop_id);
+
   return (
     <div className="space-y-8">
+      {/* Owner stripe — shown only to the product's seller */}
+      {isOwner && fetchedProduct && (
+        <a
+          href={`/${lang}/dashboard/products/${fetchedProduct.id}`}
+          className="flex items-center justify-center gap-3 w-full bg-gradient-to-r from-primary/90 via-primary to-primary/90 text-white text-sm font-semibold py-3 px-6 rounded-2xl shadow-md hover:brightness-105 transition-all group animate-in fade-in duration-300"
+          style={{ direction: lang === 'ar' ? 'rtl' : 'ltr' }}
+        >
+          {/* Pencil icon */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 flex-shrink-0 opacity-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <span className="opacity-90">{ownerText.msg}</span>
+          <span className="underline underline-offset-2 group-hover:opacity-100 opacity-80 transition-opacity">{ownerText.cta}</span>
+          {/* Arrow */}
+          <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 flex-shrink-0 opacity-75 group-hover:translate-x-1 transition-transform ${lang === 'ar' ? 'rotate-180' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      )}
+
       {/* Product no longer available banner */}
       {!isFetchingBackground && !fetchedProduct && (
         <div className="w-full bg-red-600 text-white font-bold py-4 px-6 text-center animate-in fade-in duration-200 rounded-2xl">
