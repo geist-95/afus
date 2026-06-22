@@ -731,7 +731,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
               </div>
             )}
 
-            <div className="flex-1 min-h-full flex items-center justify-center p-6 md:p-10 lg:p-14">
+            <div className="flex-1 min-h-full flex items-center justify-center pt-28 md:pt-32 pb-6 md:pb-10 px-6 md:px-10 lg:px-14 lg:pb-14">
               <div className="w-full max-w-md">
 
               {/* ── LOGIN MODE ── */}
