@@ -142,6 +142,8 @@ export async function registerUser(payload: {
   role?: 'buyer' | 'seller';
   shopName?: string;
   logoUrl?: string;
+  merchantCity?: string;
+  pickupAddress?: string;
 }): Promise<UserSession> {
   const redirectTo = typeof window !== 'undefined'
     ? `${window.location.origin}/auth/callback`
@@ -155,6 +157,10 @@ export async function registerUser(payload: {
 
   if (signUpError) throw signUpError;
   if (!signUpData.user) throw new Error('sign up failed: no user returned');
+
+  if (signUpData.session) {
+    await supabase.auth.setSession(signUpData.session);
+  }
 
   const userId = signUpData.user.id;
   const actualRole = payload.shopName ? 'seller' : (payload.role || 'buyer');
@@ -184,8 +190,8 @@ export async function registerUser(payload: {
         owner_id: userId,
         name: finalShopName,
         slug: shopSlug,
-        merchant_city: 'Marrakech',
-        pickup_address_street: 'Derb Snan, Marrakech',
+        merchant_city: payload.merchantCity || 'Marrakech',
+        pickup_address_street: payload.pickupAddress || 'Derb Snan, Marrakech',
         ice_number: '123456789012345',
         is_verified: true,
         logo_url: payload.logoUrl,
@@ -195,6 +201,7 @@ export async function registerUser(payload: {
 
     if (shopError) {
       console.error('could not automatically create shop for seller:', shopError);
+      throw shopError;
     } else {
       shop = shopData;
     }

@@ -3,7 +3,6 @@ import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-import LanguageModal from "@/components/ui/LanguageModal";
 import { Readex_Pro, Instrument_Sans, Noto_Sans_Tifinagh } from 'next/font/google';
 import { Toaster } from "sonner";
 import "../globals.css";
@@ -141,7 +140,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body className="min-h-full flex flex-col bg-white text-black antialiased font-sans" suppressHydrationWarning>
         <WishlistProvider>
         <CartProvider>
-          <LanguageModal currentLang={lang} />
           {children}
           <Toaster position="top-center" richColors />
           <SpeedInsights />

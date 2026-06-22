@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { getActiveSession, loginUser, registerUser, createShopForExistingUser, UserSession } from '@/lib/auth';
-import { checkShopSlugAvailable, uploadImage } from '@/lib/supabase';
+import { checkShopSlugAvailable, uploadImage, createProductListing, staticCategories } from '@/lib/supabase';
 import {
   IconX,
   IconBuildingStore,
@@ -31,9 +31,9 @@ interface StoreOnboardingModalProps {
   lang: string;
 }
 
-type Step = 'account' | 'store' | 'branding' | 'location' | 'summary' | 'success';
+type Step = 'account' | 'store' | 'product' | 'location' | 'summary' | 'success';
 
-const STEPS: Step[] = ['account', 'store', 'branding', 'location', 'summary', 'success'];
+const STEPS: Step[] = ['account', 'store', 'product', 'location', 'summary', 'success'];
 
 const labels: Record<string, Record<string, string>> = {
   en: {
@@ -62,12 +62,18 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'e.g. Atlas Artisanat',
     shopDesc: 'Short description (optional)',
     shopDescPlaceholder: 'Tell buyers what makes your shop unique...',
-    // Branding
-    brandingTitle: 'Brand your shop',
-    brandingSubtitle: 'Make your artisan profile stand out.',
-    shopLogo: 'Shop logo',
-    shopLogoHelp: 'Upload a profile picture for your shop (optional).',
-    upload: 'Upload',
+    // Product
+    productTitle: 'List your first product',
+    productSubtitle: 'Add your first craft so buyers can see what you sell immediately.',
+    productName: 'Product title',
+    productNamePlaceholder: 'e.g. Handwoven Berber Wool Rug',
+    productPrice: 'Price (MAD)',
+    productPricePlaceholder: 'e.g. 450',
+    productImage: 'Product photo',
+    productImageHelp: 'Upload a clear photo of your craft.',
+    productCategory: 'Category',
+    productCategoryPlaceholder: 'Select category...',
+    skipStep: 'Skip this step',
     // Location
     locationTitle: 'Where are you based?',
     locationSubtitle: 'Help buyers discover your crafts and plan local pickups.',
@@ -130,11 +136,18 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'ex. Maison Artisanale',
     shopDesc: 'Description courte (optionnel)',
     shopDescPlaceholder: 'Dites aux acheteurs ce qui rend votre boutique unique...',
-    brandingTitle: 'Identité de votre boutique',
-    brandingSubtitle: 'Faites ressortir votre profil d\'artisan.',
-    shopLogo: 'Logo de la boutique',
-    shopLogoHelp: 'Téléchargez une photo de profil pour votre boutique (optionnel).',
-    upload: 'Télécharger',
+    // Product
+    productTitle: 'Ajoutez votre premier produit',
+    productSubtitle: 'Ajoutez votre première création pour que les acheteurs voient immédiatement ce que vous vendez.',
+    productName: 'Nom du produit',
+    productNamePlaceholder: 'ex. Tapis berbère en laine fait main',
+    productPrice: 'Prix (MAD)',
+    productPricePlaceholder: 'ex. 450',
+    productImage: 'Photo du produit',
+    productImageHelp: 'Téléchargez une photo claire de votre produit.',
+    productCategory: 'Catégorie',
+    productCategoryPlaceholder: 'Sélectionnez une catégorie...',
+    skipStep: 'Passer cette étape',
     locationTitle: 'Où êtes-vous basé ?',
     locationSubtitle: 'Aidez les acheteurs à découvrir vos artisanats.',
     city: 'Ville',
@@ -193,11 +206,18 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'مثال: أطلس للحرف اليدوية',
     shopDesc: 'وصف قصير (اختياري)',
     shopDescPlaceholder: 'أخبر المشترين بما يميز متجرك...',
-    brandingTitle: 'تصميم هوية متجرك',
-    brandingSubtitle: 'اجعل ملفك الشخصي كحرفي مميزاً.',
-    shopLogo: 'شعار المتجر',
-    shopLogoHelp: 'تحميل صورة الملف الشخصي لمتجرك (اختياري).',
-    upload: 'تحميل',
+    // Product
+    productTitle: 'أضف منتجك الأول',
+    productSubtitle: 'أضف أول قطعة من إبداعك ليتمكن المشترون من رؤية ما تبيعه على الفور.',
+    productName: 'اسم المنتج',
+    productNamePlaceholder: 'مثال: سجادة بربرية من الصوف مغزولة يدويًا',
+    productPrice: 'السعر (بالدرهم)',
+    productPricePlaceholder: 'مثال: 450',
+    productImage: 'صورة المنتج',
+    productImageHelp: 'قم بتحميل صورة واضحة لمنتجك.',
+    productCategory: 'التصنيف',
+    productCategoryPlaceholder: 'اختر التصنيف...',
+    skipStep: 'تخطي هذه الخطوة',
     locationTitle: 'أين أنت موجود؟',
     locationSubtitle: 'ساعد المشترين في اكتشاف حرفك.',
     city: 'المدينة',
@@ -239,13 +259,13 @@ const labels: Record<string, Record<string, string>> = {
     feat1: 'ⵙⵔⵙ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⴽ ⴼⴰⴱⵓⵔ',
     feat2: 'ⴰⵙⵖⵏ ⴳ ⵓⵎⵣⴰⵖ ⵙ ⴰⵎⴰⵏⴰ',
     feat3: 'ⵜⴰⵙⵏⵙⵉⵜ ⵉⵜⵜⵓⴼⵔⴰⵏ',
-    feat4: 'ⴰⵡⴹ ⵉⵎⵙⴰⵖⵏ ⴳ ⴽⵓ ⴰⴷⵖⴰⵔ',
+    feat4: 'ⴰⵡⴹ ⵉⵎⵙⴰⵖⵏ ⴳ ⴽⵓ ⴰⴷⵖⴰาร',
     getStarted: 'ⵙⵏⵜⵉ',
     alreadyHaveAccount: 'ⵉⵍⵍⴰ ⵖⵓⵔⴽ ⴰⵎⵉⴹⴰⵏ?',
     signIn: 'ⴽⵛⵎ',
     accountTitle: 'ⵙⵏⴼⵍ ⴰⵎⵉⴹⴰⵏ ⵏⵏⴽ',
     accountSubtitle: 'ⵉⵏⵖ密ⵙⵏ ⵏⵏⴽ ⵉ ⵓⴽⵛⵛⵓⵎ.',
-    fullName: 'ⵉⵙⵎ ⴰⵎⵖⵔⴰⴷ',
+    fullName: 'ⵉⵙⵎ ⴰⵎⵖראⴷ',
     email: 'ⴰⵏⵙⴰ ⵏ ⵓⵎⴰⵢⵍ',
     password: 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⴰⵢ',
     phone: 'ⵓⵟⵟⵓⵏ ⵏ ⵜⵉⵍⵉⴼⵓⵏ',
@@ -256,11 +276,18 @@ const labels: Record<string, Record<string, string>> = {
     shopNamePlaceholder: 'ⵎⴷⵢⴰ. ⴰⵟⵍⴰⵙ ⵉ ⵜⵉⴳⴰⵡⵉⵏ',
     shopDesc: 'ⴰⴳⵍⴰⵎ ⴰⴳⵣⵣⴰⵍ (ⴰⵙⵜⴰⵢ)',
     shopDescPlaceholder: 'ⵎⵎⵍ ⵉ ⵉⵎⵙⴰⵖⵏ ⵎⴰⵢⴷ ⵉⵥⵉⵍⵏ ⴳ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ...',
-    brandingTitle: 'ⵙⵏⴼⵍ ⵜⴰⵎⵙⵙⵓⴳⵓⵔⵜ ⵏ ⵜⵃⴰⵏⵓⵜ',
-    brandingSubtitle: 'ⵙⴽⵔ ⴰⵙⵡⵉⵔ ⵏ ⵓⵎⴳⵓⵔⵉ ⵏⵏⴽ ⴰⴷ ⵉⵥⵉⵍ.',
-    shopLogo: 'ⵜⴰⵎⵓⵍⵉ ⵏ ⵜⵃⴰⵏⵓⵜ',
-    shopLogoHelp: 'ⵙⵔⵙ ⵜⴰⵡⵍⴰⴼⵜ ⵏ ⵜⵃⴰⵏⵓⵜ ⵏⵏⴽ (ⴰⵙⵜⴰⵢ).',
-    upload: 'ⵙⵔⵙ',
+    // Product
+    productTitle: 'ⵙⵉⴷⴼ ⵜⴰⵖⴰⵡⵙⴰ ⵏⵏⴽ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ',
+    productSubtitle: 'ⵙⵉⴷⴼ ⵜⴰⵡⵓⵔⵉ ⵏⵏⴽ ⵜⴰⵎⵣⵡⴰⵔⵓⵜ ⵃⵎⴰ ⴰⴷ ⵥⵕⵏ ⵉⵎⵙⵖⴰⵏ ⵎⴰ ⵜⵣⵣⵏⵣⴰⵜ.',
+    productName: 'ⵉⵙⵎ ⵏ ⵜⵖⴰⵡⵙⴰ',
+    productNamePlaceholder: 'ex. ⵜⴰⵥⵕⴱⵉⵜ ⵜⴰⴱⵔⴱⵔⵉⵜ',
+    productPrice: 'ⴰⵜⵉⴳ (MAD)',
+    productPricePlaceholder: 'ex. 450',
+    productImage: 'ⵜⴰⵡⵍⴰⴼⵜ ⵏ ⵜⵖⴰⵡⵙⴰ',
+    productImageHelp: 'ⵙⵉⴷⴼ ⵜⴰⵡⵍⴰⴼⵜ ⵉⴼⴰⵡⵏ.',
+    productCategory: 'ⴰⵏⴰⵡ',
+    productCategoryPlaceholder: 'ⴼⵔⵏ ⴰⵏⴰⵡ...',
+    skipStep: 'ⵣⵔⵉ ⵜⴰⵙⵓⵔⵜ ⴰⴷ',
     locationTitle: 'ⵎⴰⵏⵉ ⵖ ⵜⵍⵍⵉⴷ?',
     locationSubtitle: 'ⴰⵡⵙ ⵉⵎⵙⴰⵖⵏ ⴰⴷ ⴰⴼⵏ ⵜⵉⴳⴰⵡⵉⵏ ⵏⵏⴽ.',
     city: 'ⵜⵉⵖⵔⵎⵜ',
@@ -286,7 +313,7 @@ const labels: Record<string, Record<string, string>> = {
     switchToRegister: 'ⵙⵏⴼⵍ ⴰⵎⵉⴹⴰⵏ',
     errFillFields: 'ⵎⵍⵍⵉ ⴰⴽⴽⵯ ⵉⴳⵔⴰⵏ.',
     errLoginFailed: 'ⵓⵔ ⵉⵎⵓⵔⵙ ⵓⴽⵛⵛⵓⵎ.',
-    errFillRequired: 'ⵎⵍⵍⵉ ⴰⴽⴽⵯ ⵉⴳⵔⴰⵏ ⵉⵜⵜⵓⵙⵖⴰⵡⵙⴰⵏ.',
+    errFillRequired: 'ⵎⵍⵍⵉ ⴰⴽⴽⵯ ⵉⴳަރⴰⵏ ⵉⵜⵜⵓⵙⵖⴰⵡⵙⴰⵏ.',
     errPasswordLength: 'ⵜⴰⴳⵓⵔⵉ ⵏ ⵓⵣⵔⴰⵢ ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵜⴳ ⵙⴳ 6 ⵏ ⵉⵙⴽⴽⵉⵍⵏ.',
     errShopNameEmpty: 'ⵙⵔⵙ ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ.',
     errShopNameLength: 'ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ ⵉⵇⵇⴰⵏ ⴷ ⴰⴷ ⵉⵍⵉ ⴳⵔ 4 ⴷ 20 ⵏ ⵉⵙⴽⴽⵉⵍⵏ.',
@@ -294,7 +321,6 @@ const labels: Record<string, Record<string, string>> = {
     errShopNameTaken: 'ⵉⵙⵎ ⴰⴷ ⵏ ⵜⵃⴰⵏⵓⵜ ⵉⵜⵜⵓⵢⴰⵎⵥ ⵢⴰⴷ.',
     errVerifyingShop: 'ⴰⵣⴳⴰⵍ ⴳ ⵓⵙⵏⵇⴷ ⵏ ⵉⵙⵎ ⵏ ⵜⵃⴰⵏⵓⵜ.',
     errSelectCity: 'ⵙⵜⵉ ⵜⵉⵖⵔⵎⵜ ⵏⵏⴽ.',
-    errCreateShopFailed: 'ⵓⵔ ⵉⵎⵓⵔⵙ ⵓⵕⵥⵎ ⵏ ⵜⵃⴰⵏⵓⵜ. ⴰⵔⵎ ⴷⴰⵖ.',
   },
 };
 
@@ -344,8 +370,12 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
   const [openCity, setOpenCity] = useState(false);
   const [address, setAddress] = useState('');
 
-  const [shopLogoPreview, setShopLogoPreview] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
+  // Product fields
+  const [productTitle, setProductTitle] = useState('');
+  const [productPrice, setProductPrice] = useState('');
+  const [productImageFile, setProductImageFile] = useState<File | null>(null);
+  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
+  const [productCategory, setProductCategory] = useState('cat_home_living');
 
   const [createdShopSlug, setCreatedShopSlug] = useState('');
   const [reviewIdx, setReviewIdx] = useState(0);
@@ -383,7 +413,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
   ];
 
   const stepIndex = STEPS.indexOf(step);
-  const contentSteps: Step[] = hasSession ? ['store', 'branding', 'location', 'summary'] : ['account', 'store', 'branding', 'location', 'summary'];
+  const contentSteps: Step[] = hasSession ? ['store', 'product', 'location', 'summary'] : ['account', 'store', 'product', 'location', 'summary'];
   const contentStepIndex = contentSteps.indexOf(step);
 
   useEffect(() => {
@@ -396,8 +426,11 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       setLoginEmail(''); setLoginPassword('');
       setShopName(''); setShopDesc('');
       setCity(''); setAddress('');
-      setShopLogoPreview(null);
-      setLogoFile(null);
+      setProductTitle('');
+      setProductPrice('');
+      setProductImageFile(null);
+      setProductImagePreview(null);
+      setProductCategory('cat_home_living');
       setReviewIdx(0);
 
       getActiveSession().then((session) => {
@@ -467,7 +500,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
         return;
       }
       setError('');
-      setStep('branding');
+      setStep('product');
     } catch (err) {
       setError(t.errVerifyingShop);
     } finally {
@@ -475,8 +508,33 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     }
   };
 
-  const handleBrandingNext = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProductNext = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setError('');
+
+    if (productTitle || productPrice || productImageFile) {
+      if (!productTitle) {
+        setError(lang === 'fr' ? 'Veuillez saisir un titre de produit.' : lang === 'ar' ? 'يرجى إدخال اسم المنتج.' : 'Please enter a product title.');
+        return;
+      }
+      if (!productPrice) {
+        setError(lang === 'fr' ? 'Veuillez saisir un prix.' : lang === 'ar' ? 'يرجى إدخال السعر.' : 'Please enter a price.');
+        return;
+      }
+      if (!productImageFile) {
+        setError(lang === 'fr' ? 'Veuillez ajouter une photo.' : lang === 'ar' ? 'يرجى إضافة صورة.' : 'Please add a photo.');
+        return;
+      }
+    }
+
+    setStep('location');
+  };
+
+  const handleProductSkip = () => {
+    setProductTitle('');
+    setProductPrice('');
+    setProductImageFile(null);
+    setProductImagePreview(null);
     setError('');
     setStep('location');
   };
@@ -492,10 +550,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     if (!city) { setError(t.errSelectCity); return; }
     setLoading(true); setError('');
     try {
-      let finalLogoUrl = undefined;
-      if (logoFile) {
-        finalLogoUrl = await uploadImage(logoFile);
-      }
+      let createdShop = null;
 
       if (hasSession) {
         const active = await getActiveSession();
@@ -509,8 +564,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
           shopName,
           merchantCity: city,
           pickupAddress: address,
-          logoUrl: finalLogoUrl,
         });
+        createdShop = result.shop;
         setCreatedShopSlug(result.shop?.slug || '');
       } else {
         const result = await registerUser({
@@ -520,10 +575,47 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
           phone: phone || '',
           role: 'seller',
           shopName,
-          logoUrl: finalLogoUrl,
+          merchantCity: city,
+          pickupAddress: address,
         });
+        createdShop = result.shop;
         setCreatedShopSlug(result.shop?.slug || '');
       }
+
+      // Create product if details and image are provided
+      if (createdShop && productTitle && productPrice && productImageFile) {
+        let uploadedProductImageUrl = '';
+        try {
+          uploadedProductImageUrl = await uploadImage(productImageFile);
+        } catch (imgErr) {
+          console.error('Failed to upload product image during onboarding:', imgErr);
+        }
+
+        if (uploadedProductImageUrl) {
+          try {
+            const productRes = await fetch('/api/products/onboarding', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                shop_id: createdShop.id,
+                category_id: productCategory || 'cat_home_living',
+                title: productTitle,
+                price: productPrice,
+                imageUrl: uploadedProductImageUrl,
+              }),
+            });
+            if (!productRes.ok) {
+              const errData = await productRes.json();
+              throw new Error(errData.error || 'Failed to create onboarding product');
+            }
+          } catch (prodErr) {
+            console.error('Failed to create first product listing during onboarding:', prodErr);
+          }
+        }
+      }
+
       setStep('success');
     } catch (err: any) {
       console.error(err);
@@ -540,59 +632,68 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     : ((contentStepIndex + 1) / contentSteps.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-stretch justify-stretch">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60"
-        onClick={onClose}
+        className="fixed inset-0 bg-black/60 transition-opacity"
+        onClick={() => {
+          if (step === 'success') {
+            window.location.href = `/${lang}/dashboard`;
+          } else {
+            onClose();
+          }
+        }}
       />
 
-      {/* Modal — fullscreen */}
-      <div className="relative z-10 w-full h-full flex flex-col md:flex-row overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+      {/* Modal Container — Centered, non-fullscreen, arabic-frame corners */}
+      <div className={`relative z-10 w-full max-w-xl md:max-w-2xl bg-white shadow-2xl arabic-frame flex flex-col max-h-[90vh] overflow-hidden ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
 
-        {/* Left panel — form (visually on the left) */}
-        <div className={`flex-1 bg-white flex flex-col overflow-hidden order-first md:order-first ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
-
-          {/* Unified header */}
-          <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-14 md:py-8 border-b md:border-none border-neutral-100 bg-white z-20">
-            <div className="flex items-center gap-2 md:gap-3">
-              <img src="/logo/logo.png" alt="Afus" className="w-6 h-6 md:w-8 md:h-8 object-contain !rounded-none" />
-              <img src="/logo/afus.svg" alt="afus" className="h-4 md:h-5 object-contain !rounded-none" />
-            </div>
-            <div className="flex items-center gap-4">
-
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="w-10 h-10 rounded-full bg-neutral-50 md:bg-white border border-neutral-200 flex items-center justify-center text-neutral-600 hover:text-black hover:bg-neutral-100 transition-all"
-              >
-                <IconX className="w-5 h-5" strokeWidth={2} />
-              </button>
-            </div>
+        {/* Unified header */}
+        <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-14 md:py-6 border-b border-neutral-100 bg-white z-20">
+          <div className="flex items-center gap-2 md:gap-3">
+            <img src="/logo/logo.png" alt="Afus" className="w-6 h-6 md:w-8 md:h-8 object-contain !rounded-none" />
+            <img src="/logo/afus.svg" alt="afus" className="h-4 md:h-5 object-contain !rounded-none" />
           </div>
+          <div className="flex items-center gap-4">
 
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto relative flex flex-col">
-            
-            {/* ── GLOBAL STEPPER (Absolute to not affect vertical centering) ── */}
-            {!isLoginMode && step !== 'success' && (
-              <div className="absolute top-6 md:top-10 lg:top-14 left-6 right-6 md:left-10 md:right-10 lg:left-14 lg:right-14 z-10 pointer-events-none">
-                <div className="w-full max-w-md mx-auto pointer-events-auto">
-                  {step !== 'account' && !(step === 'store' && hasSession) && (
-                    <button
-                      onClick={() => {
-                        setError('');
-                        if (step === 'store') setStep('account');
-                        else if (step === 'branding') setStep('store');
-                        else if (step === 'location') setStep('branding');
-                        else if (step === 'summary') setStep('location');
-                      }}
-                      className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-black mb-6 transition-colors"
-                    >
-                      <IconArrowLeft className="w-4 h-4" strokeWidth={2} />
-                      <span>{t.back}</span>
-                    </button>
-                  )}
+            {/* Close button */}
+            <button
+              onClick={() => {
+                if (step === 'success') {
+                  window.location.href = `/${lang}/dashboard`;
+                } else {
+                  onClose();
+                }
+              }}
+              className="w-10 h-10 rounded-full bg-neutral-50 md:bg-white border border-neutral-200 flex items-center justify-center text-neutral-600 hover:text-black hover:bg-neutral-100 transition-all"
+            >
+              <IconX className="w-5 h-5" strokeWidth={2} />
+            </button>
+          </div>
+        </div>
+
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto relative flex flex-col min-h-0">
+          
+          {/* ── GLOBAL STEPPER ── */}
+          {!isLoginMode && step !== 'success' && (
+            <div className="absolute top-6 md:top-8 left-6 right-6 md:left-10 md:right-10 z-10 pointer-events-none">
+              <div className="w-full max-w-md mx-auto pointer-events-auto">
+                {step !== 'account' && !(step === 'store' && hasSession) && (
+                  <button
+                    onClick={() => {
+                      setError('');
+                      if (step === 'store') setStep('account');
+                      else if (step === 'product') setStep('store');
+                      else if (step === 'location') setStep('product');
+                      else if (step === 'summary') setStep('location');
+                    }}
+                    className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-black mb-4 transition-colors"
+                  >
+                    <IconArrowLeft className="w-4 h-4" strokeWidth={2} />
+                    <span>{t.back}</span>
+                  </button>
+                )}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between text-neutral-500 text-xs font-bold uppercase tracking-wider">
                       <span>{t.step} {contentStepIndex + 1} {t.of} {contentSteps.length}</span>
@@ -817,72 +918,118 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                   </div>
                 )}
 
-                {/* ── STEP 3: BRANDING ── */}
-                {step === 'branding' && (
+                {/* ── STEP 3: PRODUCT ── */}
+                {step === 'product' && (
                   <div className="space-y-6 text-center">
                     <div>
-                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.brandingTitle}</h1>
-                      <p className="text-neutral-500 mt-2 text-base">{t.brandingSubtitle}</p>
+                      <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.productTitle}</h1>
+                      <p className="text-neutral-500 mt-2 text-base">{t.productSubtitle}</p>
                     </div>
 
-                    <form onSubmit={handleBrandingNext} className="space-y-4 text-left">
+                    <form onSubmit={handleProductNext} className="space-y-4 text-left">
                       {error && (
                         <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
                           {error}
                         </div>
                       )}
 
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-16 h-16 rounded-xl bg-neutral-100 border border-neutral-200 flex items-center justify-center overflow-hidden flex-shrink-0 relative group cursor-pointer">
-                          {shopLogoPreview ? (
-                            <img src={shopLogoPreview} alt="Shop logo" className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-primary font-bold text-2xl uppercase">
-                              {shopName ? shopName.charAt(0) : <IconBuildingStore className="w-6 h-6 text-neutral-400" />}
-                            </span>
-                          )}
-                          <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-all">
-                            <span className="text-[10px] font-bold text-white uppercase tracking-wider text-center">{t.upload}</span>
-                          </div>
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            className="absolute inset-0 opacity-0 cursor-pointer"
-                            onChange={(e) => {
-                              if (e.target.files && e.target.files[0]) {
-                                const file = e.target.files[0];
-                                setLogoFile(file);
-                                setShopLogoPreview(URL.createObjectURL(file));
-                              }
-                            }}
+                      <div className="space-y-1">
+                        <label className="text-sm font-semibold text-black block">{t.productName} <span className="text-red-500">*</span></label>
+                        <input
+                          type="text"
+                          value={productTitle}
+                          onChange={(e) => setProductTitle(e.target.value)}
+                          className="w-full border border-neutral-200 rounded-2xl px-4 py-3 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 animate-in"
+                          placeholder={t.productNamePlaceholder}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-sm font-semibold text-black block">{t.productPrice} <span className="text-red-500">*</span></label>
+                          <input
+                            type="number"
+                            value={productPrice}
+                            onChange={(e) => setProductPrice(e.target.value)}
+                            className="w-full border border-neutral-200 rounded-2xl px-4 py-3 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                            placeholder={t.productPricePlaceholder}
                           />
                         </div>
+
                         <div className="space-y-1">
-                          <label className="text-sm font-semibold text-black block">{t.shopLogo}</label>
-                          <p className="text-xs text-neutral-500">{t.shopLogoHelp}</p>
+                          <label className="text-sm font-semibold text-black block">{t.productCategory} <span className="text-red-500">*</span></label>
+                          <div className="relative">
+                            <select
+                              value={productCategory}
+                              onChange={(e) => setProductCategory(e.target.value)}
+                              className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer"
+                            >
+                              {staticCategories.map((c) => (
+                                <option key={c.id} value={c.id}>
+                                  {c.name[lang as 'en'|'fr'|'ar'|'tz'] || c.name.en}
+                                </option>
+                              ))}
+                            </select>
+                            <IconSelector className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" strokeWidth={1.8} />
+                          </div>
                         </div>
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-sm font-semibold text-black block">{t.shopDesc}</label>
-                        <textarea
-                          value={shopDesc}
-                          onChange={(e) => setShopDesc(e.target.value)}
-                          rows={3}
-                          className="w-full border border-neutral-200 rounded-xl px-4 py-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all bg-neutral-50 hover:bg-white resize-none"
-                          placeholder={t.shopDescPlaceholder}
-                        />
+                        <label className="text-sm font-semibold text-black block">{t.productImage} <span className="text-red-500">*</span></label>
+                        <div className="relative border-2 border-dashed border-neutral-200 rounded-2xl hover:border-primary/50 transition-all p-6 flex flex-col items-center justify-center bg-neutral-50 hover:bg-white cursor-pointer group">
+                          {productImagePreview ? (
+                            <div className="relative w-full max-h-40 rounded-xl overflow-hidden flex items-center justify-center">
+                              <img src={productImagePreview} alt="Product preview" className="object-cover max-h-40 rounded-xl" />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold uppercase tracking-wider">
+                                {lang === 'fr' ? 'Changer' : lang === 'ar' ? 'تغيير' : 'Change'}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center space-y-1">
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto text-primary">
+                                <IconPackage className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-black">
+                                  {lang === 'fr' ? 'Déposer une photo ou cliquer' : lang === 'ar' ? 'اسحب صورة أو انقر هنا' : 'Drop a photo or click'}
+                                </p>
+                                <p className="text-[10px] text-neutral-500 mt-0.5">{t.productImageHelp}</p>
+                              </div>
+                            </div>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                const file = e.target.files[0];
+                                setProductImageFile(file);
+                                setProductImagePreview(URL.createObjectURL(file));
+                              }
+                            }}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                          />
+                        </div>
                       </div>
-
-
 
                       <button
                         type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-8"
+                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-6 cursor-pointer"
                       >
                         {t.next}
                         <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
                       </button>
+
+                      <div className="text-center mt-2">
+                        <button
+                          type="button"
+                          onClick={handleProductSkip}
+                          className="text-xs text-neutral-500 font-bold hover:text-black transition-colors underline cursor-pointer"
+                        >
+                          {t.skipStep}
+                        </button>
+                      </div>
                     </form>
                   </div>
                 )}
@@ -964,22 +1111,39 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       )}
 
                       {/* Preview card */}
-                      {shopName && (
-                        <div className="arabic-frame bg-neutral-200 p-[1px]">
-                          <div className="arabic-frame bg-neutral-50 py-4 pr-4 pl-6 flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                              {shopLogoPreview ? (
-                                <img src={shopLogoPreview} alt="Shop logo" className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-primary font-bold text-lg uppercase">{shopName.charAt(0)}</span>
-                              )}
+                      {productTitle && productImagePreview ? (
+                        <div className="arabic-frame bg-neutral-200 p-[1px] max-w-sm mx-auto shadow-sm">
+                          <div className="arabic-frame bg-white p-4 flex flex-col text-left space-y-3">
+                            <div className="arabic-frame aspect-square w-full bg-neutral-100 overflow-hidden relative">
+                              <img
+                                src={productImagePreview}
+                                alt={productTitle}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                            <div className="min-w-0">
-                              <p className="font-bold text-black text-sm truncate">{shopName}</p>
-                              <p className="text-xs text-neutral-500 truncate">{shopDesc || t.defaultShopDesc}</p>
+                            <div>
+                              <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                                {staticCategories.find(c => c.id === productCategory)?.name[lang as 'en'|'fr'|'ar'|'tz'] || 'Craft'}
+                              </span>
+                              <h3 className="font-bold text-neutral-900 text-lg mt-0.5 line-clamp-1">{productTitle}</h3>
+                              <p className="text-sm font-bold text-black mt-1 font-sans">{productPrice} MAD</p>
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        shopName && (
+                          <div className="arabic-frame bg-neutral-200 p-[1px] max-w-sm mx-auto">
+                            <div className="arabic-frame bg-neutral-50 py-4 pr-4 pl-6 flex items-center gap-3 text-left">
+                              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <span className="text-primary font-bold text-lg uppercase">{shopName.charAt(0)}</span>
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-bold text-black text-sm truncate">{shopName}</p>
+                                <p className="text-xs text-neutral-500 truncate">{shopDesc || t.defaultShopDesc}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )
                       )}
 
                       <button
@@ -1053,91 +1217,9 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                   </div>
                 )}
 
-              </div>
             </div>
           </div>
         </div>
-
-        {/* Right panel — decorative (visually on the right) */}
-        <div
-          className="hidden md:flex md:w-[42%] lg:w-[38%] flex-col justify-between relative overflow-hidden order-last md:order-last"
-          style={{
-            backgroundImage: 'url(/onboarding.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-
-          {/* Top spacer */}
-          <div className="relative z-10 p-10 lg:p-14"></div>
-
-          {/* Bottom block — review + step indicator, flush to bottom with equal padding */}
-          <div className="relative z-10 px-10 pb-10 lg:px-14 lg:pb-14 space-y-4">
-
-
-
-            {/* Review carousel */}
-            {false && step !== 'success' && (
-              <div
-                className={`transition-opacity duration-300 ${
-                  reviewFading ? 'opacity-0' : 'opacity-100'
-                }`}
-              >
-                {/* Card */}
-                <div className="arabic-frame bg-neutral-200 p-[1px]">
-                  <div className="arabic-frame bg-white p-5 space-y-3 flex flex-col">
-
-                    {/* Stars + rating */}
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <svg key={i} viewBox="0 0 20 20" fill={i < Math.floor(REVIEWS[reviewIdx].rating) ? '#FBBF24' : 'none'} stroke="#FBBF24" strokeWidth={i < Math.floor(REVIEWS[reviewIdx].rating) ? 0 : 1.5} className="w-4 h-4">
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                      <span className="ml-1 text-xs font-bold text-black">{REVIEWS[reviewIdx].rating.toFixed(1)}</span>
-                    </div>
-
-                    {/* Quote — deep charcoal */}
-                    <p className="text-base text-neutral-900 leading-relaxed font-medium">
-                      &ldquo;{REVIEWS[reviewIdx].text}&rdquo;
-                    </p>
-
-                    {/* Divider + avatar + name + product */}
-                    <div className="flex items-center gap-3 pt-3 border-t border-neutral-100">
-                      <img
-                        src={REVIEWS[reviewIdx].avatar}
-                        alt={REVIEWS[reviewIdx].name}
-                        className="w-9 h-9 rounded-full object-cover flex-shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-black truncate">{REVIEWS[reviewIdx].name}</p>
-                        <p className="text-xs text-neutral-600 truncate">{REVIEWS[reviewIdx].product}</p>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                {/* Dot indicators */}
-                <div className="flex items-center justify-center gap-1.5 mt-3">
-                  {REVIEWS.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => { setReviewFading(true); setTimeout(() => { setReviewIdx(i); setReviewFading(false); }, 300); }}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        i === reviewIdx ? 'bg-white w-4' : 'bg-white/40 w-1.5'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-
-
-          </div>
-        </div>
-
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 "use client";
 
 import { landingTranslations } from "./LandingTranslations";
-import LanguageModal from "./ui/LanguageModal";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -259,7 +258,6 @@ export default function MarketingPage({ lang = 'en' }: { lang?: string }) {
 
   return (
     <main className="min-h-screen bg-[#f6f3ec] tracking-tight ">
-      <LanguageModal currentLang={lang} />
       <nav
         className={`
     hidden md:block fixed left-1/2 -translate-x-1/2
