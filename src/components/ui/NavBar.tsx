@@ -11,7 +11,7 @@ import { getFollowedShops, getLastCheckedNotifications, updateLastCheckedNotific
 import LoginModal from './LoginModal';
 import StoreOnboardingModal from './StoreOnboardingModal';
 
-import { ShoppingCartIcon as ShoppingCartSolid, BuildingStorefrontIcon as BriefcaseSolid, BellIcon as BellSolid, ShoppingBagIcon as ShoppingBagSolid } from '@heroicons/react/24/solid';
+import { ShoppingCartIcon as ShoppingCartSolid, BuildingStorefrontIcon as BriefcaseSolid, BellIcon as BellSolid, ShoppingBagIcon as ShoppingBagSolid, CubeIcon as CubeSolid } from '@heroicons/react/24/solid';
 import { 
   IconSearch, 
   IconPlus, 
@@ -45,7 +45,7 @@ function BellIcon() { return <BellSolid className="w-5.5 h-5.5 text-[#532e70]" /
 function UserIcon() { return <IconUser className="w-5 h-5 text-[#532e70]" strokeWidth={1.8} />; }
 function SettingsIcon() { return <IconSettings className="w-5 h-5 text-[#532e70]" strokeWidth={1.8} />; }
 function HelpIcon() { return <IconHelp className="w-4 h-4" strokeWidth={1.8} />; }
-function PackageIcon() { return <IconPackage className="w-6 h-6 text-black" strokeWidth={1.8} />; }
+function PackageIcon() { return <CubeSolid className="w-5.5 h-5.5 text-[#532e70]" />; }
 
 interface NavBarProps {
   lang: string;
@@ -345,8 +345,8 @@ export default function NavBar({ lang }: NavBarProps) {
               <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
             ) : session ? (
               <>
-                {/* Desktop User Menu Dropdown */}
-                <div className="relative hidden md:block">
+                {/* User Menu Dropdown */}
+                <div className="relative">
                   <button
                     onClick={() => setMenuOpen(!menuOpen)}
                     className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
@@ -357,7 +357,7 @@ export default function NavBar({ lang }: NavBarProps) {
                       <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
                     )}
                     <span className="hidden sm:inline max-w-[80px] truncate">{shortName}</span>
-                    <span className="text-black/50 text-[10px]">▼</span>
+                    <span className="hidden sm:inline text-black/50 text-[10px]">▼</span>
                   </button>
 
                   {menuOpen && (
@@ -400,10 +400,7 @@ export default function NavBar({ lang }: NavBarProps) {
                   )}
                 </div>
 
-                {/* Mobile User Icon (links to profile directly) */}
-                <Link href={`/${lang}/user/${session.id}`} className="md:hidden flex items-center text-black hover:opacity-80">
-                  <UserIcon />
-                </Link>
+                {/* Mobile User Icon removed in favor of unified dropdown */}
 
                 {/* Dashboard Icon for Shop Owners */}
                 {session.shop && (
