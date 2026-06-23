@@ -4,6 +4,7 @@ import { useState, useEffect, use, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { fetchOrders, fetchShops, updateAmanaMilestone, updateOrderTracking } from '@/lib/supabase';
+import { notifyOrderAcceptedServer } from '@/app/actions/orders';
 import { getActiveSession } from '@/lib/auth';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 import { FileText, MapPin, Search, CheckCircle2, AlertCircle, X, Navigation, Package, History } from 'lucide-react';
@@ -187,6 +188,11 @@ export default function MerchantOrdersPage({ params }: PageProps) {
       order_status: nextStatus,
       skip_history: true
     });
+    
+    if (nextStatus === 'confirmed') {
+      await notifyOrderAcceptedServer(selectedOrder.id, lang);
+    }
+    
     const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
     setOrders(dbOrders as Order[]);
 
@@ -401,6 +407,11 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                             order_status: nextStatus,
                             skip_history: true
                           });
+                          
+                          if (nextStatus === 'confirmed') {
+                            await notifyOrderAcceptedServer(order.id, lang);
+                          }
+                          
                           const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
                           setOrders(dbOrders as Order[]);
                         }}
@@ -549,6 +560,11 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                                 order_status: nextStatus,
                                 skip_history: true
                               });
+                              
+                              if (nextStatus === 'confirmed') {
+                                await notifyOrderAcceptedServer(order.id, lang);
+                              }
+                              
                               const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
                               setOrders(dbOrders as Order[]);
                             }}
