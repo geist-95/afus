@@ -401,13 +401,6 @@ export default function NavBar({ lang }: NavBarProps) {
 
                 {/* Mobile User Icon removed in favor of unified dropdown */}
 
-                {/* Dashboard Icon for Shop Owners */}
-                {session.shop && (
-                  <Link href={`/${lang}/dashboard`} className="flex items-center text-black hover:opacity-80 relative" title={t.dashboard}>
-                    <BriefcaseIcon />
-                  </Link>
-                )}
-
                 {/* Notification Bell */}
                 <div className="relative flex items-center" ref={notifRef}>
                   <button onClick={handleOpenNotifications} className="flex items-center text-black hover:opacity-80 relative cursor-pointer" title="Notifications">
