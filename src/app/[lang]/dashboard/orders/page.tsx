@@ -516,14 +516,14 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                       <TableCell className="align-top pt-4">
                         <div className="flex -space-x-2 relative z-0">
                            {order.items.slice(0, 3).map((item, idx) => item.image_url ? (
-                             <img key={idx} src={item.image_url} alt="" className="w-8 h-8 rounded-full border-2 border-white object-cover bg-neutral-100 shadow-sm relative" style={{ zIndex: 3 - idx }} />
+                             <img key={idx} src={item.image_url} alt="" className="w-8 h-8 rounded border-2 border-white object-cover bg-neutral-100 relative" style={{ zIndex: 3 - idx }} />
                            ) : (
-                             <div key={idx} className="w-8 h-8 rounded-full border-2 border-white bg-neutral-100 flex items-center justify-center shadow-sm relative" style={{ zIndex: 3 - idx }}>
+                             <div key={idx} className="w-8 h-8 rounded border-2 border-white bg-neutral-100 flex items-center justify-center relative" style={{ zIndex: 3 - idx }}>
                                <Package className="w-3 h-3 text-neutral-400" />
                              </div>
                            ))}
                            {order.items.length > 3 && (
-                             <div className="w-8 h-8 rounded-full border-2 border-white bg-neutral-100 flex items-center justify-center text-[10px] font-bold text-neutral-600 shadow-sm relative z-0">
+                             <div className="w-8 h-8 rounded border-2 border-white bg-neutral-100 flex items-center justify-center text-[10px] font-bold text-neutral-600 relative z-0">
                                +{order.items.length - 3}
                              </div>
                            )}
@@ -567,7 +567,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                       <TableCell className="text-right align-top pt-4">
                         <button 
                             onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}
-                            className="bg-white text-neutral-700 hover:text-black hover:bg-neutral-100 border border-neutral-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm group-hover:border-neutral-300 flex items-center gap-1.5 ml-auto"
+                            className="bg-white text-neutral-700 hover:text-black hover:bg-neutral-100 border border-neutral-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap group-hover:border-neutral-300 flex items-center gap-1.5 ml-auto"
                         >
                             <Navigation className="w-3 h-3" />
                             {t.trackShipment}
