@@ -379,9 +379,11 @@ export default function MerchantOrdersPage({ params }: PageProps) {
             {t.emptyOrders}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredOrders.map((order) => {
-              return (
+          <>
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 md:hidden gap-6">
+              {filteredOrders.map((order) => {
+                return (
                 <Card key={order.id} className="overflow-hidden border-neutral-200 hover:border-neutral-300 transition-colors">
                   <CardHeader className="pb-3 border-b bg-neutral-50/50">
                     <div className="flex justify-between items-start">
@@ -481,7 +483,102 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                 </Card>
               );
             })}
-          </div>
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block bg-white border border-neutral-200 rounded-xl overflow-hidden">
+              <Table>
+                <TableHeader className="bg-neutral-50/80">
+                  <TableRow>
+                    <TableHead className="font-semibold text-neutral-900">{t.orderId}</TableHead>
+                    <TableHead className="font-semibold text-neutral-900">{t.buyer}</TableHead>
+                    <TableHead className="font-semibold text-neutral-900">{t.items}</TableHead>
+                    <TableHead className="font-semibold text-neutral-900">{t.amount}</TableHead>
+                    <TableHead className="font-semibold text-neutral-900">{t.status}</TableHead>
+                    <TableHead className="text-right font-semibold text-neutral-900"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrders.map(order => (
+                    <TableRow key={order.id} className="hover:bg-neutral-50/80 transition-colors group cursor-pointer" onClick={() => setSelectedOrder(order)}>
+                      <TableCell className="font-mono text-xs text-neutral-600 align-top pt-4">
+                        {order.id.substring(0,8)}
+                        <span className="block text-[10px] text-neutral-400 mt-1">{new Date(order.created_at).toLocaleDateString()}</span>
+                      </TableCell>
+                      <TableCell className="align-top pt-4">
+                        <p className="text-sm font-semibold text-neutral-900">{order.customer_name}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5">{order.customer_phone}</p>
+                        <div className="flex items-start text-xs text-neutral-500 gap-1 mt-1">
+                          <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-neutral-400" />
+                          <span className="line-clamp-1">{order.shipping_city}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="align-top pt-4">
+                        <div className="flex -space-x-2 relative z-0">
+                           {order.items.slice(0, 3).map((item, idx) => item.image_url ? (
+                             <img key={idx} src={item.image_url} alt="" className="w-8 h-8 rounded-full border-2 border-white object-cover bg-neutral-100 shadow-sm relative" style={{ zIndex: 3 - idx }} />
+                           ) : (
+                             <div key={idx} className="w-8 h-8 rounded-full border-2 border-white bg-neutral-100 flex items-center justify-center shadow-sm relative" style={{ zIndex: 3 - idx }}>
+                               <Package className="w-3 h-3 text-neutral-400" />
+                             </div>
+                           ))}
+                           {order.items.length > 3 && (
+                             <div className="w-8 h-8 rounded-full border-2 border-white bg-neutral-100 flex items-center justify-center text-[10px] font-bold text-neutral-600 shadow-sm relative z-0">
+                               +{order.items.length - 3}
+                             </div>
+                           )}
+                        </div>
+                        <span className="text-[10px] text-neutral-500 mt-1.5 block">{order.items.length} {t.items}</span>
+                      </TableCell>
+                      <TableCell className="align-top pt-4">
+                        <span className="font-semibold text-neutral-900">{order.total_mad} MAD</span>
+                        {order.items.some(i => i.attributes?.note) && (
+                          <span className="block text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded mt-1.5 w-fit">Has Notes</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="align-top pt-4">
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={order.order_status}
+                            onChange={async (e) => {
+                              const nextStatus = e.target.value;
+                              await updateAmanaMilestone(order.id, {
+                                status: order.amana_delivery_status,
+                                location: shopFallback?.merchant_city || '',
+                                note: `order status changed to ${nextStatus}`,
+                                order_status: nextStatus,
+                                skip_history: true
+                              });
+                              const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
+                              setOrders(dbOrders as Order[]);
+                            }}
+                            className={`text-xs font-bold px-3 py-1.5 rounded-full border cursor-pointer focus:outline-none appearance-none capitalize transition-colors ${getStatusColor(order.order_status)}`}
+                            style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.55rem auto', paddingRight: '2rem' }}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="returned">Returned</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right align-top pt-4">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); setSelectedOrder(order); }}
+                            className="bg-white text-neutral-700 hover:text-black hover:bg-neutral-100 border border-neutral-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap shadow-sm group-hover:border-neutral-300 flex items-center gap-1.5 ml-auto"
+                        >
+                            <Navigation className="w-3 h-3" />
+                            {t.trackShipment}
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
           </>
         ) : (
