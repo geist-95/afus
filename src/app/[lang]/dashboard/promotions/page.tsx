@@ -13,9 +13,9 @@ export default function PromotionsPage({ params }: { params: Promise<{ lang: str
           <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{t.title}</h1>
           <p className="text-sm text-neutral-500 mt-1">{t.subtitle}</p>
         </div>
-        <button className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
-          <IconPlus className="w-4 h-4" />
-          {t.newPromotion}
+        <button className="inline-flex items-center justify-center gap-2 bg-primary text-white w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors">
+          <IconPlus className="w-5 h-5 md:w-4 md:h-4" />
+          <span className="hidden md:inline">{t.newPromotion}</span>
         </button>
       </div>
 

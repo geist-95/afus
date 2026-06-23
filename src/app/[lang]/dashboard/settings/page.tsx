@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { supabase, uploadImage } from '@/lib/supabase';
 import { getDictionary } from '@/lib/i18n';
-import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload, Bell } from 'lucide-react';
+import { Settings, Image as ImageIcon, Phone, LayoutGrid, Star, Upload, Bell, Save } from 'lucide-react';
 import Link from 'next/link';
 
 interface SettingsPageProps {
@@ -304,7 +304,7 @@ export default function SettingsPage({ params }: SettingsPageProps) {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       {/* Header */}
-      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
+      <div className="border-b border-neutral-200 bg-white px-4 md:px-6 py-4 flex flex-row justify-between items-center gap-4 shrink-0">
         <div>
           <h1 className="text-xl font-bold text-neutral-800 capitalize tracking-tight">{t.title}</h1>
           <p className="text-xs text-neutral-500 mt-0.5">{t.subtitle}</p>
@@ -312,9 +312,16 @@ export default function SettingsPage({ params }: SettingsPageProps) {
         <button
           onClick={handleSave}
           disabled={loading}
-          className="bg-[#9c7a97] hover:bg-[#866581] text-white px-6 py-2.5 font-semibold rounded-lg text-sm transition-colors disabled:opacity-50"
+          className="flex items-center justify-center gap-2 bg-[#9c7a97] hover:bg-[#866581] text-white w-10 h-10 md:w-auto md:h-auto md:px-6 md:py-2.5 font-semibold rounded-lg text-sm transition-colors disabled:opacity-50 shrink-0"
         >
-          {loading ? '...' : t.save}
+          {loading ? (
+             <span className="hidden md:inline">...</span>
+          ) : (
+            <>
+              <Save className="w-5 h-5 md:w-4 md:h-4 md:hidden" />
+              <span className="hidden md:inline">{t.save}</span>
+            </>
+          )}
         </button>
       </div>
 

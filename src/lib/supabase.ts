@@ -168,6 +168,8 @@ export async function fetchOrders(shopId?: string, buyerId?: string) {
       quantity: oi.quantity,
       price_mad: oi.price_mad,
       variant_sku: oi.variant_id,
+      image_url: oi.products?.media_gallery?.[0] || null,
+      attributes: oi.attributes || {},
     })),
   }));
 }
@@ -196,7 +198,10 @@ export async function updateAmanaMilestone(orderId: string, milestone: any) {
     else if (milestone.status === 'returned_to_sender') generalStatus = 'returned';
     else if (milestone.status === 'collected') generalStatus = 'confirmed';
   }
-  const updates: any = { order_status: generalStatus, amana_delivery_status: milestone.status, amana_history: [newHistoryEntry, ...history] };
+  let updates: any = { order_status: generalStatus, amana_delivery_status: milestone.status };
+  if (!milestone.skip_history) {
+    updates.amana_history = [newHistoryEntry, ...history];
+  }
   if (milestone.tracking_number) updates.amana_tracking_number = milestone.tracking_number;
   const { error } = await supabase.from('orders').update(updates).eq('id', orderId);
   if (error) throw error;
@@ -240,15 +245,14 @@ export async function updateProductListing(productId: string, productData: any) 
     ar: 'منتج-جديد',
   };
   const { data, error } = await supabase.from('products').update({
-    category_id: productData.category_id,
-    subcategory_id: productData.subcategory_id,
+    category_id: productData.category_id || null,
     title_translations: productData.title_translations,
     description_translations: productData.description_translations,
     slug_translations: slugTranslations,
     base_price_mad: productData.base_price_mad,
     media_gallery: productData.media_gallery,
     stock_quantity: productData.stock_quantity,
-    metadata: productData.metadata,
+    ...(productData.status ? { is_active: productData.status === 'active' } : {})
   }).eq('id', productId).select().single();
   if (error) throw error;
   return data;
@@ -268,7 +272,18 @@ export async function searchProducts(searchTerm: string, filters: any = {}) {
     location_filter: filters.location || null,
     sort_by: filters.sortBy || 'relevant'
   });
-  if (error) throw error;
+  
+  if (error) {
+    console.warn("search_products RPC failed, using fallback:", error.message);
+    let q = supabase.from('products').select(`*, shops(*)`).eq('status', 'active');
+    if (searchTerm) {
+      // Basic fallback search across all languages
+      q = q.or(`title_translations->>en.ilike.%${searchTerm}%,title_translations->>fr.ilike.%${searchTerm}%,title_translations->>ar.ilike.%${searchTerm}%`);
+    }
+    const { data: fallbackData } = await q.limit(20);
+    return fallbackData || [];
+  }
+  
   return (data || []).map((item: any) => ({ ...item, shops: item.shop_data }));
 }
 

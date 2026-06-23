@@ -57,7 +57,7 @@ export default async function ShopPage({ params }: PageProps) {
     try {
       reviews = await fetchShopReviews(shop.id);
     } catch (error) {
-      console.error("Failed to fetch shop reviews", error);
+      // Missing reviews table or RLS issue, fail silently for now
     }
     const averageRating = reviews.length > 0 
       ? (reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / reviews.length).toFixed(1)

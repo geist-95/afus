@@ -50,7 +50,7 @@ export default function ProductsManagerPage({ params }: PageProps) {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#F9F9F9]">
       {/* Title */}
-      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shrink-0">
+      <div className="border-b border-neutral-200 bg-white px-4 md:px-6 py-4 flex flex-row justify-between items-center gap-4 shrink-0">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-neutral-800">
             {t.title}
@@ -60,14 +60,15 @@ export default function ProductsManagerPage({ params }: PageProps) {
           </p>
         </div>
         <div className="flex gap-3">
-          <Link href={`/${lang}/dashboard/orders`}>
+          <Link href={`/${lang}/dashboard/orders`} className="hidden md:block">
             <button className="h-10 px-4 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-700 font-semibold text-sm rounded-lg transition-colors">
               {lang === 'fr' ? 'Voir les commandes' : lang === 'ar' ? 'عرض الطلبات' : 'View Orders'}
             </button>
           </Link>
           <Link href={`/${lang}/dashboard/products/new`}>
-            <button className="h-10 px-4 bg-black hover:bg-neutral-800 text-white font-semibold text-sm rounded-lg transition-colors flex items-center gap-2">
-              <Plus className="w-4 h-4" /> {t.newProduct}
+            <button className="h-10 w-10 md:w-auto px-0 md:px-4 bg-black hover:bg-neutral-800 text-white font-semibold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
+              <Plus className="w-5 h-5 md:w-4 md:h-4" /> 
+              <span className="hidden md:inline">{t.newProduct}</span>
             </button>
           </Link>
         </div>

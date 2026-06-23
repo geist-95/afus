@@ -42,14 +42,14 @@ export default function EarningsOverviewPage({ params }: { params: Promise<{ lan
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-[#F9F9F9] flex flex-col font-sans p-6 md:p-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-row items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{t.title}</h1>
           <p className="text-sm text-neutral-500 mt-1">{t.subtitle}</p>
         </div>
-        <button className="inline-flex items-center gap-2 bg-white border border-neutral-200 text-neutral-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-neutral-50 transition-colors">
-          <IconDownload className="w-4 h-4" />
-          {t.exportReport}
+        <button className="inline-flex items-center justify-center gap-2 bg-white border border-neutral-200 text-neutral-700 w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2 rounded-lg text-sm font-semibold hover:bg-neutral-50 transition-colors shrink-0">
+          <IconDownload className="w-5 h-5 md:w-4 md:h-4" />
+          <span className="hidden md:inline">{t.exportReport}</span>
         </button>
       </div>
 

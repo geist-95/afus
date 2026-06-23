@@ -67,8 +67,8 @@ export default function ListingClientWrapper({
       mad: "MAD",
       codEligible: "Cash on delivery eligible",
       checkoutTitle: "Place cash on delivery order",
-      customizationLabel: "Personalization instructions (optional)",
-      customizationPlaceholder: "E.g., engrave initials 'y.t.' or specify sizing...",
+      customizationLabel: "Made to order instructions (optional)",
+      customizationPlaceholder: "Enter your customization text...",
       buyBtn: "Buy now (pay cash on delivery)",
       shippingTitle: "Amana shipping calculator",
       selectCity: "Select delivery city",
@@ -100,8 +100,8 @@ export default function ListingClientWrapper({
       mad: "DH",
       codEligible: "Éligible au paiement à la livraison",
       checkoutTitle: "Passer commande (paiement à la livraison)",
-      customizationLabel: "Instructions de personnalisation (optionnel)",
-      customizationPlaceholder: "Ex: graver les initiales 'y.t.' ou taille spécifique...",
+      customizationLabel: "Instructions sur commande (optionnel)",
+      customizationPlaceholder: "Entrez vos instructions...",
       buyBtn: "Acheter (payer à la livraison)",
       shippingTitle: "Calculateur de livraison amana",
       selectCity: "Sélectionner la ville de livraison",
@@ -133,8 +133,8 @@ export default function ListingClientWrapper({
       mad: "درهم",
       codEligible: "متاح للدفع عند الاستلام",
       checkoutTitle: "إجراء طلب الدفع عند الاستلام",
-      customizationLabel: "تعليمات التخصيص (اختياري)",
-      customizationPlaceholder: "مثال: نقش الحروف الأولى 'y.t.' أو تحديد الحجم...",
+      customizationLabel: "إرشادات تحت الطلب (اختياري)",
+      customizationPlaceholder: "أدخل إرشاداتك...",
       buyBtn: "اشترِ الآن (الدفع عند الاستلام)",
       shippingTitle: "حاسبة شحن أمانة",
       selectCity: "اختر مدينة التوصيل",
@@ -268,7 +268,7 @@ export default function ListingClientWrapper({
   }, [fetchedProduct, isSaleActive]);
 
   const isSeeded = fetchedProduct?.title_translations?._is_seeded || fetchedProduct?.slug_translations?._is_seeded;
-  const isPersonalizable = fetchedProduct?.title_translations?._is_personalizable || fetchedProduct?.slug_translations?._is_personalizable;
+  const isPersonalizable = !!(fetchedProduct?.metadata?.personalization || fetchedProduct?.title_translations?._is_personalizable || fetchedProduct?.slug_translations?._is_personalizable);
 
   // Determine current active price
   const activeBasePrice = fetchedProduct ? fetchedProduct.base_price_mad : parseFloat(initialPrice || "0");
@@ -705,7 +705,7 @@ export default function ListingClientWrapper({
 
 
           {/* Quantity Selector */}
-          {!isSeeded && (
+          {!isSeeded && !isPersonalizable && (
             <div className="space-y-2 text-sm capitalize">
               <label className="block font-bold text-black/70 capitalize">{t.quantity}</label>
               <Select value={quantity.toString()} onValueChange={(val) => setQuantity(parseInt(val) || 1)}>

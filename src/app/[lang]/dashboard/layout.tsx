@@ -161,7 +161,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
           <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-[60] pb-safe flex justify-around items-center h-[65px]">
             <Link href={`/${lang}/dashboard`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard`, true) ? 'text-[#663399]' : 'text-neutral-500'}`}>
               <LayoutDashboard className="w-5 h-5" />
-              <span className="text-[10px] font-medium">{t.overview}</span>
+              <span className="text-[10px] font-medium">Dashboard</span>
             </Link>
             <Link href={`/${lang}/dashboard/products`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/products`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
               <Package className="w-5 h-5" />
@@ -170,6 +170,10 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
             <Link href={`/${lang}/dashboard/orders`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/orders`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
               <ShoppingBag className="w-5 h-5" />
               <span className="text-[10px] font-medium">{t.orders}</span>
+            </Link>
+            <Link href={`/${lang}/dashboard/earnings/overview`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/earnings/overview`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              <Wallet className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{lang === 'fr' ? 'Gain' : lang === 'ar' ? 'الأرباح' : 'Gain'}</span>
             </Link>
             <button onClick={() => setIsMobileMenuOpen(true)} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isMobileMenuOpen ? 'text-[#663399]' : 'text-neutral-500'}`}>
               <div className="flex flex-col gap-[3px] items-center justify-center w-5 h-5">

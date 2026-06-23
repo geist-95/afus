@@ -2,8 +2,9 @@
 
 import { use, useState, useEffect } from 'react';
 import { useCart } from '@/lib/cart';
-import { placeCODCheckout, fetchCategoryProducts } from '@/lib/supabase';
+import { fetchCategoryProducts } from '@/lib/supabase';
 import { getActiveSession } from '@/lib/auth';
+import { placeCODCheckoutServer } from '@/app/actions/checkout';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -164,8 +165,8 @@ export default function CartPage({ params }: CartPageProps) {
   const subtotal = items.reduce((acc, item) => acc + (item.price_mad * item.quantity), 0);
   const grandTotal = subtotal + totalShipping;
 
-  const handlePlaceOrder = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePlaceOrder = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setPhoneError('');
 
     const phoneRegex = /^(?:\+212|0)[67]\d{8}$/;
@@ -193,17 +194,17 @@ export default function CartPage({ params }: CartPageProps) {
         })),
       };
 
-      const result = await placeCODCheckout(payload);
+      const result = await placeCODCheckoutServer(payload);
       
-      if (result && result.success) {
-        setSuccessOrderIds(result.order_ids || []);
+      if (result && result.success && result.data) {
+        setSuccessOrderIds(result.data.order_ids || []);
         clearCart();
       } else {
-        alert(t.errorPlace);
+        alert(t.errorPlace + (result.error ? ` (${result.error})` : ''));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert(t.errorGeneric);
+      alert(t.errorGeneric + (err.message ? ` (${err.message})` : ''));
     } finally {
       setCheckoutLoading(false);
     }
@@ -271,43 +272,50 @@ export default function CartPage({ params }: CartPageProps) {
                 
                 <div className="space-y-6">
                   {shopItems.map((item, index) => (
-                    <div key={item.id} className={`flex flex-col sm:flex-row gap-6 ${index !== shopItems.length - 1 ? 'border-b border-neutral-100 pb-6' : ''}`}>
-                      <img src={item.image} alt={item.title} className="w-full sm:w-32 h-32 object-cover rounded-xl" />
-                      <div className="flex-1 space-y-2 flex flex-col">
-                        <div className="flex justify-between items-start gap-4">
-                          <h4 className="font-medium text-lg text-neutral-900 leading-tight hover:underline cursor-pointer">{item.title}</h4>
-                          <div className="font-bold text-lg whitespace-nowrap">{item.price_mad} {t.mad}</div>
-                        </div>
-                        
-                        <div className="text-neutral-500 text-sm space-y-1">
-                          {item.variant_label && <div><span className="text-neutral-700">{t.optionLabel}:</span> {item.variant_label}</div>}
-                          {item.customizationText ? (
-                            <div><span className="text-neutral-700">{t.noteLabel}:</span> {item.customizationText}</div>
-                          ) : index === 0 ? (
-                            <div className="italic text-neutral-600"><span className="text-neutral-700 not-italic font-medium">{lang === 'fr' ? 'Personnalisation' : lang === 'ar' ? 'تخصيص' : 'Personalization'}:</span> Engrave "Yazid" (Preview)</div>
-                          ) : null}
-                        </div>
-                        
-                        <div className="flex items-center justify-between pt-4 mt-auto">
-                          <button 
-                            onClick={() => removeItem(item.id)}
-                            className="text-neutral-500 text-sm hover:text-neutral-800 transition-colors underline underline-offset-2"
-                          >
-                            {t.remove}
-                          </button>
+                    <div key={item.id} className={`flex flex-col gap-4 sm:gap-6 ${index !== shopItems.length - 1 ? 'border-b border-neutral-100 pb-6' : ''}`}>
+                      <div className="flex flex-row gap-4 sm:gap-6">
+                        <img src={item.image} alt={item.title} className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-xl shrink-0" />
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex flex-col gap-1.5 mb-2">
+                            <h4 className="font-medium text-base sm:text-lg text-neutral-900 leading-snug hover:underline cursor-pointer pr-2">{item.title}</h4>
+                            <div className="font-bold text-lg text-[#663399]">{item.price_mad} {t.mad}</div>
+                          </div>
                           
-                          <div className="flex items-center gap-3 border border-neutral-300 rounded-full px-1 py-1">
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-neutral-100 transition-colors"
-                            >-</button>
-                            <span className="w-4 text-center text-sm font-medium">{item.quantity}</span>
-                            <button 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-neutral-100 transition-colors"
-                            >+</button>
+                          <div className="text-neutral-500 text-sm space-y-1 mb-4">
+                            {item.variant_label && <div><span className="text-neutral-700">{t.optionLabel}:</span> {item.variant_label}</div>}
+                            {item.customizationText ? (
+                              <div><span className="text-neutral-700">{t.noteLabel}:</span> {item.customizationText}</div>
+                            ) : index === 0 ? (
+                              <div className="italic text-neutral-600"><span className="text-neutral-700 not-italic font-medium">{lang === 'fr' ? 'Sur commande' : lang === 'ar' ? 'تحت الطلب' : 'Made to order'}:</span> Engrave "Yazid" (Preview)</div>
+                            ) : null}
                           </div>
                         </div>
+                      </div>
+                      
+                      <div className="flex flex-row items-center justify-between w-full pt-4 mt-2 border-t border-neutral-50">
+                        <button 
+                          onClick={() => removeItem(item.id)}
+                          className="text-neutral-500 text-sm hover:text-red-600 transition-colors underline underline-offset-2"
+                        >
+                          {t.remove}
+                        </button>
+                        {(!item.customizationText && index !== 0) ? (
+                          <div className="flex items-center gap-4 border border-neutral-200 bg-neutral-50 rounded-full px-1.5 py-1.5">
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-neutral-100 transition-colors font-medium text-lg"
+                            >-</button>
+                            <span className="w-6 text-center text-sm font-bold text-neutral-900">{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center hover:bg-neutral-100 transition-colors font-medium text-lg"
+                            >+</button>
+                          </div>
+                        ) : (
+                          <div className="text-sm font-medium text-neutral-500 bg-neutral-50 px-4 py-2 rounded-full border border-neutral-200">
+                            Qté: 1
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -325,7 +333,7 @@ export default function CartPage({ params }: CartPageProps) {
             <div>
               <h3 className="font-semibold text-neutral-900 mb-4">{lang === 'fr' ? 'Mode de paiement' : lang === 'ar' ? 'طريقة الدفع' : 'Payment Method'}</h3>
               <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between border border-neutral-200 p-3 rounded-xl bg-neutral-50 cursor-not-allowed">
+                <div className="flex items-center justify-between border-2 border-[#663399] p-3 rounded-xl bg-[#663399]/5">
                   <div className="flex items-center gap-3">
                     <Image src="/amana.png" alt="Amana" width={32} height={32} className="object-contain" />
                     <div className="flex flex-col">
@@ -333,9 +341,9 @@ export default function CartPage({ params }: CartPageProps) {
                       <span className="text-xs text-neutral-500">Delivery via Barid Bank</span>
                     </div>
                   </div>
-                  <input type="radio" checked readOnly disabled className="w-4 h-4 accent-[#663399] opacity-60" />
+                  <input type="radio" checked readOnly className="w-4 h-4 accent-[#663399]" />
                 </div>
-                <div className="flex items-center justify-between border border-neutral-200 p-3 rounded-xl bg-neutral-50 cursor-not-allowed">
+                <div className="flex items-center justify-between border-2 border-[#663399] p-3 rounded-xl bg-[#663399]/5">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl opacity-80 px-1">💵</span>
                     <div className="flex flex-col">
@@ -343,9 +351,12 @@ export default function CartPage({ params }: CartPageProps) {
                       <span className="text-xs text-neutral-500">Pay when you receive your order</span>
                     </div>
                   </div>
-                  <input type="radio" checked readOnly disabled className="w-4 h-4 accent-[#663399] opacity-60" />
+                  <input type="radio" checked readOnly className="w-4 h-4 accent-[#663399]" />
                 </div>
               </div>
+              <p className="mt-3 text-sm text-neutral-500 leading-relaxed">
+                {lang === 'fr' ? 'Vous paierez le total en espèces directement au livreur Amana lors de la réception de votre colis. Aucun paiement en ligne n\'est requis aujourd\'hui.' : lang === 'ar' ? 'ستدفع المبلغ الإجمالي نقداً لموظف توصيل أمانة عند استلام طردك. لا يلزم الدفع عبر الإنترنت اليوم.' : 'You will pay the total in cash directly to the Amana delivery person upon receiving your package. No online payment is required today.'}
+              </p>
             </div>
 
             <div className="space-y-4 text-neutral-700 pt-6 border-t border-neutral-100">
@@ -364,10 +375,17 @@ export default function CartPage({ params }: CartPageProps) {
             </div>
 
             {/* Delivery Details Summary */}
-            <div className="space-y-4 pt-8 border-t border-neutral-200">
+            <div className={`space-y-4 pt-8 border-t ${(!customerName || !customerPhone || !shippingAddress) ? 'border-red-200 bg-red-50/30 -mx-4 px-4 pb-4 rounded-b-xl' : 'border-neutral-200'}`}>
               <div className="flex justify-between items-start gap-4">
                 <div>
-                  <h3 className="font-semibold text-neutral-900 mb-2">{t.deliveryDetails}</h3>
+                  <h3 className="font-semibold text-neutral-900 mb-2 flex items-center gap-2">
+                    {t.deliveryDetails}
+                    {(!customerName || !customerPhone || !shippingAddress) && (
+                      <span className="text-xs font-bold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">
+                        {lang === 'fr' ? 'Requis' : lang === 'ar' ? 'مطلوب' : 'Required'}
+                      </span>
+                    )}
+                  </h3>
                   <div className="text-sm text-neutral-600 leading-relaxed">
                     {customerName ? (
                       <>
@@ -385,11 +403,20 @@ export default function CartPage({ params }: CartPageProps) {
               </div>
 
               <button
-                onClick={handlePlaceOrder}
-                disabled={checkoutLoading || !customerName || !customerPhone || !shippingAddress}
+                onClick={() => {
+                  if (!customerName || !customerPhone || !shippingAddress) {
+                    setIsEditingDelivery(true);
+                  } else {
+                    handlePlaceOrder();
+                  }
+                }}
+                disabled={checkoutLoading}
                 className="w-full bg-neutral-900 text-white hover:bg-black py-4 rounded-full font-bold transition-all disabled:opacity-50 mt-6 shadow-sm"
               >
-                {checkoutLoading ? t.processing : t.placeOrder}
+                {checkoutLoading ? t.processing : 
+                 (!customerName || !customerPhone || !shippingAddress) ? 
+                 (lang === 'fr' ? 'Ajouter l\'adresse de livraison' : lang === 'ar' ? 'أضف عنوان التوصيل' : 'Add delivery address') : 
+                 t.placeOrder}
               </button>
             </div>
           </div>
@@ -471,27 +498,7 @@ export default function CartPage({ params }: CartPageProps) {
         </div>
       )}
 
-      {/* Suggestions Section */}
-      {suggestions.length > 0 && (
-        <div className="mt-20 pt-12 border-t border-neutral-200">
-          <h2 className="text-2xl font-ariom text-neutral-900 mb-8">
-            {lang === 'fr' ? 'Articles connexes qui pourraient vous plaire' : lang === 'ar' ? 'عناصر ذات صلة قد تعجبك' : 'Related items you might like'}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {suggestions.map(prod => (
-              <Link key={prod.id} href={`/${lang}/listing/${prod.slug || prod.id}`} className="group space-y-3">
-                <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-neutral-100">
-                  <img src={prod.main_image} alt={prod.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-medium text-neutral-900 truncate text-sm">{prod.title}</h3>
-                  <div className="font-bold text-[#663399]">{prod.price_mad} {t.mad}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Suggestions Section Removed */}
 
       </div>
     </div>

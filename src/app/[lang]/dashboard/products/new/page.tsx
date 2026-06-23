@@ -18,7 +18,7 @@ const localDicts = {
     newListing: "New listing",
     draft: "Draft",
     notListedYet: "Not listed yet",
-    requiredInputsOnly: "Required inputs only",
+    advanced: "Advanced",
     viewOnAfus: "View on Afus",
     copy: "Copy",
     tabs: {
@@ -53,13 +53,13 @@ const localDicts = {
       photosHelper: "Add up to 10 photos and 1 video.",
       descriptionLabel: "Description",
       descriptionHelper: "What makes your item special? Buyers will only see the first few lines unless they expand the description.",
-      personalizationLabel: "Allow buyers to personalize this item",
+      personalizationLabel: "Allow buyers to customize this item (Made to order)",
       personalizationHelper: "Collect personalized information for this listing.",
       personalizationInstructions: "Instructions for buyers",
-      personalizationPlaceholder: "Include the name you want to include at the bottom of the journal. If you don't want personalization, just leave blank.",
-      personalizationInstructionsHelper: "Enter the personalization instructions you want buyers to see.",
+      personalizationPlaceholder: "Include the details you want to include... If you don't want customization, just leave blank.",
+      personalizationInstructionsHelper: "Enter the instructions you want buyers to see.",
       charLimit: "Character limit for buyer response",
-      makeOptional: "Make personalization optional for the buyer"
+      makeOptional: "Make customization optional for the buyer"
     },
     price: {
       title: "Price & Inventory",
@@ -150,7 +150,7 @@ const localDicts = {
     newListing: "Nouvelle fiche",
     draft: "Brouillon",
     notListedYet: "Pas encore en ligne",
-    requiredInputsOnly: "Champs requis uniquement",
+    advanced: "Avancé",
     viewOnAfus: "Voir sur Afus",
     copy: "Copier",
     tabs: {
@@ -185,7 +185,7 @@ const localDicts = {
       photosHelper: "Ajoutez jusqu'à 10 photos et 1 vidéo.",
       descriptionLabel: "Description",
       descriptionHelper: "Qu'est-ce qui rend votre article spécial ? Les acheteurs ne verront que les premières lignes.",
-      personalizationLabel: "Autoriser la personnalisation",
+      personalizationLabel: "Sur commande (Personnalisation)",
       personalizationHelper: "Recueillez les détails de personnalisation pour cette fiche.",
       personalizationInstructions: "Instructions pour les acheteurs",
       personalizationPlaceholder: "Entrez le texte ou les instructions de personnalisation...",
@@ -282,7 +282,7 @@ const localDicts = {
     newListing: "قائمة جديدة",
     draft: "مسودة",
     notListedYet: "لم يتم نشره بعد",
-    requiredInputsOnly: "المدخلات المطلوبة فقط",
+    advanced: "متقدم",
     viewOnAfus: "عرض على أفس",
     copy: "نسخ",
     tabs: {
@@ -317,7 +317,7 @@ const localDicts = {
       photosHelper: "أضف ما يصل إلى 10 صور وفيديو واحد.",
       descriptionLabel: "الوصف",
       descriptionHelper: "ما الذي يجعل منتجك مميزاً؟ سيرى المشترون الأسطر الأولى فقط.",
-      personalizationLabel: "السماح بالتخصيص للمشترين",
+      personalizationLabel: "تحت الطلب (السماح بالتخصيص)",
       personalizationHelper: "جمع معلومات التخصيص لهذه القائمة.",
       personalizationInstructions: "إرشادات للمشترين",
       personalizationPlaceholder: "أدخل إرشادات التخصيص الخاصة بك...",
@@ -414,7 +414,7 @@ const localDicts = {
     newListing: "ⵜⴰⴼⵉⵍⵜ ⵜⴰⵎⴰⵢⵏⵓⵜ",
     draft: "ⴱⵔⵓⵢⵓ",
     notListedYet: "ⵓⵔ ⵜⵍⵍⵉ ⴳ ⵓⵥⵟⵟⴰ",
-    requiredInputsOnly: "ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵜⵉⵔⴰⵏⵉⵏ ⵖⴰⵙ",
+    advanced: "ⴰⵎⴰⵜⵜⴰⵢ",
     viewOnAfus: "ⵥⵕ ⴳ Afus",
     copy: "ⵙⵙⵏⴼⵍ",
     tabs: {
@@ -557,8 +557,8 @@ export default function NewListingPage({ params }: PageProps) {
   const [authLoading, setAuthLoading] = useState(true);
   const [session, setSession] = useState<any>(null);
 
-  // Fast Mode State
-  const [fastMode, setFastMode] = useState(true);
+  // Advanced Mode State
+  const [advancedMode, setAdvancedMode] = useState(false);
 
   // Form State
   const [titleEn, setTitleEn] = useState('');
@@ -647,7 +647,7 @@ export default function NewListingPage({ params }: PageProps) {
           const shopCollections = await fetchCollections(activeUser.shop.id);
           setCollections(shopCollections);
         } catch (e) {
-          console.error('Failed to fetch collections:', e);
+          console.warn('Failed to fetch collections:', e);
         }
       }
     }
@@ -773,11 +773,13 @@ export default function NewListingPage({ params }: PageProps) {
             }
           }
         } catch (e) {
-          console.error('Failed to update collection with new product:', e);
+          console.warn('Failed to update collection with new product:', e);
         }
       }
 
       router.push(`/${lang}/dashboard/products`);
+    } else {
+        console.warn('Failed to create product listing');
     }
     setIsSubmitting(false);
   };
@@ -849,7 +851,7 @@ export default function NewListingPage({ params }: PageProps) {
   const TABS = [
     { id: 'about', label: t.tabs.about },
     { id: 'price', label: t.tabs.price },
-    ...(!fastMode ? [
+    ...(advancedMode ? [
       { id: 'variations', label: t.tabs.variations },
       { id: 'details', label: t.tabs.details }
     ] : []),
@@ -866,25 +868,25 @@ export default function NewListingPage({ params }: PageProps) {
         </Link>
 
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-800 max-w-3xl line-clamp-2">
+          <div className="flex-1 mr-4">
+            <h1 className="text-2xl font-bold tracking-tight text-neutral-800">
               {titleEn || t.newListing}
             </h1>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="px-2 py-0.5 bg-neutral-200 text-neutral-700 text-xs font-bold rounded-md">{t.draft}</span>
-              <span className="text-xs text-neutral-500">{t.notListedYet}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3">
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-0.5 bg-neutral-200 text-neutral-700 text-xs font-bold rounded-md">{t.draft}</span>
+                <span className="text-xs text-neutral-500">{t.notListedYet}</span>
+              </div>
+              <div className="flex items-center gap-2 bg-neutral-100 border border-neutral-200 px-3 py-1.5 rounded-full text-xs font-bold text-neutral-800 w-fit shadow-sm">
+                <Switch
+                  checked={advancedMode}
+                  onCheckedChange={setAdvancedMode}
+                />
+                <span>{t.advanced}</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Required inputs only toggle */}
-            <div className="flex items-center gap-2 bg-neutral-100 border border-neutral-200 px-4 py-2 rounded-full text-xs font-bold text-neutral-800 shadow-sm">
-              <Switch
-                checked={fastMode}
-                onCheckedChange={setFastMode}
-              />
-              <span>{t.requiredInputsOnly}</span>
-            </div>
-
+          <div className="flex items-center shrink-0">
             <button className="p-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 rounded-full transition-colors">
               <MoreHorizontal className="w-5 h-5" />
             </button>
@@ -930,7 +932,7 @@ export default function NewListingPage({ params }: PageProps) {
                   </label>
                   <p className="text-xs text-neutral-500">{t.about.titleHelper}</p>
                 </div>
-                {!fastMode && (
+                {advancedMode && (
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-neutral-500">{t.about.translateLabel}</span>
                     <label className="flex items-center cursor-pointer">
@@ -990,7 +992,7 @@ export default function NewListingPage({ params }: PageProps) {
               </div>
             </div>
 
-            {!fastMode && enableAltLangs && (
+            {advancedMode && enableAltLangs && (
               <div className="grid grid-cols-2 gap-4">
                 {lang !== 'en' && (
                   <div className="space-y-2">
@@ -1191,7 +1193,7 @@ export default function NewListingPage({ params }: PageProps) {
               )}
             </div>
 
-            {!fastMode && enableAltLangs && (
+            {advancedMode && enableAltLangs && (
               <div className="grid grid-cols-2 gap-4">
                 {lang !== 'en' && (
                   <div className="space-y-2">
@@ -1241,7 +1243,7 @@ export default function NewListingPage({ params }: PageProps) {
             )}
 
             {/* Personalization */}
-            {!fastMode && (
+            {advancedMode && (
               <div className="pt-4 border-t border-neutral-100">
                 <div className="flex items-center justify-between">
                   <div>
@@ -1319,7 +1321,7 @@ export default function NewListingPage({ params }: PageProps) {
         </div>
 
         {/* VARIATIONS */}
-        {!fastMode && (
+        {advancedMode && (
           <div id="variations" className="space-y-6 bg-white p-8 rounded-xl border border-neutral-200">
             <div className="flex items-center justify-between">
               <div>
@@ -1448,7 +1450,7 @@ export default function NewListingPage({ params }: PageProps) {
         )}
 
         {/* DETAILS SECTION */}
-        {!fastMode && (
+        {advancedMode && (
           <div id="details" className="space-y-6 bg-white p-8 rounded-xl border border-neutral-200">
             <div>
               <h2 className="text-2xl font-bold text-neutral-800">{t.details.title}</h2>
@@ -1671,7 +1673,7 @@ export default function NewListingPage({ params }: PageProps) {
               </div>
             </div>
 
-            {!fastMode && (
+            {advancedMode && (
               <>
                 <div className="pt-6 border-t border-neutral-100 grid grid-cols-[200px_1fr] gap-8">
                   <div>
@@ -1721,7 +1723,7 @@ export default function NewListingPage({ params }: PageProps) {
       </div>
 
       {/* Fixed Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 p-4 md:px-8 z-30 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-[65px] pb-safe md:bottom-0 md:pb-0 left-0 right-0 bg-white border-t border-neutral-200 p-4 md:px-8 z-30 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <Link href={`/${lang}/dashboard/products`}>
           <button className="px-6 py-3 font-semibold text-sm text-neutral-600 hover:text-black transition-colors rounded-full hover:bg-neutral-100">
             {t.buttons.cancel}

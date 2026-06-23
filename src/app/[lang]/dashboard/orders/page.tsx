@@ -6,7 +6,13 @@ import { useRouter } from 'next/navigation';
 import { fetchOrders, fetchShops, updateAmanaMilestone } from '@/lib/supabase';
 import { getActiveSession } from '@/lib/auth';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
-import { FileText, MapPin, Search, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { FileText, MapPin, Search, CheckCircle2, AlertCircle, X, Navigation, Package, History } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface OrderHistoryEntry {
   status: string;
@@ -22,7 +28,8 @@ interface OrderItem {
   quantity: number;
   price_mad: number;
   variant_sku?: string;
-  attributes?: Record<string, string>;
+  image_url?: string | null;
+  attributes?: Record<string, any>;
 }
 
 interface Order {
@@ -54,12 +61,12 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
   // States
   const [authLoading, setAuthLoading] = useState(true);
-  const [shops, setShops] = useState<any[]>([]);
-  const [selectedShopId, setSelectedShopId] = useState<string>('s1');
+  const [activeShop, setActiveShop] = useState<any>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [activeTrackingSearch, setActiveTrackingSearch] = useState<string>('');
   
-  // Modal states
+  // Modal & Sheet states
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [activeLabelOrder, setActiveLabelOrder] = useState<Order | null>(null);
   const [verifyingPhoneOrder, setVerifyingPhoneOrder] = useState<Order | null>(null);
   const [phoneVerifiedIds, setPhoneVerifiedIds] = useState<string[]>([]);
@@ -76,22 +83,17 @@ export default function MerchantOrdersPage({ params }: PageProps) {
     async function checkAuthAndLoad() {
       const activeUser = await getActiveSession();
       if (!activeUser) {
-        // Redirect to login page, remembering redirect target
         router.push(`/${lang}/login?redirect=dashboard/orders`);
         return;
       }
 
-      // Load DB records restricted to the user's shop
-      const userShops = activeUser.shop ? [activeUser.shop] : [];
-      setShops(userShops);
-      if (userShops.length > 0) {
-        setSelectedShopId(userShops[0].id);
+      if (activeUser.shop) {
+        setActiveShop(activeUser.shop);
       }
 
       const dbOrders = activeUser.shop ? await fetchOrders(activeUser.shop.id) : [];
       setOrders(dbOrders as Order[]);
 
-      // Check URL query parameters for direct tracking search
       if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         const trackParam = urlParams.get('track');
@@ -105,15 +107,15 @@ export default function MerchantOrdersPage({ params }: PageProps) {
     checkAuthAndLoad();
   }, [lang, router]);
 
-  // Filter orders by shop OR tracking search
+  // Filter orders by tracking search
   const filteredOrders = orders.filter((order) => {
     if (activeTrackingSearch.trim()) {
       return order.amana_tracking_number.toLowerCase() === activeTrackingSearch.toLowerCase().trim();
     }
-    return order.shop_id === selectedShopId;
+    return true;
   });
 
-  const activeShop = shops.find((s) => s.id === selectedShopId) || shops[0] || {
+  const shopFallback = activeShop || {
     name: 'artisan',
     merchant_city: 'Marrakech',
     pickup_address_street: 'Derb Snan, Marrakech',
@@ -133,175 +135,125 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
     const newMilestone = {
       status: newAmanaStatus,
-      location: newScanLocation || activeShop.merchant_city,
+      location: newScanLocation || shopFallback.merchant_city,
       note: newScanNote || `status updated to ${newAmanaStatus.replace('_', ' ')}`,
       tracking_number: manualTrackingNum || undefined,
     };
 
-    // Update in database (runs live update query if DB configured, or resolves fallback)
     await updateAmanaMilestone(updatingStatusOrder.id, newMilestone);
 
-    // Refresh local list state from DB to guarantee data coherence
     const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
     setOrders(dbOrders as Order[]);
 
-    // Reset states
+    // If we're updating the currently viewed order in the sheet, update it there too
+    if (selectedOrder && selectedOrder.id === updatingStatusOrder.id) {
+        const updatedOrder = dbOrders.find(o => o.id === selectedOrder.id);
+        if (updatedOrder) setSelectedOrder(updatedOrder as Order);
+    }
+
     setUpdatingStatusOrder(null);
     setNewScanLocation('');
     setNewScanNote('');
     setManualTrackingNum('');
   };
 
-  // Translation mapping
+  const getStatusColor = (status: string) => {
+    switch(status) {
+        case 'delivered': return 'bg-green-100 text-green-800 hover:bg-green-100';
+        case 'shipped': return 'bg-blue-100 text-blue-800 hover:bg-blue-100';
+        case 'returned': return 'bg-red-100 text-red-800 hover:bg-red-100';
+        default: return 'bg-amber-100 text-amber-800 hover:bg-amber-100';
+    }
+  };
+
   const labels: Record<string, Record<string, string>> = {
     en: {
-      consoleTitle: "merchant command console",
-      activeShop: "active shop node",
-      searchPlaceholder: "enter amana tracking number...",
-      clearSearch: "show all shop orders",
-      orderId: "order reference ID",
-      buyer: "buyer",
-      phone: "phone",
-      address: "delivery address",
-      city: "destination hub",
-      amount: "cod amount due",
-      status: "order status",
-      deliveryStatus: "amana step",
-      items: "order items",
-      verifyBtn: "verify phone",
-      labelBtn: "print amana label",
-      milestoneBtn: "log delivery scan",
-      historyTitle: "amana log history",
-      statusPending: "pending verification",
-      statusConfirmed: "confirmed",
-      statusShipped: "in transit",
-      statusDelivered: "delivered / collected",
-      statusReturned: "returned",
-      verifiedBadge: "phone verified ✓",
-      totalMad: "mad",
-      shopSwitcher: "select merchant guild",
-      emptyOrders: "no orders recorded for this shop.",
+      consoleTitle: "Store Orders",
+      subtitle: "Manage your orders and logistics",
+      searchPlaceholder: "Enter amana tracking number...",
+      clearSearch: "Show all shop orders",
+      orderId: "Order ID",
+      buyer: "Buyer",
+      city: "Destination",
+      amount: "Total COD",
+      status: "Status",
+      emptyOrders: "No orders recorded for this shop.",
+      trackShipment: "Track Shipment",
+      verifyBtn: "Verify Phone",
+      labelBtn: "Print Label",
+      milestoneBtn: "Log Scan",
+      historyTitle: "Amana History",
+      items: "Articles",
+      subtotal: "Subtotal",
+      amanaShipping: "Amana Shipping",
       milestoneModalTitle: "register amana delivery checkpoint",
       milestoneLocation: "scanning facility location (city)",
       milestoneNote: "dispatch note (optional)",
       milestoneSave: "commit tracking status",
       trackingOverride: "override amana tracking number",
-      labelTitle: "al barid bank - amana cash on delivery routing slip",
+      deliveryStatus: "amana step",
       labelSender: "shipper (artisan)",
       labelReceiver: "consignee (buyer)",
       labelInstructions: "delivery protocol: collect cash on delivery. inspect before payment allowed.",
     },
     fr: {
-      consoleTitle: "console marchand",
-      activeShop: "boutique active",
-      searchPlaceholder: "rechercher un numéro de suivi amana...",
-      clearSearch: "voir toutes les commandes",
-      orderId: "référence de commande",
-      buyer: "destinataire",
-      phone: "téléphone",
-      address: "adresse de livraison",
-      city: "ville de destination",
-      amount: "montant cod à percevoir",
-      status: "statut commande",
-      deliveryStatus: "étape amana",
-      items: "articles",
-      verifyBtn: "valider tél",
-      labelBtn: "étiquette amana",
-      milestoneBtn: "scanner amana",
-      historyTitle: "historique amana",
-      statusPending: "en attente confirmation",
-      statusConfirmed: "confirmée",
-      statusShipped: "expédiée",
-      statusDelivered: "livrée / encaissée",
-      statusReturned: "retournée",
-      verifiedBadge: "téléphone validé ✓",
-      totalMad: "dh",
-      shopSwitcher: "sélectionner la boutique",
-      emptyOrders: "aucune commande enregistrée pour cette boutique.",
+      consoleTitle: "Commandes",
+      subtitle: "Gérez vos commandes et vos expéditions",
+      searchPlaceholder: "Rechercher un numéro de suivi amana...",
+      clearSearch: "Voir toutes les commandes",
+      orderId: "Réf",
+      buyer: "Destinataire",
+      city: "Destination",
+      amount: "Total COD",
+      status: "Statut",
+      emptyOrders: "Aucune commande enregistrée pour cette boutique.",
+      trackShipment: "Suivre l'expédition",
+      verifyBtn: "Valider Tél",
+      labelBtn: "Étiquette",
+      milestoneBtn: "Scanner",
+      historyTitle: "Historique Amana",
+      items: "Articles",
+      subtotal: "Sous-total",
+      amanaShipping: "Expédition Amana",
       milestoneModalTitle: "enregistrer une étape de livraison amana",
       milestoneLocation: "lieu de scan (ville)",
       milestoneNote: "remarque d'expédition (optionnel)",
       milestoneSave: "enregistrer l'étape",
       trackingOverride: "modifier le numéro amana",
-      labelTitle: "al barid bank - bordereau d'expédition amana contre remboursement",
+      deliveryStatus: "étape amana",
       labelSender: "expéditeur (artisan)",
       labelReceiver: "destinataire",
       labelInstructions: "instruction de livraison : encaissement espèces à la livraison. vérification autorisée.",
     },
     ar: {
-      consoleTitle: "لوحة تحكم التاجر",
-      activeShop: "المتجر النشط",
+      consoleTitle: "الطلبيات",
+      subtitle: "إدارة وتتبع الطلبيات والشحن",
       searchPlaceholder: "أدخل رقم تتبع أمانة...",
       clearSearch: "عرض جميع طلبات المتجر",
-      orderId: "مرجع الطلبية",
+      orderId: "المرجع",
       buyer: "المشتري",
-      phone: "الهاتف",
-      address: "عنوان التوصيل",
-      city: "مدينة التوصيل",
-      amount: "مبلغ الدفع عند الاستلام",
-      status: "حالة الطلبية",
-      deliveryStatus: "حالة شحن أمانة",
-      items: "السلع",
-      verifyBtn: "تأكيد الهاتف",
-      labelBtn: "طبع ملصق أمانة",
-      milestoneBtn: "تسجيل نقطة تتبع",
-      historyTitle: "سجل تتبع أمانة",
-      statusPending: "في انتظار التأكيد",
-      statusConfirmed: "مؤكدة",
-      statusShipped: "تم الشحن",
-      statusDelivered: "تم التسليم والتحصيل",
-      statusReturned: "مرتجعة",
-      verifiedBadge: "الهاتف مؤكد ✓",
-      totalMad: "درهم",
-      shopSwitcher: "اختر متجر الحرفي",
+      city: "الوجهة",
+      amount: "المجموع",
+      status: "الحالة",
       emptyOrders: "لا توجد طلبيات مسجلة لهذا المتجر.",
+      trackShipment: "تتبع الشحنة",
+      verifyBtn: "تأكيد الهاتف",
+      labelBtn: "ملصق أمانة",
+      milestoneBtn: "تسجيل فحص",
+      historyTitle: "سجل أمانة",
+      items: "السلع",
+      subtotal: "المجموع الفرعي",
+      amanaShipping: "شحن أمانة",
       milestoneModalTitle: "تسجيل نقطة فحص شحن أمانة جديدة",
       milestoneLocation: "موقع الفحص (المدينة)",
       milestoneNote: "ملاحظة الشحن (اختياري)",
       milestoneSave: "حفظ نقطة التتبع",
       trackingOverride: "تغيير رقم تتبع أمانة",
-      labelTitle: "بريد المغرب - بطاقة شحن أمانة الدفع عند الاستلام",
+      deliveryStatus: "حالة شحن أمانة",
       labelSender: "المرسل (الحرفي)",
       labelReceiver: "المرسل إليه (الزبون)",
       labelInstructions: "بروتوكول التوصيل: تحصيل المبلغ نقداً عند الاستلام. يُسمح بالفحص قبل الدفع.",
     },
-    tz: {
-      consoleTitle: "ⵜⴰⴼⵓⵍⵜ ⵏ ⵓⵎⵙⵙⵓⴼⵖ",
-      activeShop: "ⵜⴰⵃⴰⵏⵓⵜ ⵜⵓⵔⵎⵉⴷⵜ",
-      searchPlaceholder: "ⴰⵔⴰ ⵓⵟⵟⵓⵏ ⵏ ⵓⴹⴼⵓⵕ ⵏ ⴰⵎⴰⵏⴰ...",
-      clearSearch: "ⵎⵍ ⴽⵓ ⵜⵉⵎⵓⵔⵉⵡⵉⵏ",
-      orderId: "ⵜⴰⵎⴰⵜⴰⵔⵜ ⵏ ⵜⵓⵎⵔⵔⴰ",
-      buyer: "ⴰⵎⵙⴰⵖ",
-      phone: "ⵜⵉⵍⵉⴼⵓⵏ",
-      address: "ⴰⵏⵙⴰ ⵏ ⵜⵓⵙⵏⴰ",
-      city: "ⵜⵉⵖⵔⵎⵜ",
-      amount: "ⴰⵜⵉⴳ",
-      status: "ⴰⴷⴷⴰⴷ ⵏ ⵜⵓⵎⵔⵔⴰ",
-      deliveryStatus: "ⴰⵙⵓⵔⵉⴼ ⵏ ⴰⵎⴰⵏⴰ",
-      items: "ⵜⵉⵎⵔⵔⵉⵡⵉⵏ",
-      verifyBtn: "ⵙⴷⴷⵉⴷ ⵜⵉⵍⵉⴼⵓⵏ",
-      labelBtn: "ⵜⴰⴼⵔⵉⵙⵜ ⵏ ⴰⵎⴰⵏⴰ",
-      milestoneBtn: "ⵙⴽⵛⵎ ⴰⴹⴼⵓⵕ",
-      historyTitle: "ⴰⵎⵣⵔⵓⵢ ⵏ ⴰⵎⴰⵏⴰ",
-      statusPending: "ⴳ ⵓⴱⵔⵉⴷ ⵏ ⵓⵙⴷⴷⵉⴷ",
-      statusConfirmed: "ⵉⵙⴷⴷⵉⴷ",
-      statusShipped: "ⵉⵎⵓⴷⴷⴰ",
-      statusDelivered: "ⵉⵜⵜⵓⴼⴽⴰ",
-      statusReturned: "ⵉⵡⵔⵔⵉ ⴷ",
-      verifiedBadge: "ⵜⵉⵍⵉⴼⵓⵏ ⵉⵙⴷⴷⵉⴷ ⵏ ⵜⵉⴷⵜ ✓",
-      totalMad: "MAD",
-      shopSwitcher: "ⵙⵜⵉ ⵜⴰⵃⴰⵏⵓⵜ",
-      emptyOrders: "ⵓⵔ ⵜⵍⵍⵉ ⵜⵓⵎⵔⵔⴰ ⵉ ⵜⵃⴰⵏⵓⵜ ⴰⴷ.",
-      milestoneModalTitle: "ⵙⴽⵛⵎ ⴰⵙⵓⵔⵉⴼ ⵏ ⵓⴹⴼⵓⵕ ⵏ ⴰⵎⴰⵏⴰ",
-      milestoneLocation: "ⴰⵏⵙⴰ (ⵜⵉⵖⵔⵎⵜ)",
-      milestoneNote: "ⵜⴰⵏⵏⴰⵢⵜ (Optional)",
-      milestoneSave: "ⵙⴽⵛⵎ ⴰⴷⴷⴰⴷ",
-      trackingOverride: "ⵙⵏⴼⵍ ⵓⵟⵟⵓⵏ ⵏ ⴰⵎⴰⵏⴰ",
-      labelTitle: "Routing slip - Amana Cash on Delivery",
-      labelSender: "Artisan",
-      labelReceiver: "Buyer",
-      labelInstructions: "Collect cash on delivery.",
-    }
   };
 
   const t = labels[lang] || labels.en;
@@ -311,237 +263,340 @@ export default function MerchantOrdersPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans bg-neutral-50/30">
       {/* Title */}
       <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row md:items-center justify-between shrink-0 gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
             {t.consoleTitle}
           </h1>
-          <p className="text-xs text-neutral-500 mt-0.5">Manage and track your Amana shipping</p>
-        </div>
-        <div className="flex gap-4 items-center">
-          <span className="text-neutral-500 text-sm font-medium">{t.shopSwitcher}:</span>
-          <select
-            value={selectedShopId}
-            onChange={(e) => {
-              setSelectedShopId(e.target.value);
-              setActiveTrackingSearch(''); // Reset search
-            }}
-            className="border border-neutral-200 p-2 bg-white rounded-lg focus:outline-none text-sm font-semibold text-neutral-800 transition-colors"
-          >
-            {shops.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} ({s.merchant_city})
-              </option>
-            ))}
-          </select>
+          <p className="text-xs text-neutral-500 mt-0.5">{t.subtitle}</p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-5xl flex-1 space-y-8">
-
-      {/* Global Tracking Lookup Input */}
-      <div className="p-4 bg-white rounded-xl border border-neutral-200 shadow-sm flex flex-col md:flex-row gap-4 items-center">
-        <div className="flex items-center gap-2 text-neutral-700 flex-shrink-0">
-          <Search className="w-4 h-4" />
-          <span className="font-semibold text-sm">Search Tracking Registry:</span>
+      <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-6xl flex-1 space-y-8">
+        {/* Global Tracking Lookup Input */}
+        <div className="p-4 bg-white rounded-xl border border-neutral-200 shadow-sm flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+          <div className="flex items-center gap-2 text-neutral-700 flex-shrink-0">
+            <Search className="w-4 h-4" />
+            <span className="font-semibold text-sm">Search Tracking Registry:</span>
+          </div>
+          <input
+            type="text"
+            value={activeTrackingSearch}
+            onChange={(e) => setActiveTrackingSearch(e.target.value)}
+            placeholder={t.searchPlaceholder}
+            className="w-full md:flex-1 border border-neutral-200 p-2 bg-neutral-50 focus:bg-white focus:border-neutral-300 focus:outline-none rounded-lg text-sm transition-all placeholder-neutral-400"
+          />
+          {activeTrackingSearch && (
+            <button
+              onClick={() => setActiveTrackingSearch('')}
+              className="w-full md:w-auto bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-black px-4 py-2 rounded-lg transition-colors font-medium text-sm"
+            >
+              {t.clearSearch}
+            </button>
+          )}
         </div>
-        <input
-          type="text"
-          value={activeTrackingSearch}
-          onChange={(e) => setActiveTrackingSearch(e.target.value)}
-          placeholder={t.searchPlaceholder}
-          className="flex-1 border border-neutral-200 p-2 bg-neutral-50 focus:bg-white focus:border-neutral-300 focus:outline-none rounded-lg text-sm transition-all placeholder-neutral-400"
-        />
-        {activeTrackingSearch && (
-          <button
-            onClick={() => setActiveTrackingSearch('')}
-            className="bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-black px-4 py-2 rounded-lg transition-colors font-medium text-sm"
-          >
-            {t.clearSearch}
-          </button>
+
+        {/* View 1: The Order Card (Overview) */}
+        {filteredOrders.length === 0 ? (
+          <div className="rounded-xl border border-neutral-200 p-8 md:p-12 text-center text-neutral-400 bg-white shadow-sm">
+            {t.emptyOrders}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredOrders.map((order) => {
+              return (
+                <Card key={order.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                  <CardHeader className="pb-3 border-b bg-neutral-50/50">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-xs text-neutral-500 mb-1">{t.orderId}</p>
+                        <CardTitle className="text-sm font-mono tracking-tight">{order.id.substring(0,8)}</CardTitle>
+                      </div>
+                      <select
+                        value={order.order_status}
+                        onChange={async (e) => {
+                          const nextStatus = e.target.value;
+                          await updateAmanaMilestone(order.id, {
+                            status: order.amana_delivery_status,
+                            location: shopFallback.merchant_city,
+                            note: `order status changed to ${nextStatus}`,
+                            order_status: nextStatus,
+                            skip_history: true
+                          });
+                          const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
+                          setOrders(dbOrders as Order[]);
+                        }}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-full border cursor-pointer focus:outline-none appearance-none capitalize ${getStatusColor(order.order_status)}`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="returned">Returned</option>
+                      </select>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-4 pb-2 space-y-4">
+                    <div className="flex justify-between items-start gap-2">
+                        <div className="space-y-1">
+                            <p className="text-sm font-semibold">{order.customer_name}</p>
+                            <div className="flex items-center text-xs text-neutral-500 gap-1">
+                                <MapPin className="w-3 h-3" />
+                                {order.shipping_city}
+                            </div>
+                        </div>
+                        {/* Mini Map Placeholder */}
+                        <div className="w-16 h-12 bg-neutral-100 rounded border flex items-center justify-center overflow-hidden shrink-0 relative">
+                            <div className="absolute inset-0 bg-blue-50/50 opacity-50"></div>
+                            <MapPin className="w-4 h-4 text-red-500 z-10" />
+                            <div className="absolute bottom-1 text-[8px] font-medium z-10">{order.shipping_city}</div>
+                        </div>
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex justify-between items-center text-sm">
+                        <div className="text-neutral-500">
+                            {order.items.length} {t.items}
+                        </div>
+                        <div className="font-bold text-right">
+                            <span className="text-xs text-neutral-500 block uppercase tracking-wider">{t.amount}</span>
+                            {order.total_mad} MAD
+                        </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-2 pb-4 bg-white">
+                    <button 
+                        onClick={() => setSelectedOrder(order)}
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold transition-colors"
+                    >
+                        <Navigation className="w-4 h-4" />
+                        {t.trackShipment}
+                    </button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
         )}
       </div>
 
-      {/* Orders Output */}
-      {filteredOrders.length === 0 ? (
-        <div className="rounded-xl border border-neutral-200 p-12 text-center text-neutral-400 bg-white">
-          {t.emptyOrders}
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {filteredOrders.map((order) => {
-            const isVerified = phoneVerifiedIds.includes(order.id) || order.order_status !== 'pending';
-
-            return (
-              <div key={order.id} className="bg-white rounded-xl border border-neutral-200 flex flex-col overflow-hidden">
-                {/* Header */}
-                <div className="p-4 border-b border-neutral-100 bg-neutral-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-                  <div className="space-y-1">
-                    <span className="font-bold text-sm block text-neutral-800">
-                      {t.orderId}: {order.id.substring(0, 8)}...
-                    </span>
-                    <span className="text-xs text-neutral-500">
-                      Registered: {new Date(order.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                  
-                   {/* Tracking & Status Badges */}
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-neutral-500 font-semibold text-xs uppercase tracking-wider">Status:</span>
-                      {order.order_status === 'delivered' ? (
-                        <span className="bg-green-50 text-green-700 border border-green-200 rounded-md px-2.5 py-1 text-xs font-bold uppercase tracking-wider">
-                          Delivered ✓
-                        </span>
-                      ) : (
-                        <select
-                          value={order.order_status}
-                          onChange={async (e) => {
-                            const nextStatus = e.target.value;
-                            await updateAmanaMilestone(order.id, {
-                              status: order.amana_delivery_status,
-                              location: activeShop.merchant_city,
-                              note: `order status changed to ${nextStatus}`,
-                              order_status: nextStatus
-                            });
-                            const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
-                            setOrders(dbOrders as Order[]);
-                          }}
-                          className="border border-neutral-200 rounded-md px-2.5 py-1 bg-white text-xs font-bold focus:outline-none cursor-pointer capitalize text-neutral-700"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="shipped">Shipped</option>
-                          <option value="delivered">Delivered</option>
-                          <option value="returned">Returned</option>
-                        </select>
-                      )}
-                    </div>
-
-                    <span className="bg-neutral-800 text-white rounded-md px-2.5 py-1 text-xs tracking-wider uppercase font-bold">
-                      Amana: {order.amana_tracking_number}
-                    </span>
-                    <span className="border border-neutral-200 rounded-md px-2.5 py-1 bg-white text-xs font-bold text-neutral-600 capitalize">
-                      {order.amana_delivery_status.replace('_', ' ')}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Grid Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 text-sm">
-                  {/* Customer details */}
-                  <div className="lg:col-span-4 p-5 space-y-4">
-                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">Buyer Logistics</span>
-                    <div className="space-y-2 text-neutral-600">
-                      <div><span className="text-neutral-500 capitalize">{t.buyer}:</span> <strong className="text-black font-semibold">{order.customer_name}</strong></div>
-                      <div>
-                        <span className="text-neutral-500 capitalize">{t.phone}:</span>{' '}
-                        <strong className="text-black font-semibold">{order.customer_phone}</strong>
-                        {isVerified ? (
-                          <span className="text-green-600 font-bold block text-xs mt-1">{t.verifiedBadge}</span>
-                        ) : (
-                          <button
-                            onClick={() => setVerifyingPhoneOrder(order)}
-                            className="text-red-600 font-bold hover:underline block text-xs mt-1 cursor-pointer transition-colors"
-                          >
-                            ⚠️ Click to trigger verification SMS
-                          </button>
-                        )}
-                      </div>
-                      <div><span className="text-neutral-500 capitalize">{t.city}:</span> <strong className="text-black font-semibold">{order.shipping_city}</strong></div>
-                      <div><span className="text-neutral-500 capitalize">{t.address}:</span> <span className="text-neutral-700 leading-normal">{order.shipping_address}</span></div>
-                    </div>
-                  </div>
-
-                  {/* Items and cost */}
-                  <div className="lg:col-span-4 p-5 space-y-4">
-                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">{t.items}</span>
-                    <div className="space-y-3">
-                      {order.items.map((item) => (
-                        <div key={item.id} className="flex justify-between items-start gap-4">
-                          <div className="space-y-0.5">
-                            <span className="font-bold text-neutral-800 line-clamp-1">{item.title}</span>
-                            {item.variant_sku && (
-                              <span className="text-xs text-neutral-400 block uppercase tracking-wider">SKU: {item.variant_sku}</span>
-                            )}
-                          </div>
-                          <span className="flex-shrink-0 text-neutral-600 font-medium whitespace-nowrap">
-                            {item.quantity}x {item.price_mad} {t.totalMad}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="pt-4 border-t border-dashed border-neutral-200 space-y-2">
-                      <div className="flex justify-between text-neutral-600">
-                        <span className="capitalize">Subtotal:</span>
-                        <span>{order.subtotal_mad} {t.totalMad}</span>
-                      </div>
-                      <div className="flex justify-between text-neutral-600">
-                        <span className="capitalize">Amana Shipping:</span>
-                        <span>{order.shipping_cost_mad} {t.totalMad}</span>
-                      </div>
-                      <div className="flex justify-between font-bold border-t border-neutral-200 pt-2 text-base text-neutral-800">
-                        <span className="capitalize">{t.amount}:</span>
-                        <span>{order.total_mad} {t.totalMad}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Tracking milestone logs */}
-                  <div className="lg:col-span-4 p-5 space-y-4 bg-neutral-50/50">
-                    <span className="font-bold border-b border-neutral-200 pb-2 block text-neutral-800 capitalize">{t.historyTitle}</span>
-                    
-                    <div className="space-y-4 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
-                      {order.amana_history.map((log, index) => (
-                        <div key={index} className="relative pl-5 border-l-2 border-neutral-200 space-y-1 pb-2">
-                          <div className="absolute w-2.5 h-2.5 bg-neutral-400 rounded-full left-[-5px] top-1.5 border-2 border-white"></div>
-                          <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-neutral-800 capitalize">{log.status.replace('_', ' ')}</span>
-                            <span className="text-xs text-neutral-400 font-medium">
-                              {new Date(log.timestamp).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <span className="text-xs text-neutral-600 block capitalize">Node: {log.location}</span>
-                          <p className="text-xs text-neutral-500 italic">{log.note}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer buttons */}
-                <div className="p-4 border-t border-neutral-100 bg-white flex flex-wrap gap-3 justify-end items-center">
-                  <button
-                    onClick={() => {
-                      setUpdatingStatusOrder(order);
-                      setManualTrackingNum(order.amana_tracking_number);
-                    }}
-                    disabled={order.order_status === 'delivered'}
-                    className="flex items-center gap-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                  >
-                    <MapPin className="w-4 h-4" />
-                    {t.milestoneBtn}
-                  </button>
-                  <button
-                    onClick={() => setActiveLabelOrder(order)}
-                    className="flex items-center gap-2 bg-black hover:bg-neutral-800 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors shadow-sm"
-                  >
-                    <FileText className="w-4 h-4" />
-                    {t.labelBtn}
-                  </button>
-                </div>
+      {/* View 2: The Detailed Order Sheet */}
+      <Sheet open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
+        <SheetContent side="bottom" className="w-full sm:max-w-xl md:max-w-2xl mx-auto max-h-[85vh] h-full rounded-t-3xl border-t p-0 flex flex-col bg-neutral-50 overflow-hidden outline-none">
+          {selectedOrder && (
+            <>
+              {/* Drawer Handle */}
+              <div className="w-full bg-white flex justify-center pt-3 pb-2 z-30 shrink-0 relative">
+                 <div className="w-12 h-1.5 rounded-full bg-neutral-300"></div>
               </div>
-            );
-          })}
-        </div>
-      )}
+              {/* Sheet Header */}
+              <div className="bg-white px-6 pb-4 border-b shrink-0 z-20 relative">
+                <SheetHeader className="text-left space-y-1">
+                  <div className="flex justify-between items-start gap-4">
+                      <div>
+                          <SheetTitle className="text-xl">Tracking: {selectedOrder.amana_tracking_number}</SheetTitle>
+                          <SheetDescription className="font-mono text-xs">
+                            ID: {selectedOrder.id} • {new Date(selectedOrder.created_at).toLocaleString()}
+                          </SheetDescription>
+                      </div>
+                      <Badge className={getStatusColor(selectedOrder.order_status)} variant="secondary">
+                        {selectedOrder.order_status}
+                      </Badge>
+                  </div>
+                </SheetHeader>
+              </div>
+
+              {/* Sheet Body */}
+              <div className="p-6 space-y-8 flex-1 overflow-y-auto">
+                {/* Status Updater */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{t.status}</label>
+                  <Select
+                    value={selectedOrder.order_status}
+                    onValueChange={async (value) => {
+                      await updateAmanaMilestone(selectedOrder.id, {
+                        status: selectedOrder.amana_delivery_status,
+                        location: shopFallback.merchant_city,
+                        note: `order status changed to ${value}`,
+                        order_status: value,
+                        skip_history: true
+                      });
+                      const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
+                      setOrders(dbOrders as Order[]);
+                      const updatedOrder = dbOrders.find(o => o.id === selectedOrder.id);
+                      if (updatedOrder) setSelectedOrder(updatedOrder as Order);
+                    }}
+                  >
+                    <SelectTrigger className="w-full font-bold">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="shipped">Shipped</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
+                      <SelectItem value="returned">Returned</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Logistics Timeline */}
+                <Card>
+                    <CardHeader className="pb-3 border-b">
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <History className="w-4 h-4" />
+                            {t.historyTitle}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-5 space-y-5">
+                        {selectedOrder.amana_history.map((log, index) => (
+                            <div key={index} className="relative pl-6 pb-2 border-l border-neutral-200 last:border-0 last:pb-0">
+                                <div className="absolute w-3 h-3 bg-white border-2 border-primary rounded-full left-[-6.5px] top-1"></div>
+                                <div className="flex justify-between items-start mb-1">
+                                    <span className="font-bold text-sm capitalize">{log.status.replace('_', ' ')}</span>
+                                    <span className="text-xs text-neutral-500">
+                                        {new Date(log.timestamp).toLocaleDateString()}
+                                    </span>
+                                </div>
+                                <span className="text-xs font-medium text-neutral-700 block capitalize">{log.location}</span>
+                                {log.note && <p className="text-xs text-neutral-500 mt-1">{log.note}</p>}
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                {/* Itemized List */}
+                <Card>
+                    <CardHeader className="pb-3 border-b">
+                        <CardTitle className="text-base flex items-center gap-2">
+                            <Package className="w-4 h-4" />
+                            {t.items}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="divide-y divide-neutral-100">
+                            {selectedOrder.items.map(item => (
+                                <div key={item.id} className="p-4 flex gap-3 justify-between items-start">
+                                    {item.image_url && (
+                                        <div className="w-12 h-12 rounded bg-neutral-100 overflow-hidden shrink-0 border border-neutral-200">
+                                            <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+                                        </div>
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-neutral-900 leading-snug">{item.title}</p>
+                                        {item.variant_sku && <p className="text-xs text-neutral-500 uppercase mt-1">SKU: {item.variant_sku}</p>}
+                                        {item.attributes && Object.keys(item.attributes).length > 0 && (
+                                            <div className="mt-1.5 flex flex-wrap gap-1">
+                                                {Object.entries(item.attributes).map(([key, val]) => (
+                                                    <span key={key} className="text-[10px] text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-full border border-neutral-200">
+                                                        <span className="font-semibold capitalize">{key}:</span> {String(val)}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-sm font-semibold">{item.price_mad} dh</p>
+                                        <p className="text-xs text-neutral-500">Qty: {item.quantity}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="p-4 bg-neutral-50/50 space-y-2 text-sm border-t border-neutral-200">
+                            <div className="flex justify-between text-neutral-600">
+                                <span>{t.subtotal}</span>
+                                <span>{selectedOrder.subtotal_mad} dh</span>
+                            </div>
+                            <div className="flex justify-between text-neutral-600">
+                                <span>{t.amanaShipping}</span>
+                                <span>{selectedOrder.shipping_cost_mad} dh</span>
+                            </div>
+                            <Separator className="my-2" />
+                            <div className="flex justify-between font-bold text-base">
+                                <span>{t.amount}</span>
+                                <span>{selectedOrder.total_mad} dh</span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                
+                {/* Buyer & Destination Details */}
+                <Card>
+                    <CardHeader className="pb-3 border-b">
+                        <CardTitle className="text-base">{t.buyer}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4 space-y-3 text-sm">
+                        <div className="flex justify-between items-center">
+                            <span className="text-neutral-500">Name</span>
+                            <span className="font-medium">{selectedOrder.customer_name}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-neutral-500">Phone</span>
+                            <div className="flex items-center gap-2">
+                                <span className="font-medium">{selectedOrder.customer_phone}</span>
+                                {phoneVerifiedIds.includes(selectedOrder.id) || selectedOrder.order_status !== 'pending' ? (
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                ) : (
+                                    <button onClick={() => setVerifyingPhoneOrder(selectedOrder)} className="text-xs font-bold text-red-600 hover:underline">
+                                        Verify
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-neutral-500">Destination</span>
+                            <span className="font-medium">{selectedOrder.shipping_city}</span>
+                        </div>
+                        <div className="flex justify-between items-start gap-4">
+                            <span className="text-neutral-500 shrink-0">Address</span>
+                            <span className="font-medium text-right">{selectedOrder.shipping_address}</span>
+                        </div>
+                    </CardContent>
+                </Card>
+              </div>
+
+              {/* Sheet Actions Cluster */}
+              <div className="bg-white p-4 border-t shrink-0 z-20 flex flex-wrap gap-2 justify-end mb-safe">
+                {!(phoneVerifiedIds.includes(selectedOrder.id) || selectedOrder.order_status !== 'pending') && (
+                    <button
+                        onClick={() => setVerifyingPhoneOrder(selectedOrder)}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-red-200 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg text-sm font-semibold transition-colors"
+                    >
+                        <AlertCircle className="w-4 h-4" />
+                        {t.verifyBtn}
+                    </button>
+                )}
+                <button
+                  onClick={() => {
+                    setUpdatingStatusOrder(selectedOrder);
+                    setManualTrackingNum(selectedOrder.amana_tracking_number);
+                  }}
+                  disabled={selectedOrder.order_status === 'delivered'}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <MapPin className="w-4 h-4" />
+                  {t.milestoneBtn}
+                </button>
+                <button
+                  onClick={() => setActiveLabelOrder(selectedOrder)}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-black hover:bg-neutral-800 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+                >
+                  <FileText className="w-4 h-4" />
+                  {t.labelBtn}
+                </button>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* MODAL 1: Barid Bank Amana shipping routing label */}
       {activeLabelOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4">
           <div className="bg-white border-2 border-black max-w-2xl w-full p-8 space-y-6 rounded-none relative">
             <button
               onClick={() => setActiveLabelOrder(null)}
@@ -594,10 +649,10 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                 <div className="p-3 space-y-2">
                   <span className="font-bold block text-neutral-500 uppercase tracking-widest">{t.labelSender}</span>
                   <div>
-                    <strong className="block text-sm">{activeShop.name}</strong>
-                    <span>ICE: {activeShop.ice_number}</span>
-                    <span className="block text-neutral-600 mt-1">{activeShop.pickup_address_street}</span>
-                    <span className="block font-bold mt-1">node origin: {activeShop.merchant_city}</span>
+                    <strong className="block text-sm">{shopFallback.name}</strong>
+                    <span>ICE: {shopFallback.ice_number}</span>
+                    <span className="block text-neutral-600 mt-1">{shopFallback.pickup_address_street}</span>
+                    <span className="block font-bold mt-1">node origin: {shopFallback.merchant_city}</span>
                   </div>
                 </div>
 
@@ -641,7 +696,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
       {/* MODAL 2: SMS Verification Trigger */}
       {verifyingPhoneOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
             <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
               <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -681,7 +736,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
       {/* MODAL 3: Update Amana delivery checkpoint */}
       {updatingStatusOrder && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
             <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
               <div className="flex items-center gap-3">
@@ -757,7 +812,6 @@ export default function MerchantOrdersPage({ params }: PageProps) {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }

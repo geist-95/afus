@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { getActiveSession, UserSession } from '@/lib/auth';
 import { getDictionary } from '@/lib/i18n';
 import Link from 'next/link';
-import { Plus, Package, MoreHorizontal, Wallet, Store } from 'lucide-react';
+import { Plus, Package, MoreHorizontal, Wallet, Store, Star, Link as LinkIcon } from 'lucide-react';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 
 interface DashboardPageProps {
@@ -56,8 +56,9 @@ export default function DashboardPage({ params }: DashboardPageProps) {
     <div className="min-h-screen bg-[#F9F9F9] flex flex-col animate-in fade-in duration-500 font-sans">
       <div className="border-b border-neutral-200 bg-white px-6 py-4 flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-800">{t.sellerDashboard}</h1>
-          <p className="text-xs text-neutral-500 mt-0.5">{t.salam} {shopName}</p>
+          <h1 className="text-xl font-bold tracking-tight text-neutral-800">
+            {lang === 'fr' ? 'Tableau de bord' : lang === 'ar' ? 'لوحة القيادة' : 'Dashboard'}
+          </h1>
         </div>
         <Link
           href={`/${lang}/shop/${session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}`}
@@ -185,38 +186,47 @@ export default function DashboardPage({ params }: DashboardPageProps) {
 
           {/* Right Sidebar Column */}
           <div className="w-full lg:w-[320px] shrink-0 space-y-6">
-            <div className="bg-white text-black rounded-lg border border-neutral-200 p-6 flex flex-col items-center relative overflow-hidden">
-              {/* Avatar with thin border */}
-              <div className="relative w-24 h-24 rounded-full p-1 border-2 border-neutral-100 mb-4 z-10 bg-white">
-                <div className="w-full h-full bg-neutral-100 rounded-full flex items-center justify-center overflow-hidden">
+            <div className="text-black flex flex-col items-start relative overflow-visible">
+              {/* Avatars Container */}
+              <div className="relative mb-3 inline-block">
+                {/* Shop Avatar (Rounded Rectangle) */}
+                <div className="w-20 h-20 rounded-2xl bg-[#E8DECC] flex items-center justify-center overflow-hidden">
                   {session.shop?.logo_url ? (
                     <img src={session.shop.logo_url} alt="Shop Logo" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-3xl font-bold text-neutral-400">{shopName.charAt(0).toUpperCase()}</span>
+                    <span className="text-3xl font-bold text-white tracking-tighter" style={{ fontFamily: 'serif' }}>
+                      {shopName.substring(0, 4).toLowerCase()}<br/>{shopName.substring(4, 8).toLowerCase()}
+                    </span>
+                  )}
+                </div>
+                {/* User Avatar (Circle Overlapping) */}
+                <div className="absolute -bottom-1 -right-2 w-10 h-10 rounded-full border-[3px] border-white bg-neutral-200 overflow-hidden flex items-center justify-center shadow-sm">
+                  {session.user_metadata?.avatar_url ? (
+                    <img src={session.user_metadata.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-bold text-neutral-600">{shopName.charAt(0).toUpperCase()}</span>
                   )}
                 </div>
               </div>
               
-              <h3 className="text-xl font-bold tracking-tight mb-1 z-10 text-neutral-800">{shopName}</h3>
-              <p className="text-sm text-neutral-500 mb-6 z-10">@{session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}</p>
+              <h3 className="text-2xl font-serif text-neutral-800 tracking-tight flex items-center gap-2 mb-2 mt-2">
+                Salam, {shopName}
+              </h3>
               
-              <div className="w-full grid grid-cols-2 gap-2 z-10">
-                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-neutral-800 mb-0.5">{productsCount}</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.products}</span>
-                </div>
-                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-neutral-800 mb-0.5">{ordersCount}</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.sales}</span>
-                </div>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-neutral-600 font-medium w-full mt-1">
+                <span className="flex items-center text-black font-bold">
+                  <Star className="w-4 h-4 mr-1 fill-black" /> 4.9 <span className="font-normal text-neutral-500 ml-1">(120)</span>
+                </span>
+                <span className="text-neutral-300">|</span>
+                <span>{ordersCount} {lang === 'fr' ? 'ventes' : lang === 'ar' ? 'مبيعات' : 'sales'}</span>
+                <span className="text-neutral-300">|</span>
+                <span>{productsCount} {lang === 'fr' ? 'actifs' : lang === 'ar' ? 'نشط' : 'active listings'}</span>
+                <span className="text-neutral-300">|</span>
+                <Link href={`/${lang}/shop/${session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}`} className="flex items-center hover:underline text-neutral-800">
+                  {session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}.afus.ma
+                  <LinkIcon className="w-3 h-3 ml-1" />
+                </Link>
               </div>
-
-              <Link
-                href={`/${lang}/shop/${session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}`}
-                className="w-full mt-6 z-10 py-2.5 px-4 bg-[#663399] hover:bg-[#663399]/90 text-white rounded-xl text-center text-xs font-bold transition-all shadow-sm"
-              >
-                {lang === 'fr' ? 'Voir ma boutique' : lang === 'ar' ? 'عرض متجري' : 'View Store'}
-              </Link>
             </div>
           </div>
 
