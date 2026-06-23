@@ -81,14 +81,14 @@ export default function MerchantOrdersPage({ params }: PageProps) {
         return;
       }
 
-      // Load DB records
-      const dbShops = await fetchShops();
-      setShops(dbShops);
-      if (dbShops.length > 0) {
-        setSelectedShopId(dbShops[0].id);
+      // Load DB records restricted to the user's shop
+      const userShops = activeUser.shop ? [activeUser.shop] : [];
+      setShops(userShops);
+      if (userShops.length > 0) {
+        setSelectedShopId(userShops[0].id);
       }
 
-      const dbOrders = await fetchOrders();
+      const dbOrders = activeUser.shop ? await fetchOrders(activeUser.shop.id) : [];
       setOrders(dbOrders as Order[]);
 
       // Check URL query parameters for direct tracking search
@@ -142,7 +142,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
     await updateAmanaMilestone(updatingStatusOrder.id, newMilestone);
 
     // Refresh local list state from DB to guarantee data coherence
-    const dbOrders = await fetchOrders();
+    const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
     setOrders(dbOrders as Order[]);
 
     // Reset states
@@ -406,7 +406,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                               note: `order status changed to ${nextStatus}`,
                               order_status: nextStatus
                             });
-                            const dbOrders = await fetchOrders();
+                            const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
                             setOrders(dbOrders as Order[]);
                           }}
                           className="border border-neutral-200 rounded-md px-2.5 py-1 bg-white text-xs font-bold focus:outline-none cursor-pointer capitalize text-neutral-700"

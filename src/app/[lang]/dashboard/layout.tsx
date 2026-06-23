@@ -23,6 +23,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
   const [session, setSession] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [openGroups, setOpenGroups] = useState({ store: true, earnings: false, account: false });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(0);
 
   const t = getDictionary(lang).dashboard;
@@ -108,7 +109,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
 
   return (
     <div className="h-[100dvh] overflow-hidden bg-[#2A1C2C] flex flex-col font-sans antialiased">
-      <header className="h-16 flex items-center justify-between px-6 lg:px-12 flex-shrink-0 w-full">
+      <header className="hidden md:flex h-16 items-center justify-between px-6 lg:px-12 flex-shrink-0 w-full">
         {/* Logo */}
         <div className="flex-shrink-0 w-[200px]">
           <Link className="flex items-center gap-3 hover:opacity-80 transition-opacity" href={`/${lang}`}>
@@ -154,56 +155,84 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
       </header>
       
       <div className="flex-1 flex flex-col overflow-hidden w-full">
-        <div className="flex-1 bg-white arabic-frame flex flex-col md:flex-row overflow-hidden shadow-2xl rounded-2xl md:rounded-none">
+        <div className="flex-1 bg-white flex flex-col md:flex-row overflow-hidden max-md:border-none md:shadow-2xl md:arabic-frame">
           
-          {/* Mobile Nav */}
-          <nav className="md:hidden border-b border-neutral-100 bg-white sticky top-0 z-40">
-            <div className="px-4">
-              <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard`, true))} href={`/${lang}/dashboard`}>
-                  <LayoutDashboard className="w-[18px] h-[18px]" />
-                  <span>{t.overview}</span>
-                </Link>
-                {session.shop && (
-                  <Link 
-                    className="flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-colors whitespace-nowrap border-transparent text-neutral-500 hover:text-black hover:border-gray-200 font-medium" 
-                    href={`/${lang}/shop/${session.shop.slug}`}
-                  >
-                    <Store className="w-[18px] h-[18px]" />
-                    <span>{lang === 'fr' ? 'Ma boutique ↗' : lang === 'ar' ? 'متجري ↗' : 'My Shop ↗'}</span>
-                  </Link>
-                )}
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/products`))} href={`/${lang}/dashboard/products`}>
-                  <Package className="w-[18px] h-[18px]" />
-                  <span>{t.products}</span>
-                </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/orders`))} href={`/${lang}/dashboard/orders`}>
-                  <ShoppingBag className="w-[18px] h-[18px]" />
-                  <span>{t.orders}</span>
-                </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/collections`))} href={`/${lang}/dashboard/collections`}>
-                  <FolderClosed className="w-[18px] h-[18px]" />
-                  <span>{t.collections}</span>
-                </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/promotions`))} href={`/${lang}/dashboard/promotions`}>
-                  <Tag className="w-[18px] h-[18px]" />
-                  <span>{t.promotions}</span>
-                </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/messages`))} href={`/${lang}/dashboard/messages`}>
-                  <MessageSquare className="w-[18px] h-[18px]" />
-                  <span>{t.messages}</span>
-                </Link>
-                <Link className={mobileNavItemClass(isActive(`/${lang}/dashboard/settings`))} href={`/${lang}/dashboard/settings`}>
-                  <Settings className="w-[18px] h-[18px]" />
-                  <span>{t.settings}</span>
-                </Link>
-                <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap border-transparent text-red-500 hover:text-red-700 hover:border-red-200">
-                  <LogOut className="w-[18px] h-[18px]" />
-                  <span>{t.logout}</span>
+          {/* Mobile Bottom Nav */}
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-[60] pb-safe flex justify-around items-center h-[65px]">
+            <Link href={`/${lang}/dashboard`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard`, true) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              <LayoutDashboard className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{t.overview}</span>
+            </Link>
+            <Link href={`/${lang}/dashboard/products`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/products`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              <Package className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{t.products}</span>
+            </Link>
+            <Link href={`/${lang}/dashboard/orders`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/orders`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              <ShoppingBag className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{t.orders}</span>
+            </Link>
+            <button onClick={() => setIsMobileMenuOpen(true)} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isMobileMenuOpen ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              <div className="flex flex-col gap-[3px] items-center justify-center w-5 h-5">
+                <span className="w-4 h-0.5 bg-current rounded-full" />
+                <span className="w-4 h-0.5 bg-current rounded-full" />
+                <span className="w-4 h-0.5 bg-current rounded-full" />
+              </div>
+              <span className="text-[10px] font-medium">{lang === 'fr' ? 'Plus' : lang === 'ar' ? 'المزيد' : 'More'}</span>
+            </button>
+          </nav>
+
+          {/* Mobile "More" Menu Overlay */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden fixed inset-0 z-[70] bg-white flex flex-col animate-in slide-in-from-bottom-full duration-300">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
+                <h2 className="text-xl font-bold">{lang === 'fr' ? 'Plus' : lang === 'ar' ? 'المزيد' : 'More'}</h2>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -mr-2 text-neutral-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
+              <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 pb-[100px]">
+                <div className="space-y-1">
+                  <p className="px-2 text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">{t.myStore}</p>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/collections`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <FolderClosed className="w-5 h-5 text-neutral-400" />
+                    <span>{t.collections}</span>
+                  </Link>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/promotions`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <Tag className="w-5 h-5 text-neutral-400" />
+                    <span>{t.promotions}</span>
+                  </Link>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/messages`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <MessageSquare className="w-5 h-5 text-neutral-400" />
+                    <span>{t.messages}</span>
+                  </Link>
+                </div>
+
+                <div className="space-y-1 border-t border-neutral-100 pt-6">
+                  <p className="px-2 text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">{t.earnings}</p>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/earnings/overview`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <Wallet className="w-5 h-5 text-neutral-400" />
+                    <span>{t.overview}</span>
+                  </Link>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/earnings/credits`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <Wallet className="w-5 h-5 text-neutral-400" />
+                    <span>{t.payouts}</span>
+                  </Link>
+                </div>
+
+                <div className="space-y-1 border-t border-neutral-100 pt-6">
+                  <p className="px-2 text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">{t.account}</p>
+                  <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/settings`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
+                    <Settings className="w-5 h-5 text-neutral-400" />
+                    <span>{t.settings}</span>
+                  </Link>
+                  <button onClick={() => { setIsMobileMenuOpen(false); handleLogout(); }} className="w-full flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-red-600 active:bg-red-50 rounded-xl">
+                    <LogOut className="w-5 h-5" />
+                    <span>{t.logout}</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </nav>
+          )}
 
           {/* Desktop Sidebar */}
           <aside className="hidden md:block w-64 bg-neutral-50/50 border-r border-neutral-200 flex-shrink-0 z-30 overflow-hidden">
@@ -289,7 +318,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
           </aside>
 
           {/* Main Content Area */}
-          <div className="flex-1 min-w-0 overflow-y-auto bg-[#F9F9F9]">
+          <div className="flex-1 min-w-0 overflow-y-auto bg-[#F9F9F9] pb-[65px] md:pb-0">
             {children}
           </div>
 

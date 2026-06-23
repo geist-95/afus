@@ -69,7 +69,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
       </div>
 
       <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-7xl flex-1">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col-reverse lg:flex-row gap-8">
 
           {/* Main Content Column */}
           <div className="flex-1 space-y-8 min-w-0">
@@ -200,7 +200,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               <h3 className="text-xl font-bold tracking-tight mb-1 z-10 text-neutral-800">{shopName}</h3>
               <p className="text-sm text-neutral-500 mb-6 z-10">@{session.shop?.slug || shopName.toLowerCase().replace(/\s+/g, '')}</p>
               
-              <div className="w-full grid grid-cols-3 gap-2 z-10">
+              <div className="w-full grid grid-cols-2 gap-2 z-10">
                 <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
                   <span className="text-lg font-bold text-neutral-800 mb-0.5">{productsCount}</span>
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.products}</span>
@@ -208,10 +208,6 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                 <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
                   <span className="text-lg font-bold text-neutral-800 mb-0.5">{ordersCount}</span>
                   <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.sales}</span>
-                </div>
-                <div className="bg-neutral-50 hover:bg-neutral-100 transition-colors border border-neutral-100 rounded-xl p-3 flex flex-col items-center justify-center">
-                  <span className="text-lg font-bold text-neutral-800 mb-0.5">4.9</span>
-                  <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">{t.stars}</span>
                 </div>
               </div>
 
