@@ -8,7 +8,7 @@ import { getActiveSession, UserSession } from '@/lib/auth';
 import { logoutUser } from '@/lib/auth';
 import { getDictionary } from '@/lib/i18n';
 import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, ArrowLeft, FolderClosed, Store, ChevronDown, Wallet, User, ChevronLeft, ChevronRight, Zap, Tag, MessageSquare } from 'lucide-react';
-import { IconBuildingStore, IconMessage2, IconWallet, IconUser, IconShoppingBag, IconPackage, IconFolder, IconTag, IconSettings, IconLogout, IconChevronDown } from '@tabler/icons-react';
+import { IconBuildingStore, IconMessage2, IconWallet, IconUser, IconShoppingBag, IconPackage, IconFolder, IconTag, IconTagFilled, IconSettings, IconLogout, IconChevronDown, IconLayoutDashboard, IconLayoutDashboardFilled, IconShoppingCart, IconShoppingCartFilled, IconCoin, IconCoinFilled } from '@tabler/icons-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -112,7 +112,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
       <header className="hidden md:flex h-16 items-center justify-between px-6 lg:px-12 flex-shrink-0 w-full">
         {/* Logo */}
         <div className="flex-shrink-0 w-[200px]">
-          <Link className="flex items-center gap-3 hover:opacity-80 transition-opacity" href={`/${lang}`}>
+          <Link prefetch={true} className="flex items-center gap-3 hover:opacity-80 transition-opacity" href={`/${lang}`}>
             <img src="/logo/logo.png" alt="Afus Logo" className="w-8 h-8 object-contain !rounded-none" />
           </Link>
         </div>
@@ -159,27 +159,27 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
           
           {/* Mobile Bottom Nav */}
           <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-[60] pb-safe flex justify-around items-center h-[65px]">
-            <Link href={`/${lang}/dashboard`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard`, true) ? 'text-[#663399]' : 'text-neutral-500'}`}>
-              <LayoutDashboard className="w-5 h-5" />
+            <Link prefetch={true} href={`/${lang}/dashboard`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard`, true) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              {isActive(`/${lang}/dashboard`, true) ? <IconLayoutDashboardFilled className="w-6 h-6" /> : <IconLayoutDashboard className="w-6 h-6" strokeWidth={1.8} />}
               <span className="text-[10px] font-medium">Dashboard</span>
             </Link>
-            <Link href={`/${lang}/dashboard/products`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/products`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
-              <Package className="w-5 h-5" />
+            <Link prefetch={true} href={`/${lang}/dashboard/products`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/products`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              {isActive(`/${lang}/dashboard/products`) ? <IconTagFilled className="w-6 h-6" /> : <IconTag className="w-6 h-6" strokeWidth={1.8} />}
               <span className="text-[10px] font-medium">{t.products}</span>
             </Link>
-            <Link href={`/${lang}/dashboard/orders`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/orders`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
-              <ShoppingBag className="w-5 h-5" />
+            <Link prefetch={true} href={`/${lang}/dashboard/orders`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/orders`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              {isActive(`/${lang}/dashboard/orders`) ? <IconShoppingCartFilled className="w-6 h-6" /> : <IconShoppingCart className="w-6 h-6" strokeWidth={1.8} />}
               <span className="text-[10px] font-medium">{t.orders}</span>
             </Link>
-            <Link href={`/${lang}/dashboard/earnings/overview`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/earnings/overview`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
-              <Wallet className="w-5 h-5" />
+            <Link prefetch={true} href={`/${lang}/dashboard/earnings/overview`} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isActive(`/${lang}/dashboard/earnings/overview`) ? 'text-[#663399]' : 'text-neutral-500'}`}>
+              {isActive(`/${lang}/dashboard/earnings/overview`) ? <IconCoinFilled className="w-6 h-6" /> : <IconCoin className="w-6 h-6" strokeWidth={1.8} />}
               <span className="text-[10px] font-medium">{lang === 'fr' ? 'Gain' : lang === 'ar' ? 'الأرباح' : 'Gain'}</span>
             </Link>
             <button onClick={() => setIsMobileMenuOpen(true)} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${isMobileMenuOpen ? 'text-[#663399]' : 'text-neutral-500'}`}>
-              <div className="flex flex-col gap-[3px] items-center justify-center w-5 h-5">
-                <span className="w-4 h-0.5 bg-current rounded-full" />
-                <span className="w-4 h-0.5 bg-current rounded-full" />
-                <span className="w-4 h-0.5 bg-current rounded-full" />
+              <div className="flex flex-col gap-[3px] items-center justify-center w-6 h-6">
+                <span className={`w-5 h-0.5 bg-current rounded-full transition-all ${isMobileMenuOpen ? 'w-6' : ''}`} />
+                <span className="w-5 h-0.5 bg-current rounded-full" />
+                <span className={`w-5 h-0.5 bg-current rounded-full transition-all ${isMobileMenuOpen ? 'w-6' : ''}`} />
               </div>
               <span className="text-[10px] font-medium">{lang === 'fr' ? 'Plus' : lang === 'ar' ? 'المزيد' : 'More'}</span>
             </button>
@@ -196,6 +196,11 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6 pb-[100px]">
                 <div className="space-y-1">
+                  <Link prefetch={true} onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}`} className="w-full flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl bg-neutral-50 mb-6 border border-neutral-100">
+                    <ArrowLeft className="w-5 h-5 text-neutral-500" />
+                    <span>{t.backToApp}</span>
+                  </Link>
+
                   <p className="px-2 text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">{t.myStore}</p>
                   <Link onClick={() => setIsMobileMenuOpen(false)} href={`/${lang}/dashboard/collections`} className="flex items-center gap-3 px-3 py-3 text-[15px] font-medium text-neutral-700 active:bg-neutral-100 rounded-xl">
                     <FolderClosed className="w-5 h-5 text-neutral-400" />
@@ -313,7 +318,7 @@ export default function DashboardLayout({ children, params }: DashboardLayoutPro
               </nav>
 
               <div className="p-4 border-t border-neutral-200 mt-auto">
-                <Link className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-neutral-600 hover:text-black transition-colors rounded-lg hover:bg-neutral-100" href={`/${lang}`}>
+                <Link prefetch={true} className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-neutral-600 hover:text-black transition-colors rounded-lg hover:bg-neutral-100" href={`/${lang}`}>
                   <ArrowLeft className="w-[18px] h-[18px]" />
                   <span>{t.backToApp}</span>
                 </Link>

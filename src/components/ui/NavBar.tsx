@@ -378,7 +378,10 @@ export default function NavBar({ lang }: NavBarProps) {
                       </Link>
                       {session.role === 'seller' && (
                         <>
-                          <Link href={`/${lang}/dashboard/products`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                          <Link href={`/${lang}/dashboard`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                            <BriefcaseIcon /><span>{t.dashboard}</span>
+                          </Link>
+                          <Link href={`/${lang}/dashboard/products/new`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
                             <PlusIcon /><span>{t.list}</span>
                           </Link>
                           {session.shop && (
@@ -399,6 +402,13 @@ export default function NavBar({ lang }: NavBarProps) {
                 <Link href={`/${lang}/user/${session.id}`} className="md:hidden flex items-center text-black hover:opacity-80">
                   <UserIcon />
                 </Link>
+
+                {/* Dashboard Icon for Shop Owners */}
+                {session.shop && (
+                  <Link href={`/${lang}/dashboard`} className="flex items-center text-black hover:opacity-80 relative" title={t.dashboard}>
+                    <BriefcaseIcon />
+                  </Link>
+                )}
 
                 {/* Notification Bell */}
                 <div className="relative flex items-center" ref={notifRef}>

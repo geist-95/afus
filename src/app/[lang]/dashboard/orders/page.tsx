@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { fetchOrders, fetchShops, updateAmanaMilestone } from '@/lib/supabase';
+import { fetchOrders, fetchShops, updateAmanaMilestone, updateOrderTracking } from '@/lib/supabase';
 import { getActiveSession } from '@/lib/auth';
 import { DashboardPageSkeleton } from '@/components/ui/Skeleton';
 import { FileText, MapPin, Search, CheckCircle2, AlertCircle, X, Navigation, Package, History } from 'lucide-react';
@@ -30,6 +30,7 @@ interface OrderItem {
   variant_sku?: string;
   image_url?: string | null;
   attributes?: Record<string, any>;
+  customization_instructions?: string | null;
 }
 
 interface Order {
@@ -64,18 +65,15 @@ export default function MerchantOrdersPage({ params }: PageProps) {
   const [activeShop, setActiveShop] = useState<any>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [activeTrackingSearch, setActiveTrackingSearch] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState<'orders' | 'clients'>('orders');
   
-  // Modal & Sheet states
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [activeLabelOrder, setActiveLabelOrder] = useState<Order | null>(null);
   const [verifyingPhoneOrder, setVerifyingPhoneOrder] = useState<Order | null>(null);
   const [phoneVerifiedIds, setPhoneVerifiedIds] = useState<string[]>([]);
-  const [updatingStatusOrder, setUpdatingStatusOrder] = useState<Order | null>(null);
+  const [confirmingStatusOrder, setConfirmingStatusOrder] = useState<{order: Order, nextStatus: string} | null>(null);
 
-  // Status update sub-states
-  const [newAmanaStatus, setNewAmanaStatus] = useState<string>('collected');
-  const [newScanLocation, setNewScanLocation] = useState<string>('');
-  const [newScanNote, setNewScanNote] = useState<string>('');
+  // Tracking update state
   const [manualTrackingNum, setManualTrackingNum] = useState<string>('');
 
   // Initial load
@@ -107,13 +105,51 @@ export default function MerchantOrdersPage({ params }: PageProps) {
     checkAuthAndLoad();
   }, [lang, router]);
 
-  // Filter orders by tracking search
+  // Filter orders by tracking search and status
   const filteredOrders = orders.filter((order) => {
+    if (statusFilter !== 'all' && order.order_status !== statusFilter) {
+      return false;
+    }
     if (activeTrackingSearch.trim()) {
       return order.amana_tracking_number.toLowerCase() === activeTrackingSearch.toLowerCase().trim();
     }
     return true;
   });
+
+  // Derived unique clients
+  const uniqueClients = useMemo(() => {
+    const clientsMap: Record<string, any> = {};
+    orders.forEach(order => {
+      // Use phone as the unique identifier for a client
+      const key = order.customer_phone;
+      if (!clientsMap[key]) {
+        clientsMap[key] = {
+          name: order.customer_name,
+          phone: order.customer_phone,
+          city: order.shipping_city,
+          address: order.shipping_address,
+          total_spent: 0,
+          order_count: 0,
+          latest_order_date: order.created_at,
+          items: order.items.map(item => ({
+            product_id: item.product_id,
+            quantity: item.quantity,
+            ...(item.attributes?.note ? { attributes: { note: item.attributes.note } } : {}),
+          })),
+        };
+      }
+      if (order.order_status?.toLowerCase() !== 'cancelled') {
+        clientsMap[key].total_spent += order.total_mad;
+        clientsMap[key].order_count += 1;
+      }
+      // update latest date
+      if (new Date(order.created_at) > new Date(clientsMap[key].latest_order_date)) {
+        clientsMap[key].latest_order_date = order.created_at;
+      }
+    });
+    // Convert to array and sort by latest order date
+    return Object.values(clientsMap).sort((a, b) => new Date(b.latest_order_date).getTime() - new Date(a.latest_order_date).getTime());
+  }, [orders]);
 
   const shopFallback = activeShop || {
     name: 'artisan',
@@ -128,33 +164,36 @@ export default function MerchantOrdersPage({ params }: PageProps) {
     setVerifyingPhoneOrder(null);
   };
 
-  // Add scan milestone to Amana logs
-  const handleAddAmanaMilestone = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!updatingStatusOrder) return;
-
-    const newMilestone = {
-      status: newAmanaStatus,
-      location: newScanLocation || shopFallback.merchant_city,
-      note: newScanNote || `status updated to ${newAmanaStatus.replace('_', ' ')}`,
-      tracking_number: manualTrackingNum || undefined,
-    };
-
-    await updateAmanaMilestone(updatingStatusOrder.id, newMilestone);
-
+  // Inline Tracking Number Save
+  const handleSaveTracking = async (trackingNum: string) => {
+    if (!selectedOrder) return;
+    await updateOrderTracking(selectedOrder.id, trackingNum);
+    
     const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
     setOrders(dbOrders as Order[]);
 
-    // If we're updating the currently viewed order in the sheet, update it there too
-    if (selectedOrder && selectedOrder.id === updatingStatusOrder.id) {
-        const updatedOrder = dbOrders.find(o => o.id === selectedOrder.id);
-        if (updatedOrder) setSelectedOrder(updatedOrder as Order);
-    }
+    // Update the currently viewed order in the sheet
+    const updatedOrder = dbOrders.find((o: Order) => o.id === selectedOrder.id);
+    if (updatedOrder) setSelectedOrder(updatedOrder as Order);
+  };
 
-    setUpdatingStatusOrder(null);
-    setNewScanLocation('');
-    setNewScanNote('');
-    setManualTrackingNum('');
+  // Change Status with confirmation
+  const handleConfirmStatus = async (nextStatus: string) => {
+    if (!selectedOrder) return;
+    await updateAmanaMilestone(selectedOrder.id, {
+      status: selectedOrder.amana_delivery_status,
+      location: shopFallback.merchant_city,
+      note: `order status changed to ${nextStatus}`,
+      order_status: nextStatus,
+      skip_history: true
+    });
+    const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
+    setOrders(dbOrders as Order[]);
+
+    const updatedOrder = dbOrders.find((o: Order) => o.id === selectedOrder.id);
+    if (updatedOrder) setSelectedOrder(updatedOrder as Order);
+    
+    setConfirmingStatusOrder(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -162,6 +201,7 @@ export default function MerchantOrdersPage({ params }: PageProps) {
         case 'delivered': return 'bg-green-100 text-green-800 hover:bg-green-100';
         case 'shipped': return 'bg-blue-100 text-blue-800 hover:bg-blue-100';
         case 'returned': return 'bg-red-100 text-red-800 hover:bg-red-100';
+        case 'cancelled': return 'bg-neutral-100 text-neutral-600 hover:bg-neutral-100 border border-neutral-200';
         default: return 'bg-amber-100 text-amber-800 hover:bg-amber-100';
     }
   };
@@ -264,55 +304,89 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-neutral-50/30">
-      {/* Title */}
-      <div className="border-b border-neutral-200 bg-white px-6 py-4 flex flex-col md:flex-row md:items-center justify-between shrink-0 gap-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
-            {t.consoleTitle}
-          </h1>
-          <p className="text-xs text-neutral-500 mt-0.5">{t.subtitle}</p>
+      {/* Title & Tabs Section (White Background) */}
+      <div className="border-b border-neutral-200 bg-white flex flex-col">
+        <div className="px-6 py-4 flex flex-col md:flex-row md:items-center justify-between shrink-0 gap-4 border-b border-neutral-100">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-neutral-800 capitalize">
+              {t.consoleTitle}
+            </h1>
+            <p className="text-xs text-neutral-500 mt-0.5">{t.subtitle}</p>
+          </div>
+        </div>
+
+        {/* Full Width Tabs */}
+        <div className="flex w-full">
+          <button 
+            onClick={() => setActiveTab('orders')}
+            className={`flex-1 text-sm font-semibold py-3 border-b-2 transition-colors ${activeTab === 'orders' ? 'border-black text-black' : 'border-transparent text-neutral-500 hover:text-black'}`}
+          >
+            Orders
+          </button>
+          <button 
+            onClick={() => setActiveTab('clients')}
+            className={`flex-1 text-sm font-semibold py-3 border-b-2 transition-colors ${activeTab === 'clients' ? 'border-black text-black' : 'border-transparent text-neutral-500 hover:text-black'}`}
+          >
+            Clients
+          </button>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-6 md:px-8 md:py-8 max-w-6xl flex-1 space-y-8">
-        {/* Global Tracking Lookup Input */}
-        <div className="p-4 bg-white rounded-xl border border-neutral-200 shadow-sm flex flex-col md:flex-row gap-4 items-stretch md:items-center">
-          <div className="flex items-center gap-2 text-neutral-700 flex-shrink-0">
-            <Search className="w-4 h-4" />
-            <span className="font-semibold text-sm">Search Tracking Registry:</span>
-          </div>
-          <input
-            type="text"
-            value={activeTrackingSearch}
-            onChange={(e) => setActiveTrackingSearch(e.target.value)}
-            placeholder={t.searchPlaceholder}
-            className="w-full md:flex-1 border border-neutral-200 p-2 bg-neutral-50 focus:bg-white focus:border-neutral-300 focus:outline-none rounded-lg text-sm transition-all placeholder-neutral-400"
-          />
-          {activeTrackingSearch && (
-            <button
-              onClick={() => setActiveTrackingSearch('')}
-              className="w-full md:w-auto bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-black px-4 py-2 rounded-lg transition-colors font-medium text-sm"
-            >
-              {t.clearSearch}
-            </button>
-          )}
-        </div>
+
+        {activeTab === 'orders' ? (
+          <>
+            <div className="flex flex-row gap-3 mb-6">
+              {/* Global Tracking Lookup Input */}
+              <div className="relative flex items-center w-full md:flex-1">
+                <Search className="w-4 h-4 absolute left-3 text-neutral-400" />
+                <input
+                  type="text"
+                  value={activeTrackingSearch}
+                  onChange={(e) => setActiveTrackingSearch(e.target.value)}
+                  placeholder={t.searchPlaceholder}
+                  className="w-full border border-neutral-200 py-2.5 pl-9 pr-4 bg-white focus:border-neutral-300 focus:outline-none rounded-xl text-sm transition-all placeholder-neutral-400"
+                />
+                {activeTrackingSearch && (
+                  <button
+                    onClick={() => setActiveTrackingSearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-neutral-100 hover:bg-neutral-200 px-2 py-1 rounded text-neutral-600 transition-colors font-medium"
+                  >
+                    {t.clearSearch}
+                  </button>
+                )}
+              </div>
+              
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="border border-neutral-200 py-2.5 px-4 pr-8 bg-white focus:border-neutral-300 focus:outline-none rounded-xl text-sm transition-all md:w-48 appearance-none"
+                style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
+              >
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="returned">Returned</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
 
         {/* View 1: The Order Card (Overview) */}
         {filteredOrders.length === 0 ? (
-          <div className="rounded-xl border border-neutral-200 p-8 md:p-12 text-center text-neutral-400 bg-white shadow-sm">
+          <div className="rounded-xl border border-neutral-200 p-8 md:p-12 text-center text-neutral-400 bg-white">
             {t.emptyOrders}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredOrders.map((order) => {
               return (
-                <Card key={order.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                <Card key={order.id} className="overflow-hidden border-neutral-200 hover:border-neutral-300 transition-colors">
                   <CardHeader className="pb-3 border-b bg-neutral-50/50">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-xs text-neutral-500 mb-1">{t.orderId}</p>
-                        <CardTitle className="text-sm font-mono tracking-tight">{order.id.substring(0,8)}</CardTitle>
+                        <CardTitle className="text-sm font-mono tracking-tight mt-1">{order.id.substring(0,8)}</CardTitle>
                       </div>
                       <select
                         value={order.order_status}
@@ -335,27 +409,55 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                         <option value="shipped">Shipped</option>
                         <option value="delivered">Delivered</option>
                         <option value="returned">Returned</option>
+                        <option value="cancelled">Cancelled</option>
                       </select>
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-4 pb-2 space-y-4">
+                  <CardContent className="pt-3 pb-2 space-y-4">
                     <div className="flex justify-between items-start gap-2">
                         <div className="space-y-1">
                             <p className="text-sm font-semibold">{order.customer_name}</p>
-                            <div className="flex items-center text-xs text-neutral-500 gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {order.shipping_city}
+                            <p className="text-xs text-neutral-600">{order.customer_phone}</p>
+                            <div className="flex items-start text-xs text-neutral-500 gap-1 mt-1">
+                                <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
+                                <span className="line-clamp-2 leading-relaxed">{order.shipping_address}, {order.shipping_city}</span>
                             </div>
-                        </div>
-                        {/* Mini Map Placeholder */}
-                        <div className="w-16 h-12 bg-neutral-100 rounded border flex items-center justify-center overflow-hidden shrink-0 relative">
-                            <div className="absolute inset-0 bg-blue-50/50 opacity-50"></div>
-                            <MapPin className="w-4 h-4 text-red-500 z-10" />
-                            <div className="absolute bottom-1 text-[8px] font-medium z-10">{order.shipping_city}</div>
                         </div>
                     </div>
                     
                     <Separator />
+                    
+                    <div className="space-y-3">
+                      {order.items.map((item, idx) => (
+                        <div key={idx} className="flex gap-3 items-center">
+                          {item.image_url ? (
+                            <img src={item.image_url} alt={item.title} className="w-10 h-10 rounded object-cover bg-neutral-100 shrink-0 border border-neutral-200" />
+                          ) : (
+                            <div className="w-10 h-10 rounded bg-neutral-100 flex items-center justify-center shrink-0 border border-neutral-200">
+                              <Package className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-neutral-900 truncate">{item.title}</p>
+                            <p className="text-xs text-neutral-500">Qty: {item.quantity}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Separator />
+
+                    {/* Customization Notes */}
+                    {order.items.some(item => item.attributes?.note) && (
+                      <div className="flex flex-col gap-1">
+                        {order.items.filter(item => item.attributes?.note).map((item, i) => (
+                          <div key={i} className="flex items-start gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-2.5 py-1.5">
+                            <span className="shrink-0 mt-0.5">✏️</span>
+                            <span><span className="font-semibold">{item.customization_instructions || 'Sur commande'}:</span> {item.attributes!.note}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     
                     <div className="flex justify-between items-center text-sm">
                         <div className="text-neutral-500">
@@ -381,9 +483,42 @@ export default function MerchantOrdersPage({ params }: PageProps) {
             })}
           </div>
         )}
+          </>
+        ) : (
+          <div className="space-y-4">
+            {uniqueClients.map((client, idx) => (
+              <div key={idx} className="bg-white rounded-xl border border-neutral-200 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:border-neutral-300">
+                <div className="space-y-1.5">
+                  <h3 className="font-bold text-lg text-neutral-900">{client.name}</h3>
+                  <div className="text-sm text-neutral-500 flex flex-wrap items-center gap-x-4 gap-y-2">
+                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {client.city}</span>
+                    <span className="flex items-center gap-1">📞 {client.phone}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-8 text-sm text-neutral-600 bg-neutral-50 px-6 py-3 rounded-lg border border-neutral-100">
+                  <div className="text-center">
+                    <p className="font-bold text-black text-base">{client.order_count}</p>
+                    <p className="text-xs uppercase tracking-wider mt-0.5">Orders</p>
+                  </div>
+                  <div className="w-px h-8 bg-neutral-200"></div>
+                  <div className="text-center">
+                    <p className="font-bold text-black text-base">{client.total_spent} <span className="text-xs text-neutral-500">MAD</span></p>
+                    <p className="text-xs uppercase tracking-wider mt-0.5">Total Spent</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {uniqueClients.length === 0 && (
+              <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden p-8 text-center text-neutral-500">
+                <h3 className="font-bold text-lg text-black mb-2">No Clients Yet</h3>
+                <p className="text-sm">When you receive orders, your clients will automatically appear here.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* View 2: The Detailed Order Sheet */}
+        {/* View 2: The Detailed Order Drawer (Sheet) */}
       <Sheet open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
         <SheetContent side="bottom" className="w-full sm:max-w-xl md:max-w-2xl mx-auto max-h-[85vh] h-full rounded-t-3xl border-t p-0 flex flex-col bg-neutral-50 overflow-hidden outline-none">
           {selectedOrder && (
@@ -411,48 +546,29 @@ export default function MerchantOrdersPage({ params }: PageProps) {
 
               {/* Sheet Body */}
               <div className="p-6 space-y-8 flex-1 overflow-y-auto">
-                {/* Status Updater */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{t.status}</label>
-                  <Select
-                    value={selectedOrder.order_status}
-                    onValueChange={async (value) => {
-                      await updateAmanaMilestone(selectedOrder.id, {
-                        status: selectedOrder.amana_delivery_status,
-                        location: shopFallback.merchant_city,
-                        note: `order status changed to ${value}`,
-                        order_status: value,
-                        skip_history: true
-                      });
-                      const dbOrders = activeShop ? await fetchOrders(activeShop.id) : [];
-                      setOrders(dbOrders as Order[]);
-                      const updatedOrder = dbOrders.find(o => o.id === selectedOrder.id);
-                      if (updatedOrder) setSelectedOrder(updatedOrder as Order);
-                    }}
-                  >
-                    <SelectTrigger className="w-full font-bold">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="shipped">Shipped</SelectItem>
-                      <SelectItem value="delivered">Delivered</SelectItem>
-                      <SelectItem value="returned">Returned</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
 
                 {/* Logistics Timeline */}
                 <Card>
-                    <CardHeader className="pb-3 border-b">
+                    <CardHeader className="pb-3 border-b flex flex-row items-center justify-between space-y-0">
                         <CardTitle className="text-base flex items-center gap-2">
                             <History className="w-4 h-4" />
                             {t.historyTitle}
                         </CardTitle>
+                        <div className="flex items-center gap-2">
+                            <input 
+                              type="text" 
+                              placeholder="AM...MA" 
+                              value={manualTrackingNum} 
+                              onChange={(e) => setManualTrackingNum(e.target.value)} 
+                              className="w-[140px] border border-neutral-200 p-1.5 text-xs bg-white rounded focus:border-neutral-400 focus:outline-none" 
+                            />
+                            <button onClick={() => handleSaveTracking(manualTrackingNum)} className="bg-black text-white px-3 py-1.5 text-xs rounded font-semibold hover:bg-neutral-800 transition-colors">
+                                Save
+                            </button>
+                        </div>
                     </CardHeader>
                     <CardContent className="pt-5 space-y-5">
-                        {selectedOrder.amana_history.map((log, index) => (
+                        {selectedOrder.amana_history.filter((log, index, self) => index === self.findIndex((t) => (t.status === log.status && t.timestamp === log.timestamp))).map((log, index) => (
                             <div key={index} className="relative pl-6 pb-2 border-l border-neutral-200 last:border-0 last:pb-0">
                                 <div className="absolute w-3 h-3 bg-white border-2 border-primary rounded-full left-[-6.5px] top-1"></div>
                                 <div className="flex justify-between items-start mb-1">
@@ -489,12 +605,22 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                                         <p className="text-sm font-medium text-neutral-900 leading-snug">{item.title}</p>
                                         {item.variant_sku && <p className="text-xs text-neutral-500 uppercase mt-1">SKU: {item.variant_sku}</p>}
                                         {item.attributes && Object.keys(item.attributes).length > 0 && (
-                                            <div className="mt-1.5 flex flex-wrap gap-1">
-                                                {Object.entries(item.attributes).map(([key, val]) => (
-                                                    <span key={key} className="text-[10px] text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-full border border-neutral-200">
-                                                        <span className="font-semibold capitalize">{key}:</span> {String(val)}
-                                                    </span>
-                                                ))}
+                                            <div className="mt-2 flex flex-col gap-1.5">
+                                                {item.attributes.note && (
+                                                    <div className="flex items-start gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-2.5 py-1.5">
+                                                        <span className="shrink-0 mt-0.5">✏️</span>
+                                                        <span><span className="font-semibold">{item.customization_instructions || 'Sur commande'}:</span> {item.attributes.note}</span>
+                                                    </div>
+                                                )}
+                                                {Object.entries(item.attributes).filter(([k]) => k !== 'note').length > 0 && (
+                                                    <div className="flex flex-wrap gap-1">
+                                                        {Object.entries(item.attributes).filter(([k]) => k !== 'note').map(([key, val]) => (
+                                                            <span key={key} className="text-[10px] text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-full border border-neutral-200">
+                                                                <span className="font-semibold capitalize">{key}:</span> {String(val)}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
@@ -570,134 +696,50 @@ export default function MerchantOrdersPage({ params }: PageProps) {
                         {t.verifyBtn}
                     </button>
                 )}
-                <button
-                  onClick={() => {
-                    setUpdatingStatusOrder(selectedOrder);
-                    setManualTrackingNum(selectedOrder.amana_tracking_number);
-                  }}
-                  disabled={selectedOrder.order_status === 'delivered'}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 px-4 py-2 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
-                >
-                  <MapPin className="w-4 h-4" />
-                  {t.milestoneBtn}
-                </button>
-                <button
-                  onClick={() => setActiveLabelOrder(selectedOrder)}
-                  className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-black hover:bg-neutral-800 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
-                >
-                  <FileText className="w-4 h-4" />
-                  {t.labelBtn}
-                </button>
+                {selectedOrder.order_status === 'pending' && (
+                    <button
+                        onClick={() => setConfirmingStatusOrder({ order: selectedOrder, nextStatus: 'confirmed' })}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-black hover:bg-neutral-800 text-white px-6 py-2.5 text-sm font-bold rounded-lg transition-colors"
+                    >
+                        Mark as Confirmed
+                    </button>
+                )}
+                {selectedOrder.order_status === 'confirmed' && (
+                    <button
+                        onClick={() => setConfirmingStatusOrder({ order: selectedOrder, nextStatus: 'shipped' })}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 text-sm font-bold rounded-lg transition-colors"
+                    >
+                        Mark as Shipped
+                    </button>
+                )}
+                {selectedOrder.order_status === 'shipped' && (
+                    <button
+                        onClick={() => setConfirmingStatusOrder({ order: selectedOrder, nextStatus: 'delivered' })}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-bold rounded-lg transition-colors"
+                    >
+                        Mark as Delivered
+                    </button>
+                )}
+                {selectedOrder.order_status !== 'cancelled' && selectedOrder.order_status !== 'delivered' && (
+                    <button
+                        onClick={() => setConfirmingStatusOrder({ order: selectedOrder, nextStatus: 'cancelled' })}
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white hover:bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 text-sm font-bold rounded-lg transition-colors"
+                    >
+                        Cancel Order
+                    </button>
+                )}
               </div>
             </>
           )}
         </SheetContent>
       </Sheet>
 
-      {/* MODAL 1: Barid Bank Amana shipping routing label */}
-      {activeLabelOrder && (
-        <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4">
-          <div className="bg-white border-2 border-black max-w-2xl w-full p-8 space-y-6 rounded-none relative">
-            <button
-              onClick={() => setActiveLabelOrder(null)}
-              className="absolute top-4 right-4 text-lg hover:underline cursor-pointer"
-            >
-              ✕ close
-            </button>
-
-            {/* Label contents */}
-            <div className="border-4 border-black p-4 space-y-6">
-              {/* Header block */}
-              <div className="grid grid-cols-3 border-b-4 border-black pb-4 items-center">
-                <div className="text-left font-bold text-base leading-tight">
-                  AL BARID BANK
-                  <span className="block text-xs font-normal">amana express</span>
-                </div>
-                <div className="text-center font-bold text-lg">
-                  C.O.D
-                  <span className="block text-xs uppercase tracking-widest font-mono bg-black text-white px-2 py-0.5 mt-1">
-                    payment on delivery
-                  </span>
-                </div>
-                <div className="text-right text-[10px] font-mono">
-                  LABEL NO: {activeLabelOrder.id.substring(0, 8)}
-                  <span className="block font-bold mt-1 text-xs">{activeLabelOrder.amana_tracking_number}</span>
-                </div>
-              </div>
-
-              {/* Barcode Mock */}
-              <div className="border border-black py-4 bg-white flex flex-col items-center justify-center space-y-1">
-                <div className="h-10 w-4/5 flex gap-1 items-stretch">
-                  {Array.from({ length: 64 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="bg-black"
-                      style={{
-                        width: `${Math.max(1, Math.floor(Math.sin(i * 1.5) * 2) + 2)}px`,
-                        opacity: i % 3 === 0 ? 0 : 1,
-                      }}
-                    ></div>
-                  ))}
-                </div>
-                <span className="font-mono text-xs tracking-[6px] font-bold mt-1">
-                  {activeLabelOrder.amana_tracking_number}
-                </span>
-              </div>
-
-              {/* Sender & Receiver Address Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-black border-y border-black font-mono text-xs">
-                <div className="p-3 space-y-2">
-                  <span className="font-bold block text-neutral-500 uppercase tracking-widest">{t.labelSender}</span>
-                  <div>
-                    <strong className="block text-sm">{shopFallback.name}</strong>
-                    <span>ICE: {shopFallback.ice_number}</span>
-                    <span className="block text-neutral-600 mt-1">{shopFallback.pickup_address_street}</span>
-                    <span className="block font-bold mt-1">node origin: {shopFallback.merchant_city}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 space-y-2">
-                  <span className="font-bold block text-neutral-500 uppercase tracking-widest">{t.labelReceiver}</span>
-                  <div>
-                    <strong className="block text-sm">{activeLabelOrder.customer_name}</strong>
-                    <span>TEL: {activeLabelOrder.customer_phone}</span>
-                    <span className="block text-neutral-600 mt-1">{activeLabelOrder.shipping_address}</span>
-                    <span className="block font-bold mt-1">node destination: {activeLabelOrder.shipping_city}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Money section */}
-              <div className="bg-black text-white p-4 flex justify-between items-center border border-black">
-                <div className="font-mono">
-                  <span className="text-[10px] text-neutral-400 block uppercase">collect total amount</span>
-                  <span className="font-bold text-xl tracking-wider">{activeLabelOrder.total_mad} {t.totalMad}</span>
-                </div>
-                <div className="text-right text-[10px] font-mono max-w-[200px] lowercase text-neutral-300">
-                  {t.labelInstructions}
-                </div>
-              </div>
-            </div>
-
-            {/* Print action trigger */}
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  if (typeof window !== 'undefined') window.print();
-                }}
-                className="bg-black text-white hover:bg-neutral-800 border border-black font-bold uppercase tracking-wider py-2.5 px-6 rounded-none cursor-pointer"
-              >
-                🖨️ print label
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* (Label Modal removed) */}
 
       {/* MODAL 2: SMS Verification Trigger */}
       {verifyingPhoneOrder && (
         <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
+          <div className="bg-white rounded-xl border border-neutral-200 max-w-md w-full p-6 space-y-5">
             <div className="flex items-center gap-3 border-b border-neutral-100 pb-4">
               <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-5 h-5 text-blue-500" />
@@ -734,81 +776,37 @@ export default function MerchantOrdersPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* MODAL 3: Update Amana delivery checkpoint */}
-      {updatingStatusOrder && (
+      {/* MODAL 3: Confirm Status Change */}
+      {confirmingStatusOrder && (
         <div className="fixed inset-0 bg-black/60 z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-5">
+          <div className="bg-white rounded-xl border border-neutral-200 max-w-md w-full p-6 space-y-5">
             <div className="flex justify-between items-center border-b border-neutral-100 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-neutral-700" />
-                </div>
-                <h3 className="font-bold text-lg text-neutral-900 capitalize">{t.milestoneModalTitle}</h3>
-              </div>
-              <button onClick={() => setUpdatingStatusOrder(null)} className="text-neutral-400 hover:text-black transition-colors">
+              <h3 className="font-bold text-lg text-neutral-900 capitalize">
+                {lang === 'fr' ? 'Confirmer le statut' : lang === 'ar' ? 'تأكيد الحالة' : 'Confirm Status Change'}
+              </h3>
+              <button onClick={() => setConfirmingStatusOrder(null)} className="text-neutral-400 hover:text-black transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
+            
+            <p className="text-sm text-neutral-600">
+              {lang === 'fr' ? 'Êtes-vous sûr de vouloir marquer cette commande comme' : lang === 'ar' ? 'هل أنت متأكد من تغيير الحالة إلى' : 'Are you sure you want to mark this order as'} <strong className="capitalize text-black">{confirmingStatusOrder.nextStatus}</strong>? {lang === 'fr' ? 'Cette action est irréversible.' : 'This action cannot be reversed.'}
+            </p>
 
-            <form onSubmit={handleAddAmanaMilestone} className="space-y-4 text-sm">
-              <div className="space-y-1.5">
-                <label className="block font-medium text-neutral-700">{t.deliveryStatus}</label>
-                <select
-                  value={newAmanaStatus}
-                  onChange={(e) => setNewAmanaStatus(e.target.value)}
-                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
-                >
-                  <option value="collected">Collected - Picked up from workshop</option>
-                  <option value="in_transit">In Transit - Scanning center transfer</option>
-                  <option value="out_for_delivery">Out for Delivery - Courier allocated</option>
-                  <option value="delivered">Delivered - Paid cash collected</option>
-                  <option value="delivery_failed">Delivery Failed - Customer unavailable</option>
-                  <option value="returned_to_sender">Returned to Sender</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block font-medium text-neutral-700">{t.trackingOverride}</label>
-                <input
-                  type="text"
-                  value={manualTrackingNum}
-                  onChange={(e) => setManualTrackingNum(e.target.value)}
-                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block font-medium text-neutral-700">{t.milestoneLocation}</label>
-                <input
-                  type="text"
-                  required
-                  value={newScanLocation}
-                  onChange={(e) => setNewScanLocation(e.target.value)}
-                  placeholder="e.g. Rabat Principal Sorting Center"
-                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block font-medium text-neutral-700">{t.milestoneNote}</label>
-                <input
-                  type="text"
-                  value={newScanNote}
-                  onChange={(e) => setNewScanNote(e.target.value)}
-                  placeholder="e.g. Sorted into local distribution bin"
-                  className="w-full border border-neutral-200 p-2.5 bg-white rounded-lg focus:border-neutral-400 focus:outline-none transition-colors"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  className="w-full bg-black text-white hover:bg-neutral-800 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  {t.milestoneSave}
-                </button>
-              </div>
-            </form>
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setConfirmingStatusOrder(null)}
+                className="px-4 py-2 text-sm font-semibold text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleConfirmStatus(confirmingStatusOrder.nextStatus)}
+                className="bg-black hover:bg-neutral-800 text-white px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}

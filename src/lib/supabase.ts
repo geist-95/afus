@@ -170,6 +170,7 @@ export async function fetchOrders(shopId?: string, buyerId?: string) {
       variant_sku: oi.variant_id,
       image_url: oi.products?.media_gallery?.[0] || null,
       attributes: oi.attributes || {},
+      customization_instructions: oi.products?.metadata?.personalization?.instructions || null,
     })),
   }));
 }
@@ -203,6 +204,16 @@ export async function updateAmanaMilestone(orderId: string, milestone: any) {
     updates.amana_history = [newHistoryEntry, ...history];
   }
   if (milestone.tracking_number) updates.amana_tracking_number = milestone.tracking_number;
+  const { error } = await supabase.from('orders').update(updates).eq('id', orderId);
+  if (error) throw error;
+  return true;
+}
+
+export async function updateOrderTracking(orderId: string, trackingNumber: string, trackingHistory?: any[], amanaStatus?: string) {
+  const updates: any = { amana_tracking_number: trackingNumber };
+  if (trackingHistory) updates.amana_history = trackingHistory;
+  if (amanaStatus) updates.amana_delivery_status = amanaStatus;
+  
   const { error } = await supabase.from('orders').update(updates).eq('id', orderId);
   if (error) throw error;
   return true;

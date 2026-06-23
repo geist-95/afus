@@ -25,23 +25,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const translations = {
     en: {
-      titlePlain: "Authentic Moroccan Artisan Marketplace",
-      description: "Buy handmade Moroccan rugs, ceramics, leather goods, and zellige tiles directly from Marrakech, Fez, and Rabat artisans. Secure Cash on Delivery (COD) shipping.",
+      titlePlain: "Afus - Shop authentic, handmade, and unique Moroccan artisan crafts",
+      description: "Shop on Afus. Find handmade Moroccan rugs, ceramics, leather goods, and zellige directly from artisans in Morocco.",
       keywords: "moroccan rug, berber carpet, zellige tile, moroccan crafts, fez leather, marrakech artisan, buy direct morocco, amana shipping, cod morocco"
     },
     fr: {
-      titlePlain: "Marché Artisanal Marocain Authentique",
-      description: "Achetez des tapis berbères, céramiques, articles en cuir et zelliges faits main directement aux artisans de Marrakech, Fès et Rabat. Paiement à la livraison sécurisé via Amana.",
+      titlePlain: "Afus - Achetez des produits artisanaux marocains authentiques, faits main et uniques",
+      description: "Acheter sur Afus. Trouvez des tapis marocains, des céramiques, du cuir et des zelliges faits main directement par les artisans du Maroc.",
       keywords: "tapis marocain, tapis berbere, zellige marocain, artisanat marocain, cuir de fes, artisan marrakech, achat direct maroc, livraison amana, paiement a la livraison"
     },
     ar: {
-      titlePlain: "سوق الحرف اليدوية المغربية الأصيلة",
-      description: "اشترِ السجاد المغربي، السيراميك، المنتجات الجلدية، والزليج المصنوع يدويًا مباشرة من حرفيي مراكش، فاس، والرباط. دفع آمن عند الاستلام مع شحن أمانة.",
+      titlePlain: "Afus - تسوق منتجات يدوية مغربية أصلية وفريدة من نوعها",
+      description: "تسوق على Afus. اعثر على السجاد المغربي والسيراميك والجلديات والزليج المصنوع يدويًا مباشرة من الحرفيين في المغرب.",
       keywords: "سجاد مغربي, سجاد بربري, زليج مغربي, صناعة تقليدية, جلد فاس, حرفي مراكش, شراء مباشر المغرب, شحن أمانة, الدفع عند الاستلام"
     },
     tz: {
-      titlePlain: "ⴰⴷⵖⴰⵔ ⵏ ⵜⵎⴳⵓⵔⵉ ⵜⴰⵎⵖⵔⵉⴱⵉⵜ",
-      description: "ⴰⴼ ⴷ ⵥⵕ ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵉⴼⴰⵙⵙⵏ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⵉⵎⵖⵔⵉⴱⵉⵢⵏ ⵙ ⵓⴼⵓⵙ.",
+      titlePlain: "Afus - ⵙⵖ ⵜⵉⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵉⴼⴰⵙⵙⵏ ⵜⵉⵎⵖⵔⵉⴱⵉⵢⵉⵏ ⵜⵉⵎⴰⵢⵏⵓⵜⵉⵏ",
+      description: "ⵙⵖ ⴳ Afus. ⴰⴼ ⴷ ⵉⵥⵕⴱⴰⵢ, ⵉⵇⵇⵛⴰⴱⵏ, ⴰⴳⵍⵉⵎ ⴷ ⵣⵣⵍⵍⵉⵊ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴳ ⵍⵎⵖⵔⵉⴱ.",
       keywords: "ⵉⵎⴳⵓⵔⵉⵢⵏ, ⵉⵥⵕⴱⴰⵢ, ⵣⵣⵍⵍⵉⵊ, ⵜⴰⵎⴳⵓⵔⵉ"
     }
   };

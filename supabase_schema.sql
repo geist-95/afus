@@ -404,7 +404,7 @@ DECLARE
     v_initial_history JSONB;
 BEGIN
     -- Step 1: Pre-process and group items by shop
-    FOR v_item IN SELECT * FROM jsonb_to_recordset(p_items) AS x(product_id UUID, variant_id UUID, quantity INT) LOOP
+    FOR v_item IN SELECT * FROM jsonb_to_recordset(p_items) AS x(product_id UUID, variant_id UUID, quantity INT, attributes JSONB) LOOP
         -- Retrieve the product's shop and price
         SELECT shop_id, base_price_mad INTO v_shop_id, v_product_price 
         FROM products WHERE id = v_item.product_id;
@@ -449,7 +449,8 @@ BEGIN
                 'product_id', v_item.product_id,
                 'variant_id', v_item.variant_id,
                 'quantity', v_item.quantity,
-                'price_mad', v_final_item_price
+                'price_mad', v_final_item_price,
+                'attributes', COALESCE(v_item.attributes, '{}'::jsonb)
             ),
             true
         );
@@ -492,11 +493,12 @@ BEGIN
         RETURNING id INTO v_order_id;
 
         -- Insert order items
-        FOR v_item IN SELECT * FROM jsonb_to_recordset(v_shop_items->v_shop_id::TEXT) AS y(product_id UUID, variant_id UUID, quantity INT, price_mad NUMERIC) LOOP
+        FOR v_item IN SELECT * FROM jsonb_to_recordset(v_shop_items->v_shop_id::TEXT) AS y(product_id UUID, variant_id UUID, quantity INT, price_mad NUMERIC, attributes JSONB) LOOP
             INSERT INTO order_items (
-                order_id, product_id, variant_id, quantity, price_mad
+                order_id, product_id, variant_id, quantity, price_mad, attributes
             ) VALUES (
-                v_order_id, v_item.product_id, v_item.variant_id, v_item.quantity, v_item.price_mad
+                v_order_id, v_item.product_id, v_item.variant_id, v_item.quantity, v_item.price_mad,
+                CASE WHEN v_item.attributes IS NOT NULL AND v_item.attributes <> '{}'::jsonb THEN v_item.attributes ELSE NULL END
             );
             
             -- Deduct stock

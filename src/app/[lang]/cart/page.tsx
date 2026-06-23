@@ -191,6 +191,7 @@ export default function CartPage({ params }: CartPageProps) {
           product_id: item.product_id,
           variant_id: item.variant_id,
           quantity: item.quantity,
+          ...(item.customizationText ? { attributes: { note: item.customizationText } } : {}),
         })),
       };
 

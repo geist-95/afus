@@ -33,7 +33,8 @@ export async function placeCODCheckoutServer(checkoutData: any) {
 
       if (orders) {
         for (const order of orders) {
-          const ownerId = order.shops?.owner_id;
+          const shopData = Array.isArray(order.shops) ? order.shops[0] : order.shops;
+          const ownerId = (shopData as any)?.owner_id;
           if (ownerId) {
             // 1. In-App Notification
             await supabaseAdmin.from('notifications').insert({

@@ -18,6 +18,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
   const [productsCount, setProductsCount] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
   const [revenue, setRevenue] = useState(0);
+  const [rating, setRating] = useState({ score: 0, count: 0 });
   const [authLoading, setAuthLoading] = useState(true);
   const t = getDictionary(lang).dashboard;
 
@@ -35,11 +36,27 @@ export default function DashboardPage({ params }: DashboardPageProps) {
         // Load real orders count and revenue
         try {
           const shopOrders = await fetchOrders(user.shop.id);
-          setOrdersCount(shopOrders.length);
-          const total = shopOrders.reduce((acc: number, o: any) => acc + (o.total_mad || o.subtotal_mad || 0), 0);
+          const activeOrders = shopOrders.filter((o: any) => o.status?.toLowerCase() !== 'cancelled');
+          setOrdersCount(activeOrders.length);
+          const total = activeOrders.reduce((acc: number, o: any) => acc + (o.total_mad || o.subtotal_mad || 0), 0);
           setRevenue(total);
         } catch (e) {
           console.warn('Failed to load orders for dashboard stats:', e);
+        }
+
+        // Load reviews
+        try {
+          const { fetchShopReviews } = await import('@/lib/supabase');
+          const shopReviews = await fetchShopReviews(user.shop.id);
+          if (shopReviews.length > 0) {
+            const avg = shopReviews.reduce((acc: number, r: any) => acc + (r.rating || 5), 0) / shopReviews.length;
+            setRating({ score: avg, count: shopReviews.length });
+          } else {
+            setRating({ score: 0, count: 0 });
+          }
+        } catch (e) {
+          console.warn('Failed to load reviews:', e);
+          setRating({ score: 0, count: 0 });
         }
       }
       setAuthLoading(false);
@@ -201,8 +218,8 @@ export default function DashboardPage({ params }: DashboardPageProps) {
                 </div>
                 {/* User Avatar (Circle Overlapping) */}
                 <div className="absolute -bottom-1 -right-2 w-10 h-10 rounded-full border-[3px] border-white bg-neutral-200 overflow-hidden flex items-center justify-center shadow-sm">
-                  {session.user_metadata?.avatar_url ? (
-                    <img src={session.user_metadata.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
+                  {session.avatar_url ? (
+                    <img src={session.avatar_url} alt="User Avatar" className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-sm font-bold text-neutral-600">{shopName.charAt(0).toUpperCase()}</span>
                   )}
@@ -215,7 +232,7 @@ export default function DashboardPage({ params }: DashboardPageProps) {
               
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-neutral-600 font-medium w-full mt-1">
                 <span className="flex items-center text-black font-bold">
-                  <Star className="w-4 h-4 mr-1 fill-black" /> 4.9 <span className="font-normal text-neutral-500 ml-1">(120)</span>
+                  <Star className="w-4 h-4 mr-1 fill-black" /> {rating.count > 0 ? rating.score.toFixed(1) : '-'} <span className="font-normal text-neutral-500 ml-1">({rating.count})</span>
                 </span>
                 <span className="text-neutral-300">|</span>
                 <span>{ordersCount} {lang === 'fr' ? 'ventes' : lang === 'ar' ? 'مبيعات' : 'sales'}</span>

@@ -19,20 +19,21 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const shopName = resolvedSearchParams.s || "Traditional Artisan";
 
   const descriptions = {
-    en: `Buy authentic handmade ${title} for ${price} MAD from ${shopName}. High-quality Moroccan craftsmanship with Cash on Delivery and Amana tracking.`,
-    fr: `Achetez ${title} authentique fait main pour ${price} DH de ${shopName}. Artisanat marocain de qualité supérieure, paiement à la livraison via Amana.`,
-    ar: `اشترِ ${title} أصيلة مصنوعة يدويًا مقابل ${price} درهم من ${shopName}. جودة عالية من الصناعة التقليدية المغربية مع الدفع عند الاستلام.`,
-    tz: `ⵀⴰ ⵜⵉⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ ${title} ⵙ ⵜⵉⴳⴳⵉ ${price} MAD ⵙⴳ ${shopName}.`
+    en: `This authentic handmade item by ${shopName} is available on Afus for ${price} MAD. Buy direct from Moroccan artisans with secure delivery.`,
+    fr: `Cet article authentique fait main proposé par ${shopName} est disponible sur Afus pour ${price} DH. Achetez directement aux artisans marocains avec livraison sécurisée.`,
+    ar: `هذا المنتج الأصلي المصنوع يدويًا بواسطة ${shopName} متوفر على Afus مقابل ${price} درهم. اشترِ مباشرة من الحرفيين المغاربة مع توصيل آمن.`,
+    tz: `ⴰⵢⴰⵡ ⴰⴷ ⵏ ⵓⴼⵓⵙ ⵙⴳ ${shopName} ⵉⵍⵍⴰ ⴳ Afus ⵙ ${price} MAD. ⵙⵖ ⵙⴳ ⵉⵎⴳⵓⵔⵉⵢⵏ ⵏ ⵍⵎⵖⵔⵉⴱ.`
   };
 
   const desc = (descriptions as any)[lang] || descriptions.en;
+  const pageTitle = `${title} - Afus`;
 
   return {
-    title: title,
+    title: pageTitle,
     description: desc,
     keywords: `${title}, ${shopName}, moroccan craft, buy ${title} online, cod morocco, amana shipping, geo optimized`,
     openGraph: {
-      title: `${title} by ${shopName} - afus`,
+      title: pageTitle,
       description: desc,
       url: `https://afus.ma/${lang}/listing/${resolvedParams.numeric_id}/${resolvedParams.product_slug}`,
       type: "website",
@@ -40,7 +41,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} by ${shopName} - afus`,
+      title: pageTitle,
       description: desc,
       images: imageUrl ? [imageUrl] : [],
     }

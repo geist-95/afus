@@ -90,53 +90,59 @@ export default function ProductsManagerPage({ params }: PageProps) {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="flex flex-col gap-4">
             {shopProducts.map((p) => {
               const title = p.title_translations?.[lang as 'en'|'fr'|'ar'] || p.title_translations?.en || 'Artisan Craft';
               const slug = p.slug_translations?.[lang as 'en'|'fr'|'ar'] || p.slug_translations?.en || 'product';
               const image = p.media_gallery?.[0] || 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&fit=crop';
               return (
-                <div key={p.id} className="bg-white rounded-xl border border-neutral-200 overflow-hidden flex flex-col group hover:shadow-sm transition-all hover:border-neutral-300">
-                  <div className="aspect-square bg-neutral-100 relative">
+                <div key={p.id} className="bg-white rounded-xl border border-neutral-200 p-4 flex flex-row flex-wrap md:flex-nowrap gap-4 items-center transition-all hover:border-neutral-300">
+                  <div className="w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden shrink-0 border border-neutral-200">
                     <img src={image} alt={title} className="w-full h-full object-cover" />
                   </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h4 className="font-bold text-sm text-neutral-800 line-clamp-2 mb-1">{title}</h4>
-                    <p className="text-neutral-500 text-sm font-medium mb-4">{p.base_price_mad} MAD</p>
-                    
-                    <div className="mt-auto flex gap-2">
-                      <Link
-                        href={`/${lang}/listing/${p.numeric_id}/${slug}`}
-                        className="flex-1 border border-neutral-200 rounded-lg px-2 py-2 bg-neutral-50 hover:bg-neutral-100 text-center text-xs font-bold transition-colors"
-                      >
-                        {lang === 'fr' ? 'Voir' : lang === 'ar' ? 'عرض' : 'View'}
-                      </Link>
-                      <Link
-                        href={`/${lang}/dashboard/products/${p.id}`}
-                        className="flex-1 border border-neutral-200 rounded-lg px-2 py-2 bg-neutral-50 hover:bg-neutral-100 text-center text-xs font-bold transition-colors"
-                      >
-                        {lang === 'fr' ? 'Modifier' : lang === 'ar' ? 'تعديل' : 'Edit'}
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette annonce ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟' : 'Are you sure you want to delete this listing?';
-                          if (confirm(confirmMsg)) {
-                            const { supabase } = await import('@/lib/supabase');
-                            const { error } = await supabase.from('products').delete().eq('id', p.id);
-                            if (error) {
-                              console.error('Failed to delete product', error);
-                              alert('Failed to delete product');
-                            } else {
-                              setShopProducts(prev => prev.filter(item => item.id !== p.id));
-                            }
-                          }
-                        }}
-                        className="flex-1 text-red-600 hover:bg-red-50 border border-neutral-200 hover:border-red-200 px-2 py-2 rounded-lg transition-colors text-xs font-bold"
-                      >
-                        {lang === 'fr' ? 'Supprimer' : lang === 'ar' ? 'حذف' : 'Delete'}
-                      </button>
+                  
+                  <div className="flex-1 min-w-[200px] flex flex-col gap-1.5 text-left">
+                    <h4 className="font-bold text-base text-neutral-800 truncate">{title}</h4>
+                    <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-1 text-sm">
+                      <span className="font-semibold text-neutral-900 bg-neutral-100 px-2 py-0.5 rounded">{p.base_price_mad} MAD</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${p.is_active ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'}`}>
+                        {p.is_active ? (lang === 'fr' ? 'Actif' : 'Active') : (lang === 'fr' ? 'Inactif' : 'Inactive')}
+                      </span>
                     </div>
+                  </div>
+                  
+                  <div className="flex gap-2 w-full md:w-auto mt-2 md:mt-0 shrink-0">
+                    <Link
+                      href={`/${lang}/listing/${p.numeric_id}/${slug}`}
+                      className="flex-1 md:flex-none border border-neutral-200 rounded-lg px-4 py-2 bg-white hover:bg-neutral-50 text-center text-xs font-bold transition-colors"
+                    >
+                      {lang === 'fr' ? 'Voir' : lang === 'ar' ? 'عرض' : 'View'}
+                    </Link>
+                    <Link
+                      href={`/${lang}/dashboard/products/${p.id}`}
+                      className="flex-1 md:flex-none border border-neutral-200 rounded-lg px-4 py-2 bg-white hover:bg-neutral-50 text-center text-xs font-bold transition-colors"
+                    >
+                      {lang === 'fr' ? 'Modifier' : lang === 'ar' ? 'تعديل' : 'Edit'}
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const confirmMsg = lang === 'fr' ? 'Êtes-vous sûr de vouloir supprimer cette annonce ?' : lang === 'ar' ? 'هل أنت متأكد من رغبتك في حذف هذا المنتج؟' : 'Are you sure you want to delete this listing?';
+                        if (confirm(confirmMsg)) {
+                          const { supabase } = await import('@/lib/supabase');
+                          const { error } = await supabase.from('products').delete().eq('id', p.id);
+                          if (error) {
+                            console.error('Failed to delete product', error);
+                            alert('Failed to delete product');
+                          } else {
+                            setShopProducts(prev => prev.filter(item => item.id !== p.id));
+                          }
+                        }
+                      }}
+                      className="flex-1 md:flex-none text-red-600 hover:bg-red-50 border border-neutral-200 hover:border-red-200 px-4 py-2 rounded-lg transition-colors text-xs font-bold"
+                    >
+                      {lang === 'fr' ? 'Supprimer' : lang === 'ar' ? 'حذف' : 'Delete'}
+                    </button>
                   </div>
                 </div>
               );
