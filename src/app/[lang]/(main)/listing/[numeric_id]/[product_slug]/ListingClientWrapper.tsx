@@ -385,7 +385,7 @@ export default function ListingClientWrapper({
       )}
 
       {/* Breadcrumb */}
-      <div className="flex justify-center items-center gap-2 text-sm text-black/40 font-medium flex-wrap">
+      <div className="hidden lg:flex justify-center items-center gap-2 text-sm text-black/40 font-medium flex-wrap">
         <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
         <span>/</span>
         {matchedCategory ? (
@@ -405,13 +405,29 @@ export default function ListingClientWrapper({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
         {/* Left Column: Image + Reviews + About Shop */}
-        <div className="lg:col-span-8 space-y-12">
+        <div className="lg:col-span-8 space-y-6 lg:space-y-12">
+
+          {/* Mobile Trust Banner (Moved above image) */}
+          <div className="lg:hidden flex items-start justify-center gap-4 text-center">
+             <div className="flex-1 flex flex-col items-center gap-2">
+                <svg className="w-6 h-6 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                <span className="text-[10px] font-bold uppercase text-neutral-600">Protection<br/>des achats afus</span>
+             </div>
+             <div className="flex-1 flex flex-col items-center gap-2 border-l border-r border-neutral-200 px-2">
+                <svg className="w-6 h-6 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <span className="text-[10px] font-bold uppercase text-neutral-600">Paiement<br/>à la livraison</span>
+             </div>
+             <div className="flex-1 flex flex-col items-center gap-2">
+                <svg className="w-6 h-6 text-neutral-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" /></svg>
+                <span className="text-[10px] font-bold uppercase text-neutral-600">Artisans<br/>vérifiés</span>
+             </div>
+          </div>
 
           {/* Gallery Layout */}
-          <div className="flex gap-4 h-[70vh] max-h-[630px]">
-            {/* Thumbnails Stack (Vertical Strip on the left) */}
+          <div className="flex lg:gap-4 aspect-square lg:aspect-auto h-auto lg:h-[70vh] max-h-[630px] -mx-4 lg:mx-0 relative w-[100vw] sm:w-full bg-neutral-100 lg:bg-transparent">
+            {/* Thumbnails Stack (Desktop only) */}
             {fetchedProduct && fetchedProduct.media_gallery && fetchedProduct.media_gallery.length > 1 && (
-              <div className="flex flex-col gap-2 overflow-y-auto pr-2 scrollbar-none snap-y w-20 flex-shrink-0">
+              <div className="hidden lg:flex flex-col gap-2 overflow-y-auto pr-2 scrollbar-none snap-y w-20 flex-shrink-0">
                 {fetchedProduct.media_gallery.map((imgUrl: string, idx: number) => (
                   <div
                     key={idx}
@@ -427,20 +443,42 @@ export default function ListingClientWrapper({
               </div>
             )}
 
-            {/* Large Main Image */}
+            {/* Main Image Slider */}
             <div 
-              className="flex-1 overflow-hidden relative rounded-2xl h-full cursor-pointer group flex items-center justify-center"
-              onClick={() => setIsFullscreen(true)}
+              className="flex-1 overflow-x-auto lg:overflow-hidden relative lg:rounded-2xl h-full group flex snap-x snap-mandatory scrollbar-none"
+              onScroll={(e) => {
+                if (window.innerWidth >= 1024) return;
+                const scrollLeft = e.currentTarget.scrollLeft;
+                const width = e.currentTarget.clientWidth;
+                const index = Math.round(scrollLeft / width);
+                if (fetchedProduct?.media_gallery && fetchedProduct.media_gallery[index]) {
+                  setActiveImage(fetchedProduct.media_gallery[index]);
+                }
+              }}
             >
-              <img
-                src={activeImage}
-                alt={initialTitle}
-                className="max-w-full max-h-full object-contain rounded-xl"
-              />
+              {fetchedProduct?.media_gallery ? fetchedProduct.media_gallery.map((imgUrl: string, idx: number) => (
+                <div 
+                  key={idx} 
+                  className="w-full h-full flex-shrink-0 snap-center relative cursor-pointer flex items-center justify-center"
+                  onClick={() => {
+                    setActiveImage(imgUrl);
+                    setIsFullscreen(true);
+                  }}
+                >
+                   <img src={imgUrl} alt={initialTitle} className="w-full h-full object-cover lg:object-contain lg:rounded-xl" />
+                </div>
+              )) : (
+                <div 
+                  className="w-full h-full flex-shrink-0 snap-center relative cursor-pointer flex items-center justify-center"
+                  onClick={() => setIsFullscreen(true)}
+                >
+                   <img src={activeImage} alt={initialTitle} className="w-full h-full object-cover lg:object-contain lg:rounded-xl" />
+                </div>
+              )}
               
-              {/* Prev/Next buttons on main image */}
+              {/* Prev/Next buttons on main image (Desktop only) */}
               {fetchedProduct?.media_gallery && fetchedProduct.media_gallery.length > 1 && (
-                <>
+                <div className="hidden lg:block">
                   <button 
                     onClick={handlePrevImage}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-2 rounded-full shadow-md z-10"
@@ -453,14 +491,25 @@ export default function ListingClientWrapper({
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                   </button>
-                </>
+                </div>
               )}
             </div>
+            
+            {/* Dots (Mobile only) */}
+            {fetchedProduct?.media_gallery && fetchedProduct.media_gallery.length > 1 && (
+              <div className="lg:hidden absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+                {fetchedProduct.media_gallery.map((imgUrl: string, idx: number) => (
+                  <div key={idx} className={`h-1.5 rounded-full transition-all duration-300 shadow-sm ${activeImage === imgUrl ? 'w-4 bg-primary' : 'w-1.5 bg-neutral-300'}`} />
+                ))}
+              </div>
+            )}
           </div>
 
 
-          {/* About the Artisan Shop UI */}
-          <div className="arabic-frame bg-neutral-200 p-[1px]">
+
+
+          {/* About the Artisan Shop UI (Desktop) */}
+          <div className="hidden lg:block arabic-frame bg-neutral-200 p-[1px]">
             <div className="arabic-frame bg-white p-6 space-y-8 h-full">
               <div className="flex justify-between items-start flex-wrap gap-4">
                 <div className="flex gap-4 items-center">
@@ -536,7 +585,7 @@ export default function ListingClientWrapper({
           <div className="space-y-6">
             <div className="flex items-start gap-3">
               <div className="flex-1 space-y-2">
-                <h1 className="text-2xl font-bold tracking-tight capitalize leading-tight text-black">
+                <h1 className="text-xl md:text-2xl font-bold tracking-tight capitalize leading-tight text-black">
                   {fetchedProduct ? (fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en) : initialTitle}
                 </h1>
                 <div className="flex items-center gap-2 text-sm">
@@ -896,6 +945,69 @@ export default function ListingClientWrapper({
         </div>
       </div>
 
+      {/* Mobile Shop Info (Hidden on desktop) */}
+      <div className="lg:hidden arabic-frame bg-neutral-200 p-[1px] mt-8">
+        <div className="arabic-frame bg-white p-6 h-full flex flex-col items-center text-center space-y-6">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="relative">
+              <div className="w-20 h-20 border border-neutral-200 rounded-full overflow-hidden bg-neutral-50 flex items-center justify-center flex-shrink-0">
+                {fetchedShop?.logo_url ? (
+                  <img src={fetchedShop.logo_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-bold text-neutral-400">{fetchedShop?.name?.charAt(0) || initialShopName?.charAt(0)}</span>
+                )}
+              </div>
+              {fetchedShop?.is_verified && (
+                <div className="absolute bottom-0 right-0 bg-fuchsia-600 border-2 border-white rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">
+                  ★
+                </div>
+              )}
+            </div>
+            <div>
+              <div className="flex items-center justify-center gap-2 flex-wrap">
+                <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`}>
+                  <h3 className="text-xl font-bold text-black hover:underline">{fetchedShop?.name || initialShopName}</h3>
+                </Link>
+                <span className="text-black/30">•</span>
+                <span className="text-sm font-semibold text-neutral-500">{fetchedShop?.merchant_city || "Marrakech"}</span>
+              </div>
+              <div className="flex items-center justify-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
+                <span className="flex items-center gap-1">★ {fetchedShop?.average_rating || 5.0} ({fetchedShop?.completed_orders_count || 1})</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-3 w-full">
+            <button className="w-full py-3.5 px-4 rounded-full border border-neutral-300 font-bold hover:bg-neutral-50 transition flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+              S'abonner
+            </button>
+            <button className="w-full py-3.5 px-4 rounded-full border border-neutral-900 text-neutral-900 font-bold hover:bg-neutral-50 transition">
+              Contacter
+            </button>
+            <span className="text-center text-[11px] text-neutral-500">Répond en 24h</span>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2 pt-6 border-t border-neutral-100 w-full text-center">
+            <div>
+              <h4 className="font-bold text-xs">Livraisons efficaces</h4>
+            </div>
+            <div>
+              <h4 className="font-bold text-xs">Réponses rapides</h4>
+            </div>
+            <div>
+              <h4 className="font-bold text-xs">Avis enthousiastes</h4>
+            </div>
+          </div>
+          
+          <p className="text-sm text-neutral-600 leading-relaxed capitalize w-full p-4 bg-neutral-50 rounded-xl text-left">
+            {fetchedShop?.description_translations?.[lang] || fetchedShop?.description_translations?.en || "We are a small collective of authentic local artisans, keeping century-old techniques and traditional crafts alive."}
+          </p>
+        </div>
+      </div>
+
 
       {/* Similar Items Section */}
       <div className="pt-16 pb-8 space-y-6 border-t border-neutral-100">
@@ -908,36 +1020,36 @@ export default function ListingClientWrapper({
         </div>
       </div>
       {isFullscreen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center">
+        <div className="fixed inset-0 z-[99999] bg-black flex items-center justify-center">
           <button 
-            onClick={() => { setIsFullscreen(false); setZoomLevel(1); }}
-            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors z-50"
+            onClick={(e) => { e.stopPropagation(); setIsFullscreen(false); setZoomLevel(1); }}
+            className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors z-[100000]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
           
           {/* Zoom controls */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-4 bg-white/10 rounded-full p-2 z-50">
-            <button onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.25))} className="text-white p-2 hover:bg-white/20 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM13.5 10.5h-6" /></svg></button>
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex gap-4 bg-white/10 rounded-full p-2 z-[100000]">
+            <button onClick={(e) => { e.stopPropagation(); setZoomLevel(Math.max(0.5, zoomLevel - 0.25)); }} className="text-white p-2 hover:bg-white/20 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM13.5 10.5h-6" /></svg></button>
             <span className="text-white flex items-center text-sm font-bold w-12 justify-center">{Math.round(zoomLevel * 100)}%</span>
-            <button onClick={() => setZoomLevel(Math.min(3, zoomLevel + 0.25))} className="text-white p-2 hover:bg-white/20 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg></button>
-            <button onClick={() => setZoomLevel(1)} className="text-white p-2 hover:bg-white/20 rounded-full text-xs font-bold px-3">Reset</button>
+            <button onClick={(e) => { e.stopPropagation(); setZoomLevel(Math.min(3, zoomLevel + 0.25)); }} className="text-white p-2 hover:bg-white/20 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" /></svg></button>
+            <button onClick={(e) => { e.stopPropagation(); setZoomLevel(1); }} className="text-white p-2 hover:bg-white/20 rounded-full text-xs font-bold px-3">Reset</button>
           </div>
 
           {fetchedProduct?.media_gallery && fetchedProduct.media_gallery.length > 1 && (
             <>
-              <button onClick={handlePrevImage} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-colors z-50">
+              <button onClick={(e) => { e?.stopPropagation(); handlePrevImage(e); }} className="absolute left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-colors z-[100000]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
               </button>
-              <button onClick={handleNextImage} className="absolute right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-colors z-50">
+              <button onClick={(e) => { e?.stopPropagation(); handleNextImage(e); }} className="absolute right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-4 rounded-full transition-colors z-[100000]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
               </button>
             </>
           )}
 
-          <div className="w-full h-full overflow-auto flex items-center justify-center p-4">
+          <div className="w-full h-full overflow-hidden flex items-center justify-center">
             <img 
-              src={activeImage} 
+              src={activeImage || initialImage} 
               alt={initialTitle}
               style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.2s ease-out', transformOrigin: 'center' }}
               className="max-w-full max-h-full object-contain cursor-zoom-in"

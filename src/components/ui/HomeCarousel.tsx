@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [session, setSession] = useState<UserSession | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     async function fetchSession() {
@@ -329,27 +330,29 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
       </div>
 
       {/* Mobile: Carousel + Video stacked */}
-      <div className="md:hidden">
+      <div className="md:hidden px-4">
         {/* Mobile Carousel */}
-        <div className="relative w-full overflow-hidden arabic-frame"
-          onTouchStart={(e) => {
-            const touch = e.touches[0];
-            (e.currentTarget as any)._touchStartX = touch.clientX;
-          }}
-          onTouchEnd={(e) => {
-            const startX = (e.currentTarget as any)._touchStartX;
-            const endX = e.changedTouches[0].clientX;
-            const diff = startX - endX;
-            if (Math.abs(diff) > 50) {
-              const isNext = lang === 'ar' ? diff < 0 : diff > 0;
-              if (isNext) {
-                setCurrentSlide((prev) => (prev + 1) % content.slides.length);
-              } else {
-                setCurrentSlide((prev) => (prev - 1 + content.slides.length) % content.slides.length);
+        <div className="relative w-full">
+          <div className="relative w-full overflow-hidden arabic-frame"
+            onTouchStart={(e) => {
+              touchStartX.current = e.touches[0].clientX;
+            }}
+            onTouchEnd={(e) => {
+              if (touchStartX.current === null) return;
+              const startX = touchStartX.current;
+              const endX = e.changedTouches[0].clientX;
+              const diff = startX - endX;
+              if (Math.abs(diff) > 50) {
+                const isNext = lang === 'ar' ? diff < 0 : diff > 0;
+                if (isNext) {
+                  setCurrentSlide((prev) => (prev + 1) % content.slides.length);
+                } else {
+                  setCurrentSlide((prev) => (prev - 1 + content.slides.length) % content.slides.length);
+                }
               }
-            }
-          }}
-        >
+              touchStartX.current = null;
+            }}
+          >
           <div
             className="flex w-full transition-transform duration-[600ms] ease-in-out"
             style={{ transform: `translateX(${lang === 'ar' ? '' : '-'}${currentSlide * 100}%)` }}
@@ -390,22 +393,23 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
               </div>
             ))}
           </div>
-          {/* Dots */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 w-24 z-20">
-            {content.slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`h-1 flex-1 rounded-full transition-all duration-500 ${currentSlide === index ? "bg-white" : "bg-white/20 hover:bg-white/40"
-                  }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
+        </div>
+        {/* Dots (Outside) */}
+        <div className="flex gap-2 w-24 mx-auto mt-4 justify-center">
+          {content.slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${currentSlide === index ? "bg-[#532e70]" : "bg-neutral-200 hover:bg-neutral-300"
+                }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
         </div>
 
         {/* Mobile Video Section */}
-        <div className="relative w-full aspect-square group overflow-hidden arabic-frame mt-3">
+        <div className="relative w-full aspect-square group overflow-hidden arabic-frame mt-3 hidden">
           <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-[#11061c]/95 via-[#2d1b4d]/50 to-transparent z-10 pointer-events-none" />
           <video
             src="/video.mp4"

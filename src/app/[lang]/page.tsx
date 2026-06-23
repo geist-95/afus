@@ -131,7 +131,7 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <MainLayout params={params}>
-      <div className="space-y-16">
+      <div className="space-y-8 md:space-y-16">
         <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -173,7 +173,7 @@ export default async function HomePage({ params }: PageProps) {
       </div>
 
       {/* Browse by Category */}
-      <BrowseByCategory className="mt-8" lang={lang} />
+      <BrowseByCategory className="md:mt-8" lang={lang} />
 
       {/* Cities */}
       <CitiesSection lang={lang} />

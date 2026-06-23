@@ -41,7 +41,7 @@ export default async function MainLayout({ children, params }: MainLayoutProps) 
       <NavBar lang={lang} />
 
       {/* Page Content */}
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8 md:py-8">
         {children}
       </main>
 

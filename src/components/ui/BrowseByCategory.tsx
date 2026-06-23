@@ -21,28 +21,28 @@ export default function BrowseByCategory({ lang, className }: { lang: string; cl
   const title = titles[lang] || titles.en;
 
   return (
-    <div className={`max-w-[100rem] mx-auto px-4 md:px-12 py-2 md:py-8${className ? ` ${className}` : ""}`}>
-      <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-center !text-black">{title}</h2>
+    <div className={`py-2 md:py-8${className ? ` ${className}` : ""}`}>
+      <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-start md:text-center !text-black">{title}</h2>
       
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">
-        <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        <div className="flex gap-3 overflow-x-auto pb-2 px-4 -mx-4 sm:mx-0 sm:px-0 scroll-pl-4 sm:scroll-pl-0 after:content-[''] after:w-px after:shrink-0" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
           {categories.map((cat) => (
             <Link
               key={cat.label}
               href={`/${lang}${cat.href}`}
               className="flex flex-col items-center gap-2 flex-shrink-0"
             >
-              <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+              <div className="relative w-28 h-28 flex items-center justify-center flex-shrink-0">
                 <Image
                   alt={cat.label}
                   src={cat.img}
-                  width={64}
-                  height={64}
-                  className="object-contain w-full h-full"
+                  width={88}
+                  height={88}
+                  className="object-contain"
                 />
               </div>
-              <span className="text-xs font-medium text-neutral-900 text-center whitespace-nowrap">
+              <span className="text-base font-semibold text-neutral-900 text-center whitespace-nowrap">
                 {cat.labels[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.label}
               </span>
             </Link>

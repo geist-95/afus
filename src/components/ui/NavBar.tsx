@@ -100,9 +100,12 @@ export default function NavBar({ lang }: NavBarProps) {
       window.scrollTo(0, 0);
     }
     async function loadSession() {
-      const active = await getActiveSession();
-      setSession(active);
-      setLoading(false);
+      try {
+        const active = await getActiveSession();
+        setSession(active);
+      } finally {
+        setLoading(false);
+      }
     }
     loadSession();
   }, [pathname]);
@@ -265,297 +268,277 @@ export default function NavBar({ lang }: NavBarProps) {
           </div>
         </div>
       </div>
-      <header className="border-b border-primary/10 bg-white sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-6">
-        {/* Logo */}
-        <Link
-          href={`/${lang}`}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
-        >
-          <img src="/logo/logo.png" alt="Afus Logo" width={32} height={32} className="w-8 h-8 object-contain !rounded-none" />
-          <img src="/logo/afus.svg" alt="afus" width={80} height={20} className="h-5 object-contain !rounded-none" />
+      {/* Mobile non-sticky Logo Row */}
+      <div className="md:hidden bg-white pt-3 pb-2 px-4 flex items-center justify-between">
+        <Link href={`/${lang}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <img src="/logo/logo.png" alt="Afus Logo" width={28} height={28} className="w-7 h-7 object-contain !rounded-none" />
+          <img src="/logo/afus.svg" alt="afus" width={70} height={18} className="h-4.5 object-contain !rounded-none" />
         </Link>
-
-        {/* Search Bar */}
-        <div className="flex-1 mx-4 hidden sm:block">
-          <form 
-            className="relative flex items-center"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const q = formData.get('q') as string;
-              if (q.trim()) {
-                router.push(`/${lang}/search?q=${encodeURIComponent(q.trim())}`);
-              }
-            }}
-          >
-            <input
-              type="search"
-              name="q"
-              placeholder={t.searchPlaceholder}
-              className="w-full border border-neutral-300 rounded-full pl-6 pr-12 py-3 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
-            />
-            <button type="submit" className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
-              <MagnifyingGlassIcon />
+        <div className="flex items-center gap-3">
+          {session ? (
+            <button
+              onClick={() => { setMenuOpen(false); handleLogout(); }}
+              className="text-black font-bold text-[12px] hover:underline"
+            >
+              {t.logout}
             </button>
-          </form>
-        </div>
-
-        {/* Nav Actions */}
-        <nav className="flex items-center gap-4.5 text-xs font-medium flex-shrink-0 text-black">
-
-          {loading ? (
-            <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
-          ) : session ? (
-            <>
-
-              {/* Shared Links (Icon-only) */}
-              {session.shop ? (
-                <Link
-                  href={`/${lang}/dashboard`}
-                  className="hidden sm:flex items-center text-black hover:text-black/80 transition-colors"
-                  title={t.manageStore}
-                >
-                  <BriefcaseIcon />
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setOnboardingModalOpen(true)}
-                  className="hidden sm:flex items-center text-black hover:text-black/80 transition-colors cursor-pointer bg-transparent border-none"
-                  title={t.manageStore}
-                >
-                  <BriefcaseIcon />
-                </button>
-              )}
-
-              <Link href={`/${lang}/cart`} className="flex items-center text-black hover:text-black/80 relative" title={t.cart}>
-                <ShoppingCartIcon />
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-
-              {/* Notification Bell */}
-              <div className="relative flex items-center" ref={notifRef}>
-                <button onClick={handleOpenNotifications} className="flex items-center text-black hover:text-black/80 relative cursor-pointer" title="Notifications">
-                  <BellIcon />
-                  {newAlerts.length > 0 && (
-                    <span className="absolute top-0 right-0 bg-[#E8583F] w-2.5 h-2.5 rounded-full border border-white"></span>
-                  )}
-                </button>
-                
-                {notificationsOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-white border border-primary/20 rounded-lg shadow-lg z-50 p-2">
-                    <div className="px-2 py-2 border-b border-primary/10 text-xs font-bold text-black mb-2 flex justify-between items-center">
-                      {lang === 'fr' ? 'Alertes' : lang === 'ar' ? 'تنبيهات' : 'Notifications'}
-                      <button onClick={() => setNotificationsOpen(false)} className="text-black/50 hover:text-black cursor-pointer" aria-label="Close notifications">×</button>
-                    </div>
-                    {newAlerts.length > 0 ? (
-                      <div className="flex flex-col gap-1">
-                        {newAlerts.map(alert => (
-                          <Link 
-                            key={alert.id}
-                            href={`/${lang}/shop/${alert.shops?.slug || '#'}`}
-                            onClick={() => setNotificationsOpen(false)}
-                            className="flex items-start gap-3 p-2 hover:bg-neutral-50 rounded-md transition-colors"
-                          >
-                            <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" width={40} height={40} loading="lazy" className="w-10 h-10 object-cover rounded-md" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
-                              <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'|'tz'] || alert.title_translations?.en}</p>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="py-6 text-center text-neutral-400 text-xs">
-                        {lang === 'fr' ? 'Aucune nouvelle alerte.' : lang === 'ar' ? 'لا توجد تنبيهات جديدة.' : 'No new alerts.'}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* User Menu Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
-                >
-                  {(session as any).avatar_url ? (
-                    <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
-                  ) : (
-                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
-                  )}
-                  <span className="hidden sm:inline max-w-[80px] truncate">{shortName}</span>
-                  <span className="text-black/50 text-[10px]">▼</span>
-                </button>
-
-                {menuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-primary/20 rounded-lg z-50 p-1">
-                    <Link href={`/${lang}/user/${session.id}`} className="block px-3 py-2.5 border-b border-primary/10 hover:bg-neutral-50 transition-colors rounded-t-lg" onClick={() => setMenuOpen(false)}>
-                      <div className="text-[12px] font-bold text-black">
-                        {session.full_name || shortName}
-                      </div>
-                      <div className="text-[10px] text-neutral-500 font-medium mt-0.5">
-                        View profile
-                      </div>
-                    </Link>
-                    <Link
-                      href={`/${lang}/settings`}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <SettingsIcon />
-                      <span>{t.settings}</span>
-                    </Link>
-                    <Link
-                      href={`/${lang}/wishlist`}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <HeartIcon />
-                      <span>Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}</span>
-                    </Link>
-                    <Link
-                      href={`/${lang}/orders`}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <ShoppingBagIcon />
-                      <span>{lang === 'fr' ? 'Mes achats' : lang === 'ar' ? 'مشترياتي' : lang === 'tz' ? 'ⵜⵉⵙⵖⵉⵏ ⵉⵏⵓ' : 'My purchases'}</span>
-                    </Link>
-                    <Link
-                      href={`/${lang}/inbox`}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      <ChatBubbleLeftRightIcon />
-                      <span>{t.messages}</span>
-                    </Link>
-                    {session.role === 'seller' && (
-                      <>
-                        <Link
-                          href={`/${lang}/dashboard/products`}
-                          className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                          onClick={() => setMenuOpen(false)}
-                        >
-                          <PlusIcon />
-                          <span>{t.list}</span>
-                        </Link>
-                        {session.shop && (
-                          <Link
-                            href={`/${lang}/shop/${session.shop.slug}`}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]"
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            <ShoppingBagIcon />
-                            <span>{t.myShop}</span>
-                          </Link>
-                        )}
-                      </>
-                    )}
-                    <button
-                      onClick={() => { setMenuOpen(false); handleLogout(); }}
-                      className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-warning/10 text-warning font-bold text-[11px] cursor-pointer rounded-lg mt-1"
-                    >
-                      <ArrowLeftOnRectangleIcon />
-                      <span>{t.logout}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
           ) : (
-            <>
-              <button
-                onClick={() => setOnboardingModalOpen(true)}
-                className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer"
-              >
-                {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
-              </button>
-              <button
-                onClick={() => setLoginModalOpen(true)}
-                className="bg-primary text-white px-5 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[12px] whitespace-nowrap"
-              >
-                {t.login}
-              </button>
-              <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:text-black/80 relative ml-1" title={t.cart}>
-                <ShoppingCartIcon />
-                {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
-            </>
+            <button
+              onClick={() => setOnboardingModalOpen(true)}
+              className="text-black font-bold text-[12px] hover:underline"
+            >
+              {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
+            </button>
           )}
-
-        </nav>
+        </div>
       </div>
 
-      {/* Categories Bar — hidden scrollbar + fade chevron */}
-      <div className="border-t border-primary/10 bg-white">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative">
-          {/* Left fade + chevron */}
-          {catCanScrollLeft && (
-            <button
-              onClick={() => catScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })}
-              className="absolute left-4 top-0 bottom-0 z-10 flex items-center pl-1 pr-4 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-auto"
-              aria-label="Scroll categories left"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-black/50">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-          )}
-
-          {/* Scrollable row — no visible scrollbar */}
-          <div
-            ref={catScrollRef}
-            onScroll={() => {
-              const el = catScrollRef.current;
-              if (!el) return;
-              setCatCanScrollLeft(el.scrollLeft > 4);
-              setCatCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
-            }}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            className="w-full py-3 flex items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden min-w-0 text-xs font-semibold text-black"
+      <header className="border-b border-primary/10 bg-white sticky top-0 z-50">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3 md:justify-between">
+          
+          {/* Desktop Logo */}
+          <Link
+            href={`/${lang}`}
+            className="hidden md:flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
           >
-            {staticCategories.map((cat, index) => [
-              <Link
-                key={cat.slug}
-                href={`/${lang}/category/${cat.slug}`}
-                className="hover:text-black/70 transition-colors whitespace-nowrap capitalize flex-shrink-0"
-              >
-                {cat.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.name.en}
-              </Link>,
-              index < staticCategories.length - 1 && (
-                <span key={`sep-${cat.slug}`} className="text-black/30 select-none text-[10px] flex-shrink-0">
-                  ✦
-                </span>
-              )
-            ])}
+            <img src="/logo/logo.png" alt="Afus Logo" width={32} height={32} className="w-8 h-8 object-contain !rounded-none" />
+            <img src="/logo/afus.svg" alt="afus" width={80} height={20} className="h-5 object-contain !rounded-none" />
+          </Link>
+
+          {/* Hamburger (Mobile only) */}
+          <button className="md:hidden text-black flex-shrink-0 p-1 -ml-1 cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+
+          {/* Search Bar */}
+          <div className="flex-1 max-w-3xl">
+            <form 
+              className="relative flex items-center"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const q = formData.get('q') as string;
+                if (q.trim()) {
+                  router.push(`/${lang}/search?q=${encodeURIComponent(q.trim())}`);
+                }
+              }}
+            >
+              <input
+                type="search"
+                name="q"
+                placeholder={t.searchPlaceholder}
+                className="w-full border border-neutral-300 rounded-full pl-4 md:pl-6 pr-12 py-2.5 md:py-3 text-sm focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-200/50 placeholder-black/40 bg-white text-black transition-all duration-200 hover:border-neutral-400"
+              />
+              <button type="submit" className="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-[#E8583F] text-white rounded-full flex items-center justify-center hover:bg-[#E8583F]/90 transition-colors shadow-sm cursor-pointer">
+                <MagnifyingGlassIcon />
+              </button>
+            </form>
           </div>
 
-          {/* Right fade + chevron */}
-          {catCanScrollRight && (
-            <button
-              onClick={() => catScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })}
-              className="absolute right-4 top-0 bottom-0 z-10 flex items-center pr-1 pl-4 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-auto"
-              aria-label="Scroll categories right"
+          {/* Nav Actions */}
+          <nav className="flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
+            {loading ? (
+              <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
+            ) : session ? (
+              <>
+                {/* Desktop User Menu Dropdown */}
+                <div className="relative hidden md:block">
+                  <button
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
+                  >
+                    {(session as any).avatar_url ? (
+                      <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
+                    ) : (
+                      <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
+                    )}
+                    <span className="hidden sm:inline max-w-[80px] truncate">{shortName}</span>
+                    <span className="text-black/50 text-[10px]">▼</span>
+                  </button>
+
+                  {menuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-primary/20 rounded-lg z-50 p-1 shadow-xl">
+                      <Link href={`/${lang}/user/${session.id}`} className="block px-3 py-2.5 border-b border-primary/10 hover:bg-neutral-50 transition-colors rounded-t-lg" onClick={() => setMenuOpen(false)}>
+                        <div className="text-[12px] font-bold text-black">{session.full_name || shortName}</div>
+                        <div className="text-[10px] text-neutral-500 font-medium mt-0.5">View profile</div>
+                      </Link>
+                      <Link href={`/${lang}/settings`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                        <SettingsIcon /><span>{t.settings}</span>
+                      </Link>
+                      <Link href={`/${lang}/wishlist`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                        <HeartIcon /><span>Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}</span>
+                      </Link>
+                      <Link href={`/${lang}/orders`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                        <ShoppingBagIcon /><span>{lang === 'fr' ? 'Mes achats' : lang === 'ar' ? 'مشترياتي' : lang === 'tz' ? 'ⵜⵉⵙⵖⵉⵏ ⵉⵏⵓ' : 'My purchases'}</span>
+                      </Link>
+                      <Link href={`/${lang}/inbox`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                        <ChatBubbleLeftRightIcon /><span>{t.messages}</span>
+                      </Link>
+                      {session.role === 'seller' && (
+                        <>
+                          <Link href={`/${lang}/dashboard/products`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                            <PlusIcon /><span>{t.list}</span>
+                          </Link>
+                          {session.shop && (
+                            <Link href={`/${lang}/shop/${session.shop.slug}`} className="flex items-center gap-2 px-3 py-2 hover:bg-primary/5 rounded-lg text-black text-[11px]" onClick={() => setMenuOpen(false)}>
+                              <ShoppingBagIcon /><span>{t.myShop}</span>
+                            </Link>
+                          )}
+                        </>
+                      )}
+                      <button onClick={() => { setMenuOpen(false); handleLogout(); }} className="w-full flex items-center gap-2 text-left px-3 py-2 hover:bg-warning/10 text-warning font-bold text-[11px] cursor-pointer rounded-lg mt-1">
+                        <ArrowLeftOnRectangleIcon /><span>{t.logout}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Mobile User Icon (links to profile directly) */}
+                <Link href={`/${lang}/user/${session.id}`} className="md:hidden flex items-center text-black hover:opacity-80">
+                  <UserIcon />
+                </Link>
+
+                {/* Notification Bell */}
+                <div className="relative flex items-center" ref={notifRef}>
+                  <button onClick={handleOpenNotifications} className="flex items-center text-black hover:opacity-80 relative cursor-pointer" title="Notifications">
+                    <BellIcon />
+                    {newAlerts.length > 0 && (
+                      <span className="absolute top-0 right-0 bg-[#E8583F] w-2.5 h-2.5 rounded-full border border-white"></span>
+                    )}
+                  </button>
+                  {notificationsOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-white border border-primary/20 rounded-lg shadow-lg z-50 p-2">
+                      <div className="px-2 py-2 border-b border-primary/10 text-xs font-bold text-black mb-2 flex justify-between items-center">
+                        {lang === 'fr' ? 'Alertes' : lang === 'ar' ? 'تنبيهات' : 'Notifications'}
+                        <button onClick={() => setNotificationsOpen(false)} className="text-black/50 hover:text-black cursor-pointer">×</button>
+                      </div>
+                      {newAlerts.length > 0 ? (
+                        <div className="flex flex-col gap-1">
+                          {newAlerts.map(alert => (
+                            <Link key={alert.id} href={`/${lang}/shop/${alert.shops?.slug || '#'}`} onClick={() => setNotificationsOpen(false)} className="flex items-start gap-3 p-2 hover:bg-neutral-50 rounded-md transition-colors">
+                              <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" width={40} height={40} loading="lazy" className="w-10 h-10 object-cover rounded-md" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
+                                <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'|'tz'] || alert.title_translations?.en}</p>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="py-6 text-center text-neutral-400 text-xs">
+                          {lang === 'fr' ? 'Aucune nouvelle alerte.' : lang === 'ar' ? 'لا توجد تنبيهات جديدة.' : 'No new alerts.'}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <Link href={`/${lang}/cart`} className="flex items-center text-black hover:opacity-80 relative" title={t.cart}>
+                  <ShoppingCartIcon />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setOnboardingModalOpen(true)}
+                  className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer"
+                >
+                  {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
+                </button>
+                <button
+                  onClick={() => setLoginModalOpen(true)}
+                  className="hidden md:block bg-primary text-white px-5 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[12px] whitespace-nowrap"
+                >
+                  {t.login}
+                </button>
+                <button
+                  onClick={() => setLoginModalOpen(true)}
+                  className="md:hidden flex items-center text-black hover:opacity-80"
+                >
+                  <UserIcon />
+                </button>
+                <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:opacity-80 relative ml-1" title={t.cart}>
+                  <ShoppingCartIcon />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
+              </>
+            )}
+          </nav>
+        </div>
+
+        {/* Categories Bar — Desktop only */}
+        <div className="hidden md:block border-t border-primary/10 bg-white">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative">
+            {catCanScrollLeft && (
+              <button onClick={() => catScrollRef.current?.scrollBy({ left: -200, behavior: 'smooth' })} className="absolute left-4 top-0 bottom-0 z-10 flex items-center pl-1 pr-4 bg-gradient-to-r from-white via-white/90 to-transparent pointer-events-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-black/50"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+            )}
+            <div
+              ref={catScrollRef}
+              onScroll={() => {
+                const el = catScrollRef.current;
+                if (!el) return;
+                setCatCanScrollLeft(el.scrollLeft > 4);
+                setCatCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+              }}
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="w-full py-3 flex items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden min-w-0 text-xs font-semibold text-black"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-black/50">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
+              {staticCategories.map((cat, index) => [
+                <Link key={cat.slug} href={`/${lang}/category/${cat.slug}`} className="hover:text-black/70 transition-colors whitespace-nowrap capitalize flex-shrink-0">
+                  {cat.name[lang as 'en' | 'fr' | 'ar' | 'tz'] || cat.name.en}
+                </Link>,
+                index < staticCategories.length - 1 && (
+                  <span key={`sep-${cat.slug}`} className="text-black/30 select-none text-[10px] flex-shrink-0">✦</span>
+                )
+              ])}
+            </div>
+            {catCanScrollRight && (
+              <button onClick={() => catScrollRef.current?.scrollBy({ left: 200, behavior: 'smooth' })} className="absolute right-4 top-0 bottom-0 z-10 flex items-center pr-1 pl-4 bg-gradient-to-l from-white via-white/90 to-transparent pointer-events-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-3.5 h-3.5 text-black/50"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Categories Drawer (Controlled by menuOpen for simplicity) */}
+      <div className={`md:hidden fixed inset-0 z-[100] transition-opacity duration-300 ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
+        <div className={`absolute top-0 bottom-0 ${lang === 'ar' ? 'right-0 translate-x-full' : 'left-0 -translate-x-full'} w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-300 flex flex-col ${menuOpen ? 'translate-x-0' : ''}`}>
+          <div className="flex items-center justify-between p-4 border-b border-neutral-100 bg-neutral-50/50">
+            <span className="font-bold text-lg text-black">{lang === 'fr' ? 'Consulter les catégories' : lang === 'ar' ? 'تصفح الفئات' : 'Browse categories'}</span>
+            <button onClick={() => setMenuOpen(false)} className="w-8 h-8 rounded-full border border-neutral-200 flex items-center justify-center text-black bg-white hover:bg-neutral-50">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
-          )}
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {staticCategories.map(cat => (
+              <Link 
+                key={cat.slug} 
+                href={`/${lang}/category/${cat.slug}`} 
+                className="flex items-center justify-between p-4 border-b border-neutral-100/60 active:bg-neutral-50 text-black font-semibold text-sm"
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>{cat.name[lang as 'en'|'fr'|'ar'|'tz'] || cat.name.en}</span>
+                <span className="text-xl leading-none text-black/50">{lang === 'ar' ? '‹' : '›'}</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
-      </header>
       <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} lang={lang} />
       <StoreOnboardingModal isOpen={onboardingModalOpen} onClose={() => setOnboardingModalOpen(false)} lang={lang} />
     </>

@@ -298,10 +298,10 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
               </button>
             </div>
           </div>
-          <div ref={newArrivalsRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div ref={newArrivalsRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {newProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[calc(20%-12.8px)]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>
@@ -326,10 +326,10 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
               </button>
             </div>
           </div>
-          <div ref={recentlyViewedRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div ref={recentlyViewedRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {recentCategoryProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
             })}
           </div>
         </section>
@@ -352,10 +352,10 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
               </button>
             </div>
           </div>
-          <div ref={under100Ref} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {under100Products.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
             })}
           </div>
         </section>
@@ -378,10 +378,10 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
               </button>
             </div>
           </div>
-          <div ref={freeShippingRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div ref={freeShippingRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {freeShippingProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="flex-shrink-0 snap-start w-36 md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
             })}
           </div>
         </section>
@@ -403,12 +403,12 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
             </button>
           </div>
         </div>
-        <div ref={newestStoresRef} className="flex gap-4 overflow-x-auto pt-[2px] pb-4 scrollbar-none snap-x scroll-smooth -mx-4 px-4 sm:-mx-[2px] sm:px-[2px]">
-          {newestStores.map((store) => (
+        <div ref={newestStoresRef} className="flex flex-col md:flex-row gap-4 md:overflow-x-auto pt-[2px] pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:-mx-[2px] sm:px-[2px]">
+          {newestStores.slice(0, 6).map((store) => (
             <Link 
               href={store.is_placeholder ? '#' : `/${lang}/shop/${store.slug}`}
               key={store.id} 
-              className={`block flex-shrink-0 snap-start w-[280px] md:w-[320px] transition-all hover:opacity-90 ${store.is_placeholder ? 'opacity-50' : ''}`}
+              className={`block w-full md:flex-shrink-0 md:snap-start md:w-[320px] transition-all hover:opacity-90 ${store.is_placeholder ? 'opacity-50' : ''}`}
               style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)" }}
             >
               <div className="bg-white arabic-frame p-6 flex flex-col justify-between h-full w-full">

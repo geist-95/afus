@@ -110,7 +110,7 @@ export default function CitiesSection({ lang }: { lang: string }) {
         </div>
       </div>
 
-      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
+      <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scroll-pl-4 sm:scroll-pl-0 scroll-smooth after:content-[''] after:w-px after:shrink-0">
         {cities.map((city) => (
           <Link
             key={city.slug}
