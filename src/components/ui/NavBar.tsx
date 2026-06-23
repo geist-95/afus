@@ -45,7 +45,6 @@ function BellIcon() { return <BellSolid className="w-5.5 h-5.5 text-[#532e70]" /
 function UserIcon() { return <IconUser className="w-5 h-5 text-[#532e70]" strokeWidth={1.8} />; }
 function SettingsIcon() { return <IconSettings className="w-5 h-5 text-[#532e70]" strokeWidth={1.8} />; }
 function HelpIcon() { return <IconHelp className="w-4 h-4" strokeWidth={1.8} />; }
-function PackageIcon() { return <CubeSolid className="w-5.5 h-5.5 text-[#532e70]" />; }
 
 interface NavBarProps {
   lang: string;
@@ -443,10 +442,6 @@ export default function NavBar({ lang }: NavBarProps) {
                     </div>
                   )}
                 </div>
-
-                <Link href={`/${lang}/orders`} className="flex items-center text-black hover:opacity-80 relative mr-1" title={t.orders}>
-                  <PackageIcon />
-                </Link>
 
                 <Link href={`/${lang}/cart`} className="flex items-center text-black hover:opacity-80 relative" title={t.cart}>
                   <ShoppingCartIcon />
