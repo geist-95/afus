@@ -1019,6 +1019,30 @@ export default function ListingClientWrapper({
           })}
         </div>
       </div>
+
+      {/* Mobile Breadcrumb & Listing Date */}
+      <div className="lg:hidden flex flex-col items-center justify-center pt-8 pb-4 border-t border-neutral-100 text-sm text-black/50 font-medium space-y-4">
+        <div className="text-xs text-neutral-400 font-normal">
+          {lang === 'ar' ? 'عُرض للبيع في ' : lang === 'fr' ? 'Mis en vente le ' : lang === 'tz' ? 'ⵉⵜⵜⵓⵙⴰⵏ ⴳ ' : 'Listed on '}
+          {fetchedProduct?.created_at ? new Date(fetchedProduct.created_at).toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : new Date().toLocaleDateString(lang === 'ar' ? 'ar-MA' : lang === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </div>
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <Link href={`/${lang}`} className="hover:text-black transition-colors">Home</Link>
+          <span>/</span>
+          {matchedCategory ? (
+            <Link href={`/${lang}/category/${matchedCategory.slug}`} className="capitalize hover:text-black transition-colors">
+              {productCategoryName}
+            </Link>
+          ) : (
+            <span className="capitalize hover:text-black transition-colors cursor-default">{productCategoryName}</span>
+          )}
+          <span>/</span>
+          <span className="text-black capitalize truncate max-w-[200px]">
+            {fetchedProduct ? (fetchedProduct.title_translations[lang] || fetchedProduct.title_translations.en) : initialTitle}
+          </span>
+        </div>
+      </div>
+
       {isFullscreen && (
         <div className="fixed inset-0 z-[99999] bg-black flex items-center justify-center">
           <button 
