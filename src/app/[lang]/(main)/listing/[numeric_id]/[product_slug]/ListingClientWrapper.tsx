@@ -286,7 +286,7 @@ export default function ListingClientWrapper({
 
   // Amana shipping cost calculation based on merchant origin and shipping destination
   const getShippingCost = () => {
-    const origin = fetchedShop?.merchant_city || "Marrakech";
+    const origin = fetchedShop?.merchant_city || "";
     const cleanOrigin = origin.toLowerCase().trim();
     const cleanDestination = shippingCity.toLowerCase().trim();
 
@@ -532,11 +532,15 @@ export default function ListingClientWrapper({
                       <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`}>
                         <h3 className="text-xl font-bold text-black hover:underline">{fetchedShop?.name || initialShopName}</h3>
                       </Link>
-                      <span className="text-sm text-neutral-500">{fetchedShop?.merchant_city || "Marrakech"}</span>
+                      {fetchedShop?.merchant_city && (
+                        <span className="text-sm text-neutral-500">{fetchedShop.merchant_city}</span>
+                      )}
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
-                      <span className="flex items-center gap-1">★ {fetchedShop?.average_rating || 5.0} ({fetchedShop?.completed_orders_count || 1})</span>
-                    </div>
+                    {fetchedShop && fetchedShop.average_rating ? (
+                      <div className="flex items-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
+                        <span className="flex items-center gap-1"><span className="text-yellow-400">★</span> {fetchedShop.average_rating} ({fetchedShop.completed_orders_count || 0})</span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 min-w-[240px]">
@@ -549,28 +553,24 @@ export default function ListingClientWrapper({
                   <button className="w-full py-2.5 px-4 rounded-full border border-neutral-900 font-bold hover:bg-neutral-50 transition">
                     Contacter
                   </button>
-                  <span className="text-center text-[11px] text-neutral-500 mt-1">Répond en 24h</span>
+
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-neutral-100">
-                <div>
-                  <h4 className="font-bold text-sm">Livraisons efficaces</h4>
-                  <p className="text-sm text-neutral-600 mt-1">Les envois sont réalisés dans les temps et accompagnés d'un suivi.</p>
+              {fetchedShop?.average_rating >= 4.8 && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-neutral-100">
+                  <div>
+                    <h4 className="font-bold text-sm">Avis enthousiastes</h4>
+                    <p className="text-sm text-neutral-600 mt-1">La moyenne des avis est d'au moins 4,8.</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-sm">Réponses rapides</h4>
-                  <p className="text-sm text-neutral-600 mt-1">Répond rapidement aux messages reçus.</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm">Avis enthousiastes</h4>
-                  <p className="text-sm text-neutral-600 mt-1">La moyenne des avis est d'au moins 4,8.</p>
-                </div>
-              </div>
+              )}
               
-              <p className="text-sm text-neutral-600 leading-relaxed capitalize mt-4 p-4 bg-neutral-50 rounded-xl">
-                {fetchedShop?.description_translations?.[lang] || fetchedShop?.description_translations?.en || "We are a small collective of authentic local artisans, keeping century-old techniques and traditional crafts alive."}
-              </p>
+              {(fetchedShop?.description_translations?.[lang] || fetchedShop?.description_translations?.en) && (
+                <p className="text-sm text-neutral-600 leading-relaxed capitalize mt-4 p-4 bg-neutral-50 rounded-xl">
+                  {fetchedShop.description_translations[lang] || fetchedShop.description_translations.en}
+                </p>
+              )}
             </div>
           </div>
 
@@ -593,10 +593,14 @@ export default function ListingClientWrapper({
                   <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`} className="font-bold text-primary hover:underline">
                     {fetchedShop?.name || initialShopName}
                   </Link>
-                  <span className="text-black/30">•</span>
-                  <span className="flex items-center gap-1 font-bold text-black/70">
-                    <span className="text-yellow-400">★</span> 4.8 (788)
-                  </span>
+                  {fetchedShop && fetchedShop.average_rating ? (
+                    <>
+                      <span className="text-black/30">•</span>
+                      <span className="flex items-center gap-1 font-bold text-black/70">
+                        <span className="text-yellow-400">★</span> {fetchedShop.average_rating} ({fetchedShop.completed_orders_count || 0})
+                      </span>
+                    </>
+                  ) : null}
                 </div>
               </div>
 
@@ -689,7 +693,7 @@ export default function ListingClientWrapper({
           )}
 
           {/* Customization Input */}
-          {(!isSeeded || isPersonalizable) && (
+          {isPersonalizable && (
             <div className="space-y-2 text-sm capitalize">
               <label className="block font-bold text-black/70 capitalize">{t.customizationLabel}</label>
               <textarea
@@ -705,7 +709,7 @@ export default function ListingClientWrapper({
 
 
           {/* Quantity Selector */}
-          {!isSeeded && !isPersonalizable && (
+          {!isPersonalizable && (
             <div className="space-y-2 text-sm capitalize">
               <label className="block font-bold text-black/70 capitalize">{t.quantity}</label>
               <Select value={quantity.toString()} onValueChange={(val) => setQuantity(parseInt(val) || 1)}>
@@ -817,16 +821,22 @@ export default function ListingClientWrapper({
                     </div>
                     <div className="flex flex-col space-y-1">
                       <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Origins</span>
-                      <div className="text-black font-semibold capitalize text-base">{fetchedShop?.merchant_city || "Marrakech"}</div>
+                      {fetchedShop?.merchant_city ? (
+                        <div className="text-black font-semibold capitalize text-base">{fetchedShop.merchant_city}</div>
+                      ) : null}
                     </div>
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Condition</span>
-                      <div className="text-black font-semibold capitalize text-base">Brand New, Authentic</div>
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Materials</span>
-                      <div className="text-black font-semibold capitalize text-base">100% Natural, Locally Sourced</div>
-                    </div>
+                    {fetchedProduct?.metadata?.condition && (
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Condition</span>
+                        <div className="text-black font-semibold capitalize text-base">{fetchedProduct.metadata.condition}</div>
+                      </div>
+                    )}
+                    {fetchedProduct?.metadata?.materials && (
+                      <div className="flex flex-col space-y-1">
+                        <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">Materials</span>
+                        <div className="text-black font-semibold capitalize text-base">{fetchedProduct.metadata.materials}</div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -968,12 +978,18 @@ export default function ListingClientWrapper({
                 <Link href={`/${lang}/shop/${fetchedShop?.slug || fetchedShop?.id || ''}`}>
                   <h3 className="text-xl font-bold text-black hover:underline">{fetchedShop?.name || initialShopName}</h3>
                 </Link>
-                <span className="text-black/30">•</span>
-                <span className="text-sm font-semibold text-neutral-500">{fetchedShop?.merchant_city || "Marrakech"}</span>
+                {fetchedShop?.merchant_city && (
+                  <>
+                    <span className="text-black/30">•</span>
+                    <span className="text-sm font-semibold text-neutral-500">{fetchedShop.merchant_city}</span>
+                  </>
+                )}
               </div>
-              <div className="flex items-center justify-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
-                <span className="flex items-center gap-1">★ {fetchedShop?.average_rating || 5.0} ({fetchedShop?.completed_orders_count || 1})</span>
-              </div>
+              {fetchedShop && fetchedShop.average_rating ? (
+                <div className="flex items-center justify-center gap-3 mt-1 text-sm font-semibold text-neutral-800">
+                  <span className="flex items-center gap-1"><span className="text-yellow-400">★</span> {fetchedShop.average_rating} ({fetchedShop.completed_orders_count || 0})</span>
+                </div>
+              ) : null}
             </div>
           </div>
           
@@ -987,24 +1003,22 @@ export default function ListingClientWrapper({
             <button className="w-full py-3.5 px-4 rounded-full border border-neutral-900 text-neutral-900 font-bold hover:bg-neutral-50 transition">
               Contacter
             </button>
-            <span className="text-center text-[11px] text-neutral-500">Répond en 24h</span>
+
           </div>
           
-          <div className="grid grid-cols-3 gap-2 pt-6 border-t border-neutral-100 w-full text-center">
-            <div>
-              <h4 className="font-bold text-xs">Livraisons efficaces</h4>
+          {fetchedShop?.average_rating >= 4.8 && (
+            <div className="grid grid-cols-1 gap-2 pt-6 border-t border-neutral-100 w-full text-center">
+              <div>
+                <h4 className="font-bold text-xs">Avis enthousiastes</h4>
+              </div>
             </div>
-            <div>
-              <h4 className="font-bold text-xs">Réponses rapides</h4>
-            </div>
-            <div>
-              <h4 className="font-bold text-xs">Avis enthousiastes</h4>
-            </div>
-          </div>
+          )}
           
-          <p className="text-sm text-neutral-600 leading-relaxed capitalize w-full p-4 bg-neutral-50 rounded-xl text-left">
-            {fetchedShop?.description_translations?.[lang] || fetchedShop?.description_translations?.en || "We are a small collective of authentic local artisans, keeping century-old techniques and traditional crafts alive."}
-          </p>
+          {(fetchedShop?.description_translations?.[lang] || fetchedShop?.description_translations?.en) && (
+            <p className="text-sm text-neutral-600 leading-relaxed capitalize w-full p-4 bg-neutral-50 rounded-xl text-left">
+              {fetchedShop.description_translations[lang] || fetchedShop.description_translations.en}
+            </p>
+          )}
         </div>
       </div>
 

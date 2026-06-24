@@ -3,10 +3,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import LandingPage from "@/components/LandingPage";
 import MainLayout from "./(main)/layout";
-export const revalidate = 60;
-export function generateStaticParams() {
-  return [{ lang: 'en' }, { lang: 'fr' }, { lang: 'ar' }, { lang: 'tz' }];
-}
+export const dynamic = 'force-dynamic';
 import { fetchProducts, fetchShops } from "@/lib/supabase";
 import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";

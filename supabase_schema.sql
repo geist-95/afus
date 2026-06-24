@@ -524,12 +524,23 @@ $$ LANGUAGE plpgsql VOLATILE;
 -- SEED DATA
 -- 1. Categories
 INSERT INTO categories (id, slug, name_translations) VALUES
-('1a111111-1111-1111-1111-111111111111', 'jewelry', '{"en": "jewelry", "fr": "bijoux", "ar": "مجوهرات"}'),
-('2b222222-2222-2222-2222-222222222222', 'art', '{"en": "art", "fr": "art", "ar": "فن"}'),
-('3c333333-3333-3333-3333-333333333333', 'beauty', '{"en": "beauty", "fr": "beauté", "ar": "جمال"}'),
-('4d444444-4444-4444-4444-444444444444', 'clothing', '{"en": "clothing", "fr": "vêtements", "ar": "ملابس"}'),
-('5e555555-5555-5555-5555-555555555555', 'bags', '{"en": "bags", "fr": "sacs", "ar": "حقائب"}'),
-('6f666666-6666-6666-6666-666666666666', 'home-living', '{"en": "home living", "fr": "maison et vie", "ar": "المنزل والمعيشة"}');
+('1a111111-1111-1111-1111-111111111111', 'jewelry', '{"en": "Jewelry", "fr": "Bijoux", "ar": "مجوهرات", "tz": "ⵜⵉⵣⴱⴳⴰⵏ"}'),
+('2b222222-2222-2222-2222-222222222222', 'art-collectibles', '{"en": "Art & Collectibles", "fr": "Art & Objets de Collection", "ar": "الفن والمقتنيات", "tz": "ⵜⴰⵥⵓⵕⵉ"}'),
+('3c333333-3333-3333-3333-333333333333', 'bath-beauty', '{"en": "Bath & Beauty", "fr": "Bain & Beauté", "ar": "الاستحمام والتجميل", "tz": "ⴰⴼⴰⵍⴽⴰⵢ"}'),
+('4d444444-4444-4444-4444-444444444444', 'clothing', '{"en": "Clothing", "fr": "Vêtements", "ar": "ملابس", "tz": "ⵉⵀⴷⵓⵎⵏ"}'),
+('5e555555-5555-5555-5555-555555555555', 'bags-purses', '{"en": "Bags & Purses", "fr": "Sacs & Porte-Monnaie", "ar": "الحقائب والمحافظ", "tz": "ⵉⵇⵕⴰⴱⵏ"}'),
+('6f666666-6666-6666-6666-666666666666', 'home-living', '{"en": "Home & Living", "fr": "Maison & Vie", "ar": "المنزل والمعيشة", "tz": "ⵜⴰⴷⴷⴰⵔⵜ"}'),
+('7a777777-7777-7777-7777-777777777777', 'craft-supplies', '{"en": "Craft Supplies & Tools", "fr": "Fournitures d''Artisanat", "ar": "مستلزمات الحرف والأدوات", "tz": "ⵜⵉⵙⵖⴰⵏ ⵏ ⵜⵥⵓⵕⵉ"}'),
+('8b888888-8888-8888-8888-888888888888', 'accessories', '{"en": "Accessories", "fr": "Accessoires", "ar": "إكسسوارات", "tz": "ⵉⵙⵎⴰⵎⵓⵜⵏ"}'),
+('9c999999-9999-9999-9999-999999999999', 'weddings', '{"en": "Weddings", "fr": "Mariages", "ar": "حفلات الزفاف", "tz": "ⵜⵉⵎⵖⵔⵉⵡⵉⵏ"}'),
+('0a000000-0000-0000-0000-000000000000', 'toys-games', '{"en": "Toys & Games", "fr": "Jouets & Jeux", "ar": "الألعاب والدمى", "tz": "ⵉⵓⵔⴰⵔⵏ"}'),
+('1b111111-1111-1111-1111-111111111112', 'kids-baby', '{"en": "Kids & Baby", "fr": "Enfants & Bébés", "ar": "الأطفال والرضع", "tz": "ⵉⵎⵥⵥⵢⴰⵏⵏ ⴷ ⵉⵣⴳⵣⴰⵡⵏ"}'),
+('2c222222-2222-2222-2222-222222222223', 'paper-party', '{"en": "Paper & Party Supplies", "fr": "Papier & Fournitures de Fête", "ar": "الورق ومستلزمات الحفلات", "tz": "ⵜⴰⵏⴼⵓⵍⵜ ⴷ ⵜⵉⴼⴼⵓⴳⵍⵉⵡⵉⵏ"}'),
+('3d333333-3333-3333-3333-333333333334', 'electronics', '{"en": "Electronics & Accessories", "fr": "Électronique & Accessoires", "ar": "الإلكترونيات وملحقاتها", "tz": "ⵜⵉⵍⵉⴽⵜⵕⵓⵏⵉⵏ"}'),
+('4e444444-4444-4444-4444-444444444445', 'pet-supplies', '{"en": "Pet Supplies", "fr": "Fournitures pour Animaux", "ar": "مستلزمات الحيوانات الأليفة", "tz": "ⵉⵎⵓⴷⴰⵔ ⵏ ⵜⴰⴷⴷⴰⵔⵜ"}'),
+('5f555555-5555-5555-5555-555555555556', 'shoes', '{"en": "Shoes", "fr": "Chaussures", "ar": "الأحذية", "tz": "ⵉⴷⵓⴽⴰⵏ"}'),
+('6a666666-6666-6666-6666-666666666667', 'books-media', '{"en": "Books, Movies & Music", "fr": "Livres, Films & Musique", "ar": "الكتب والأفلام والموسيقى", "tz": "ⵉⴷⵍⵉⵙⵏ, ⵉⵙⵓⵔⴰ, ⴷ ⵓⵥⴰⵡⴰⵏ"}'),
+('7b777777-7777-7777-7777-777777777778', 'gifts', '{"en": "Gifts", "fr": "Cadeaux", "ar": "الهدايا", "tz": "ⵜⵉⵙⵎⵖⵓⵔⵉⵏ"}');
 
 
 -- SEARCH SYSTEM EXTENSION AND RPC

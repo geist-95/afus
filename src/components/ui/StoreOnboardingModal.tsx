@@ -63,7 +63,7 @@ const labels: Record<string, Record<string, string>> = {
     shopDesc: 'Short description (optional)',
     shopDescPlaceholder: 'Tell buyers what makes your shop unique...',
     // Product
-    productTitle: 'List your first product',
+    productTitle: 'List your product',
     productSubtitle: 'Add your first craft so buyers can see what you sell immediately.',
     productName: 'Product title',
     productNamePlaceholder: 'e.g. Handwoven Berber Wool Rug',
@@ -108,7 +108,7 @@ const labels: Record<string, Record<string, string>> = {
     errPasswordLength: 'Password must be at least 6 characters.',
     errShopNameEmpty: 'Please enter a shop name.',
     errShopNameLength: 'Shop name must be between 4 and 20 characters.',
-    errShopNameFormat: 'Shop name can only contain letters and numbers (no spaces, special characters, or emojis).',
+    errShopNameFormat: 'Shop name can only contain letters, numbers, and spaces (no special characters or emojis).',
     errShopNameTaken: 'This shop name is already taken.',
     errVerifyingShop: 'Error verifying shop name.',
     errSelectCity: 'Please select your city.',
@@ -138,7 +138,7 @@ const labels: Record<string, Record<string, string>> = {
     shopDesc: 'Description courte (optionnel)',
     shopDescPlaceholder: 'Dites aux acheteurs ce qui rend votre boutique unique...',
     // Product
-    productTitle: 'Ajoutez votre premier produit',
+    productTitle: 'Ajoutez votre produit',
     productSubtitle: 'Ajoutez votre première création pour que les acheteurs voient immédiatement ce que vous vendez.',
     productName: 'Nom du produit',
     productNamePlaceholder: 'ex. Tapis berbère en laine fait main',
@@ -179,7 +179,7 @@ const labels: Record<string, Record<string, string>> = {
     errPasswordLength: 'Le mot de passe doit comporter au moins 6 caractères.',
     errShopNameEmpty: 'Veuillez entrer un nom de boutique.',
     errShopNameLength: 'Le nom de la boutique doit comporter entre 4 et 20 caractères.',
-    errShopNameFormat: 'Le nom de la boutique ne peut contenir que des lettres et des chiffres (sans espaces, caractères spéciaux ou emojis).',
+    errShopNameFormat: 'Le nom de la boutique ne peut contenir que des lettres, des chiffres et des espaces (pas de caractères spéciaux ni d\'émojis).',
     errShopNameTaken: 'Ce nom de boutique est déjà pris.',
     errVerifyingShop: 'Erreur lors de la vérification du nom de la boutique.',
     errSelectCity: 'Veuillez sélectionner votre ville.',
@@ -375,10 +375,11 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
   // Product fields
   const [productTitle, setProductTitle] = useState('');
+  const [productDesc, setProductDesc] = useState('');
   const [productPrice, setProductPrice] = useState('');
   const [productImageFile, setProductImageFile] = useState<File | null>(null);
   const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
-  const [productCategory, setProductCategory] = useState('cat_home_living');
+  const [productCategory, setProductCategory] = useState('');
   const [createdProduct, setCreatedProduct] = useState<any>(null);
 
   const [createdShopSlug, setCreatedShopSlug] = useState('');
@@ -431,10 +432,11 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       setShopName(''); setShopDesc('');
       setCity(''); setAddress('');
       setProductTitle('');
+      setProductDesc('');
       setProductPrice('');
       setProductImageFile(null);
       setProductImagePreview(null);
-      setProductCategory('cat_home_living');
+      setProductCategory('');
       setCreatedProduct(null);
       setReviewIdx(0);
 
@@ -494,11 +496,13 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     const cleanName = shopName.trim();
     if (!cleanName) { setError(t.errShopNameEmpty); return; }
     if (cleanName.length < 4 || cleanName.length > 20) { setError(t.errShopNameLength); return; }
-    if (!/^[a-zA-Z0-9]+$/.test(cleanName)) { setError(t.errShopNameFormat); return; }
+    if (!/^[a-zA-Z0-9\s]+$/.test(cleanName)) { setError(t.errShopNameFormat); return; }
     
+    // Create a slugified version for checking availability (lowercase, replace spaces with hyphens)
+    const shopSlug = cleanName.toLowerCase().replace(/\s+/g, '-');
     setLoading(true);
     try {
-      const isAvailable = await checkShopSlugAvailable(cleanName.toLowerCase());
+      const isAvailable = await checkShopSlugAvailable(shopSlug);
       if (!isAvailable) {
         setError(t.errShopNameTaken);
         setLoading(false);
@@ -530,6 +534,10 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
         setError(lang === 'fr' ? 'Veuillez ajouter une photo.' : lang === 'ar' ? 'يرجى إضافة صورة.' : 'Please add a photo.');
         return;
       }
+      if (!productCategory) {
+        setError(lang === 'fr' ? 'Veuillez sélectionner une catégorie.' : lang === 'ar' ? 'يرجى اختيار فئة.' : 'Please select a category.');
+        return;
+      }
     }
 
     setStep('location');
@@ -537,6 +545,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
 
   const handleProductSkip = () => {
     setProductTitle('');
+    setProductDesc('');
     setProductPrice('');
     setProductImageFile(null);
     setProductImagePreview(null);
@@ -601,8 +610,9 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
             },
             body: JSON.stringify({
               shop_id: createdShop.id,
-              category_id: productCategory || 'cat_home_living',
+              category_id: productCategory,
               title: productTitle,
+              description: productDesc,
               price: productPrice,
               imageUrl: uploadedProductImageUrl,
             }),
@@ -648,7 +658,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
     : ((contentStepIndex + 1) / contentSteps.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 transition-opacity"
@@ -662,7 +672,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
       />
 
       {/* Modal Container — Centered, non-fullscreen, arabic-frame corners */}
-      <div className={`relative z-10 w-full max-w-xl md:max-w-2xl bg-white shadow-2xl arabic-frame flex flex-col max-h-[90vh] overflow-hidden ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
+      <div className={`relative z-10 w-full max-w-xl md:max-w-2xl bg-white shadow-2xl arabic-frame flex flex-col min-h-[100dvh] md:min-h-0 md:max-h-[90vh] overflow-hidden border-0 md:border ${lang === 'tz' ? 'font-tifinagh' : ''}`}>
 
         {/* Unified header */}
         <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-14 md:py-6 border-b border-neutral-100 bg-white z-20">
@@ -704,7 +714,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       else if (step === 'location') setStep('product');
                       else if (step === 'summary') setStep('location');
                     }}
-                    className="flex items-center gap-1.5 text-sm text-neutral-500 hover:text-black mb-4 transition-colors"
+                    className="hidden md:flex items-center gap-1.5 text-sm text-neutral-500 hover:text-black mb-4 transition-colors"
                   >
                     <IconArrowLeft className="w-4 h-4" strokeWidth={2} />
                     <span>{t.back}</span>
@@ -731,8 +741,8 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
               </div>
             )}
 
-            <div className="flex-1 min-h-full flex items-center justify-center pt-28 md:pt-32 pb-6 md:pb-10 px-6 md:px-10 lg:px-14 lg:pb-14">
-              <div className="w-full max-w-md">
+            <div className="flex-1 flex flex-col justify-start pt-28 md:pt-32 pb-24 md:pb-10 px-6 md:px-10 lg:px-14 lg:pb-14 min-h-full">
+              <div className="w-full max-w-md my-auto mx-auto">
 
               {/* ── LOGIN MODE ── */}
                 {isLoginMode && (
@@ -785,7 +795,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       </div>
                       <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || !loginEmail || !loginPassword}
                         className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {loading ? '...' : t.signinBtn}
@@ -807,8 +817,6 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                 {step === 'account' && !isLoginMode && (
                   <div className="space-y-6 text-center">
                     <div>
-
-
                       <h1 className="text-3xl md:text-4xl font-bold !font-ariom text-neutral-900 leading-tight">{t.accountTitle}</h1>
                       <p className="text-neutral-500 mt-2 text-base">{t.accountSubtitle}</p>
                     </div>
@@ -862,23 +870,33 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         </div>
                       </div>
 
+                      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50 flex flex-row-reverse items-center justify-between gap-3 md:relative md:border-0 md:bg-transparent md:p-0 md:mt-6">
+                        <button
+                          type="submit"
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all"
+                        >
+                          {t.next}
+                          <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                        </button>
+                        
+                        {!hasSession && (
+                          <button
+                            type="button"
+                            onClick={() => { setIsLoginMode(true); setError(''); }}
+                            className="md:hidden flex-1 flex items-center justify-center gap-1.5 text-sm md:text-base font-bold text-neutral-600 hover:text-black hover:bg-neutral-50 transition-colors py-3.5 md:py-4 rounded-full border border-neutral-200"
+                          >
+                            <span>{t.signIn}</span>
+                          </button>
+                        )}
+                      </div>
 
-
-                      <button
-                        type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-8"
-                      >
-                        {t.next}
-                        <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                      </button>
-
-                      <div className="flex items-center gap-3 my-2">
+                      <div className="hidden md:flex items-center gap-3 my-2">
                         <div className="flex-1 h-px bg-neutral-200" />
                         <span className="text-xs text-neutral-400 font-medium">{t.or}</span>
                         <div className="flex-1 h-px bg-neutral-200" />
                       </div>
 
-                      <div className="text-center">
+                      <div className="hidden md:text-center">
                         <button
                           type="button"
                           onClick={() => { setIsLoginMode(true); setError(''); }}
@@ -918,18 +936,29 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         </div>
                         {shopName && (
                           <p className="text-xs text-neutral-400 mt-1">
-                            afus.ma/shop/{shopName.toLowerCase()}
+                            afus.ma/shop/{shopName.toLowerCase().replace(/\s+/g, '-')}
                           </p>
                         )}
                       </div>
 
-                      <button
-                        type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-8"
-                      >
-                        {t.next}
-                        <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                      </button>
+                      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50 flex flex-row-reverse items-center justify-between gap-3 md:relative md:border-0 md:bg-transparent md:p-0 md:mt-6">
+                        <button
+                          type="submit"
+                          disabled={!shopName.trim()}
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {t.next}
+                          <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setError(''); setStep('account'); }}
+                          className="md:hidden flex-1 flex items-center justify-center gap-1.5 text-sm md:text-base font-bold text-neutral-600 hover:text-black hover:bg-neutral-50 transition-colors py-3.5 md:py-4 rounded-full border border-neutral-200"
+                        >
+                          <IconArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                          <span>{t.back}</span>
+                        </button>
+                      </div>
                     </form>
                   </div>
                 )}
@@ -960,7 +989,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="flex flex-col gap-4">
                         <div className="space-y-1">
                           <label className="text-sm font-semibold text-black block">{t.productPrice} <span className="text-red-500">*</span></label>
                           <input
@@ -980,6 +1009,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                               onChange={(e) => setProductCategory(e.target.value)}
                               className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer"
                             >
+                              <option value="" disabled>{t.productCategoryPlaceholder || 'Select category...'}</option>
                               {staticCategories.map((c) => (
                                 <option key={c.id} value={c.id}>
                                   {c.name[lang as 'en'|'fr'|'ar'|'tz'] || c.name.en}
@@ -989,6 +1019,16 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             <IconSelector className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" strokeWidth={1.8} />
                           </div>
                         </div>
+                      </div>
+
+                      <div className="space-y-1 mt-4">
+                        <label className="text-sm font-semibold text-black block">{lang === 'fr' ? 'Description (facultative)' : lang === 'ar' ? 'الوصف (اختياري)' : 'Description (optional)'}</label>
+                        <textarea
+                          value={productDesc}
+                          onChange={(e) => setProductDesc(e.target.value)}
+                          className="w-full border border-neutral-200 rounded-2xl px-4 py-3 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 resize-none h-24"
+                          placeholder={lang === 'fr' ? 'Décrivez votre produit...' : lang === 'ar' ? 'صف منتجك...' : 'Describe your product...'}
+                        />
                       </div>
 
                       <div className="space-y-1">
@@ -1029,22 +1069,34 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         </div>
                       </div>
 
-                      <button
-                        type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-6 cursor-pointer"
-                      >
-                        {t.next}
-                        <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                      </button>
+                      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50 flex flex-row-reverse items-center justify-between gap-3 md:relative md:border-0 md:bg-transparent md:p-0 md:mt-6">
+                        <button
+                          type="submit"
+                          disabled={!productTitle || !productPrice || !productCategory || !productImageFile}
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {t.next}
+                          <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                        </button>
 
-                      <div className="text-center mt-2">
                         <button
                           type="button"
                           onClick={handleProductSkip}
-                          className="text-xs text-neutral-500 font-bold hover:text-black transition-colors underline cursor-pointer"
+                          className="md:hidden flex-1 flex items-center justify-center gap-1.5 text-sm md:text-base font-bold text-neutral-600 hover:text-black hover:bg-neutral-50 transition-colors py-3.5 md:py-4 rounded-full border border-neutral-200"
                         >
-                          {t.skipStep}
+                          <span>{t.skipStep}</span>
                         </button>
+                        
+                        {/* Desktop Skip */}
+                        <div className="hidden md:block absolute -bottom-8 left-0 right-0 text-center">
+                          <button
+                            type="button"
+                            onClick={handleProductSkip}
+                            className="text-xs md:text-sm font-bold text-neutral-500 hover:text-black transition-colors underline cursor-pointer"
+                          >
+                            {t.skipStep}
+                          </button>
+                        </div>
                       </div>
                     </form>
                   </div>
@@ -1075,7 +1127,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                             className="w-full border border-neutral-200 rounded-xl pl-10 pr-10 py-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all bg-neutral-50 hover:bg-white appearance-none cursor-pointer"
                           >
                             <option value="" disabled>{t.selectCity}</option>
-                            {MOROCCAN_CITIES.map((c) => (
+                            {[...MOROCCAN_CITIES].sort((a, b) => a.localeCompare(b)).map((c) => (
                               <option key={c} value={c}>{c}</option>
                             ))}
                           </select>
@@ -1083,30 +1135,44 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <label className="text-sm font-semibold text-black block">{t.address}</label>
-                        <div className="relative">
-                          <IconMapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
-                          <textarea
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            rows={2}
-                            className="w-full border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all bg-neutral-50 hover:bg-white resize-none"
-                            placeholder={t.addressPlaceholder}
-                          />
+                      {city && (
+                        <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <label className="text-sm font-semibold text-black block">
+                            {t.address} <span className="text-neutral-400 font-normal">{lang === 'fr' ? '(facultatif)' : lang === 'ar' ? '(اختياري)' : '(optional)'}</span>
+                          </label>
+                          <div className="relative">
+                            <IconMapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
+                            <textarea
+                              value={address}
+                              onChange={(e) => setAddress(e.target.value)}
+                              rows={2}
+                              className="w-full border border-neutral-200 rounded-xl pl-10 pr-4 py-3 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all bg-neutral-50 hover:bg-white resize-none"
+                              placeholder={t.addressPlaceholder}
+                            />
+                          </div>
                         </div>
+                      )}
+
+                      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50 flex flex-row-reverse items-center justify-between gap-3 md:relative md:border-0 md:bg-transparent md:p-0 md:mt-8">
+                        <button
+                          type="button"
+                          onClick={handleLocationNext}
+                          disabled={!city}
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {t.next}
+                          <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => { setError(''); setStep('product'); }}
+                          className="md:hidden flex-1 flex items-center justify-center gap-1.5 text-sm md:text-base font-bold text-neutral-600 hover:text-black hover:bg-neutral-50 transition-colors py-3.5 md:py-4 rounded-full border border-neutral-200"
+                        >
+                          <IconArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                          <span>{t.back}</span>
+                        </button>
                       </div>
-
-
-
-                      <button
-                        type="button"
-                        onClick={handleLocationNext}
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all mt-8"
-                      >
-                        {t.next}
-                        <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
-                      </button>
                     </div>
                   </div>
                 )}
@@ -1130,7 +1196,7 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                       {productTitle && productImagePreview ? (
                         <div className="arabic-frame bg-neutral-200 p-[1px] max-w-sm mx-auto shadow-sm">
                           <div className="arabic-frame bg-white p-4 flex flex-col text-left space-y-3">
-                            <div className="arabic-frame aspect-square w-full bg-neutral-100 overflow-hidden relative">
+                            <div className="arabic-frame h-48 w-full bg-neutral-100 overflow-hidden relative">
                               <img
                                 src={productImagePreview}
                                 alt={productTitle}
@@ -1143,6 +1209,9 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                               </span>
                               <h3 className="font-bold text-neutral-900 text-lg mt-0.5 line-clamp-1">{productTitle}</h3>
                               <p className="text-sm font-bold text-black mt-1 font-sans">{productPrice} MAD</p>
+                              {productDesc && (
+                                <p className="text-xs text-neutral-500 mt-2 line-clamp-2">{productDesc}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1162,23 +1231,34 @@ export default function StoreOnboardingModal({ isOpen, onClose, lang }: StoreOnb
                         )
                       )}
 
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full flex items-center justify-center gap-2 bg-primary text-white py-4 rounded-full font-bold text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
-                      >
-                        {loading ? (
-                          <span className="flex items-center gap-2 justify-center w-full">
-                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            {t.creating}
-                          </span>
-                        ) : (
-                          <>
-                            {t.createShop}
-                            <IconCheck className="w-5 h-5" strokeWidth={2.5} />
-                          </>
-                        )}
-                      </button>
+                      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50 flex flex-row-reverse items-center justify-between gap-3 md:relative md:border-0 md:bg-transparent md:p-0 md:mt-8">
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {loading ? (
+                            <span className="flex items-center gap-2 justify-center w-full">
+                              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              {t.creating}
+                            </span>
+                          ) : (
+                            <>
+                              {t.createShop}
+                              <IconCheck className="w-5 h-5" strokeWidth={2.5} />
+                            </>
+                          )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => { setError(''); setStep('location'); }}
+                          className="md:hidden flex-1 flex items-center justify-center gap-1.5 text-sm md:text-base font-bold text-neutral-600 hover:text-black hover:bg-neutral-50 transition-colors py-3.5 md:py-4 rounded-full border border-neutral-200"
+                        >
+                          <IconArrowLeft className="w-5 h-5" strokeWidth={2.5} />
+                          <span>{t.back}</span>
+                        </button>
+                      </div>
                     </form>
                   </div>
                 )}

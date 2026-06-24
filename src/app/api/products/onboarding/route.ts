@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   try {
-    const { shop_id, category_id, title, price, imageUrl } = await req.json();
+    const { shop_id, category_id, title, description, price, imageUrl } = await req.json();
 
     if (!shop_id || !category_id || !title || !price || !imageUrl) {
       return NextResponse.json({ error: 'Missing required product parameters' }, { status: 400 });
@@ -49,9 +49,9 @@ export async function POST(req: Request) {
     };
 
     const descriptionTranslations = {
-      en: 'Your first craft listing on afus.',
-      fr: 'Votre première création sur afus.',
-      ar: 'أول قطعة من إبداعك على أفوس.',
+      en: description || 'Your first craft listing on afus.',
+      fr: description || 'Votre première création sur afus.',
+      ar: description || 'أول قطعة من إبداعك على أفوس.',
     };
 
     const slugTranslations = {
