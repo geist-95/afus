@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
-  { label: "Jewelry",     labels: { en: "Jewelry", fr: "Bijoux", ar: "مجوهرات", tz: "ⵜⵉⵣⴱⴳⴰⵏ" },     href: "/category/jewelry",     img: "/categories/jewelry.png" },
-  { label: "Art",         labels: { en: "Art", fr: "Art", ar: "فن", tz: "ⵜⴰⵥⵓⵕⵉ" },         href: "/category/art-collectibles",         img: "/categories/11.png"      },
-  { label: "Beauty",      labels: { en: "Beauty", fr: "Beauté", ar: "جمال", tz: "ⴰⴼⴰⵍⴽⴰⵢ" },      href: "/category/bath-beauty",      img: "/categories/beauty.png"  },
-  { label: "Clothing",    labels: { en: "Clothing", fr: "Vêtements", ar: "ملابس", tz: "ⵉⵀⴷⵓⵎⵏ" },    href: "/category/clothing",    img: "/categories/clothing.png"},
-  { label: "Bags",        labels: { en: "Bags", fr: "Sacs", ar: "حقائب", tz: "ⵉⵇⵕⴰⴱⵏ" },        href: "/category/bags-purses",        img: "/categories/bags.png"    },
-  { label: "Home Living", labels: { en: "Home Living", fr: "Maison", ar: "المنزل", tz: "ⵜⴰⴷⴷⴰⵔⵜ" }, href: "/category/home-living", img: "/categories/home.png"    },
-  { label: "Baby",        labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" },        href: "/category/kids-baby",        img: "/categories/baby.png"    },
+  { label: "Jewelry", labels: { en: "Jewelry", fr: "Bijoux", ar: "مجوهرات", tz: "ⵜⵉⵣⴱⴳⴰⵏ" }, href: "/category/jewelry", img: "/categories/jewelry.png" },
+  { label: "Art", labels: { en: "Art", fr: "Art", ar: "فن", tz: "ⵜⴰⵥⵓⵕⵉ" }, href: "/category/art-collectibles", img: "/categories/11.png" },
+  { label: "Beauty", labels: { en: "Beauty", fr: "Beauté", ar: "جمال", tz: "ⴰⴼⴰⵍⴽⴰⵢ" }, href: "/category/bath-beauty", img: "/categories/beauty.png" },
+  { label: "Clothing", labels: { en: "Clothing", fr: "Vêtements", ar: "ملابس", tz: "ⵉⵀⴷⵓⵎⵏ" }, href: "/category/clothing", img: "/categories/clothing.png" },
+  { label: "Bags", labels: { en: "Bags", fr: "Sacs", ar: "حقائب", tz: "ⵉⵇⵕⴰⴱⵏ" }, href: "/category/bags-purses", img: "/categories/bags.png" },
+  { label: "Home Living", labels: { en: "Home Living", fr: "Maison", ar: "المنزل", tz: "ⵜⴰⴷⴷⴰⵔⵜ" }, href: "/category/home-living", img: "/categories/home.png" },
+  { label: "Baby", labels: { en: "Baby", fr: "Bébé", ar: "أطفال", tz: "ⴰⵣⴳⵣⴰⵡ" }, href: "/category/kids-baby", img: "/categories/baby.png" },
 ];
 
 export default function BrowseByCategory({ lang, className }: { lang: string; className?: string }) {
@@ -23,7 +23,7 @@ export default function BrowseByCategory({ lang, className }: { lang: string; cl
   return (
     <div className={`py-2 md:py-8${className ? ` ${className}` : ""}`}>
       <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-start md:text-center !text-black">{title}</h2>
-      
+
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">
         <div className="flex gap-3 overflow-x-auto pb-2 px-4 -mx-4 sm:mx-0 sm:px-0 scroll-pl-4 sm:scroll-pl-0 after:content-[''] after:w-px after:shrink-0" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>

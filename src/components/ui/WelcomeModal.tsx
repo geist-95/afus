@@ -203,6 +203,10 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
       }, 500);
       return () => clearTimeout(timer);
     }
+
+    const handleOpenModal = () => setIsOpen(true);
+    window.addEventListener('open-welcome-modal', handleOpenModal);
+    return () => window.removeEventListener('open-welcome-modal', handleOpenModal);
   }, []);
 
   useEffect(() => {
@@ -332,7 +336,7 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
               </button>
               <button 
                 onClick={handleClose} 
-                className="flex-1 bg-neutral-50 border border-neutral-200 text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity"
+                className="flex-1 bg-neutral-50 border-2 border-black text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity"
               >
                 {continueText}
               </button>

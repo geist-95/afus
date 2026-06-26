@@ -340,6 +340,12 @@ export default function NavBar({ lang }: NavBarProps) {
 
           {/* Nav Actions */}
           <nav className="flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
+              className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer whitespace-nowrap"
+            >
+              {lang === 'fr' ? 'À propos' : lang === 'ar' ? 'من نحن' : lang === 'tz' ? 'ⴼⵍⵍⴰⵖ' : 'About'}
+            </button>
             {loading ? (
               <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
             ) : session ? (
