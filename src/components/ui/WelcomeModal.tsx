@@ -100,7 +100,7 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
 
   const introText: Record<string, string> = {
     en: "Afus is a 🇲🇦 Moroccan marketplace for artisans and handmade goods.",
-    fr: "Afus est une place de marché 🇲🇦 marocaine pour les artisans et les produits faits main.",
+    fr: "Afus est une platforme 🇲🇦 marocaine pour les artisans et les produits faits main.",
     ar: "Afus هو سوق 🇲🇦 مغربي للحرفيين والمنتجات المصنوعة يدوياً.",
     tz: "Afus ⵉⴳⴰ ⵢⴰⵏ ⵓⴷⵖⴰⵔ 🇲🇦 ⵏ ⵜⵎⴳⵓⵔⵉ ⵉ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴷ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ."
   };
