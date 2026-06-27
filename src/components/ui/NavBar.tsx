@@ -61,7 +61,8 @@ export default function NavBar({ lang }: NavBarProps) {
   const { totalItems: wishlistCount } = useWishlist();
   const langRef = useRef<HTMLDivElement>(null);
   const catScrollRef = useRef<HTMLDivElement>(null);
-  const notifRef = useRef<HTMLDivElement>(null);
+  const notifRefDesktop = useRef<HTMLDivElement>(null);
+  const notifRefMobile = useRef<HTMLDivElement>(null);
   const [catCanScrollLeft, setCatCanScrollLeft] = useState(false);
   const [catCanScrollRight, setCatCanScrollRight] = useState(true);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -117,7 +118,9 @@ export default function NavBar({ lang }: NavBarProps) {
       if (langRef.current && !langRef.current.contains(event.target as Node)) {
         setLangOpen(false);
       }
-      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+      const desktopContains = notifRefDesktop.current?.contains(event.target as Node);
+      const mobileContains = notifRefMobile.current?.contains(event.target as Node);
+      if (!desktopContains && !mobileContains) {
         setNotificationsOpen(false);
       }
     }
@@ -275,23 +278,82 @@ export default function NavBar({ lang }: NavBarProps) {
           <img src="/logo/logo.png" alt="Afus Logo" width={28} height={28} className="w-7 h-7 object-contain !rounded-none" />
           <img src="/logo/afus.svg" alt="afus" width={70} height={18} className="h-4.5 object-contain !rounded-none" />
         </Link>
-        <div className="flex items-center gap-3">
-          {session ? (
-            <button
-              onClick={() => { setMenuOpen(false); handleLogout(); }}
-              className="text-black font-bold text-[12px] hover:underline"
-            >
-              {t.logout}
-            </button>
+        <nav className="flex items-center gap-3 text-xs font-medium flex-shrink-0 text-black">
+          {loading ? (
+            <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
+          ) : session ? (
+            <>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="flex items-center gap-2 rounded-lg py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
+              >
+                {(session as any).avatar_url ? (
+                  <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
+                )}
+              </button>
+              <div className="relative flex items-center" ref={notifRefMobile}>
+                <button onClick={handleOpenNotifications} className="flex items-center text-black hover:opacity-80 relative cursor-pointer" title="Notifications">
+                  <BellIcon />
+                  {newAlerts.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-[#E8583F] w-2.5 h-2.5 rounded-full border border-white"></span>
+                  )}
+                </button>
+                {notificationsOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-72 max-h-96 overflow-y-auto bg-white border border-primary/20 rounded-lg shadow-lg z-50 p-2">
+                    <div className="px-2 py-2 border-b border-primary/10 text-xs font-bold text-black mb-2 flex justify-between items-center">
+                      {lang === 'fr' ? 'Alertes' : lang === 'ar' ? 'تنبيهات' : 'Notifications'}
+                      <button onClick={() => setNotificationsOpen(false)} className="text-black/50 hover:text-black cursor-pointer">×</button>
+                    </div>
+                    {newAlerts.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {newAlerts.map(alert => (
+                          <Link key={alert.id} href={`/${lang}/shop/${alert.shops?.slug || '#'}`} onClick={() => setNotificationsOpen(false)} className="flex items-start gap-3 p-2 hover:bg-neutral-50 rounded-md transition-colors">
+                            <img src={alert.media_gallery?.[0] || 'https://via.placeholder.com/40'} alt="product" width={40} height={40} loading="lazy" className="w-10 h-10 object-cover rounded-md" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-semibold text-black truncate">{alert.shops?.name || 'A shop'} posted a new product</p>
+                              <p className="text-[10px] text-neutral-500 truncate">{alert.title_translations?.[lang as 'en'|'fr'|'ar'|'tz'] || alert.title_translations?.en}</p>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-neutral-400 text-xs">
+                        {lang === 'fr' ? 'Aucune nouvelle alerte.' : lang === 'ar' ? 'لا توجد تنبيهات جديدة.' : 'No new alerts.'}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <Link href={`/${lang}/cart`} className="flex items-center text-black hover:opacity-80 relative" title={t.cart}>
+                <ShoppingCartIcon />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+            </>
           ) : (
-            <button
-              onClick={() => setOnboardingModalOpen(true)}
-              className="text-black font-bold text-[12px] hover:underline"
-            >
-              {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
-            </button>
+            <>
+              <button
+                onClick={() => setLoginModalOpen(true)}
+                className="flex items-center text-black hover:opacity-80"
+              >
+                <UserIcon />
+              </button>
+              <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:opacity-80 relative" title={t.cart}>
+                <ShoppingCartIcon />
+                {totalItems > 0 && (
+                  <span className="absolute -top-2 -right-3.5 bg-warning text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+            </>
           )}
-        </div>
+        </nav>
       </div>
 
       <header className="border-b border-primary/10 bg-white sticky top-0 z-50">
@@ -339,7 +401,7 @@ export default function NavBar({ lang }: NavBarProps) {
           </div>
 
           {/* Nav Actions */}
-          <nav className="flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
+          <nav className="hidden md:flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
             <button
               onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
               className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer whitespace-nowrap"
@@ -408,7 +470,7 @@ export default function NavBar({ lang }: NavBarProps) {
                 {/* Mobile User Icon removed in favor of unified dropdown */}
 
                 {/* Notification Bell */}
-                <div className="relative flex items-center" ref={notifRef}>
+                <div className="relative flex items-center" ref={notifRefDesktop}>
                   <button onClick={handleOpenNotifications} className="flex items-center text-black hover:opacity-80 relative cursor-pointer" title="Notifications">
                     <BellIcon />
                     {newAlerts.length > 0 && (

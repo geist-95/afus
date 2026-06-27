@@ -154,138 +154,141 @@ export default function ShopClientWrapper({
   const bannerUrl = hasCover ? (shop.metadata?.cover_url || shop.banner_url) : '';
 
   return (
-    <div className="w-full pb-12">
+    <div className="w-[100vw] relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] -mt-4 md:-mt-8 pb-12">
       {/* Shop Banner with Info */}
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        <div 
-          className="relative w-full overflow-hidden min-h-[300px] flex flex-col md:flex-row arabic-frame"
-          style={{ filter: "drop-shadow(1px 0 0 #e5e5e5) drop-shadow(-1px 0 0 #e5e5e5) drop-shadow(0 1px 0 #e5e5e5) drop-shadow(0 -1px 0 #e5e5e5)", backgroundColor: shop.metadata?.banner_bg_color || '#f0e4f6' }}
-        >
-            {/* Left: Shop Info */}
-            <div className="flex-1 flex flex-col items-start justify-center px-6 md:px-12 py-10 z-10 text-left">
-              
+      <div className="w-full">
+        {/* Unified Responsive View */}
+        <div className="flex flex-col w-full bg-white relative pb-2 md:pb-6">
+          {/* Banner at the top (full width, arabic frame on bottom) */}
+          <div className="relative w-full h-[180px] md:h-[300px] flex-shrink-0 bg-neutral-100 overflow-hidden arabic-frame-sm-bottom md:arabic-frame-bottom">
+            {hasCover ? (
+              <img src={bannerUrl} alt="shop banner" className="w-full h-full object-cover" />
+            ) : (
+               <div 
+                  className="w-full h-full flex items-center justify-center overflow-hidden"
+                  style={{ backgroundColor: cityObj.bg }}
+                >
+                  <div 
+                    className="font-black select-none whitespace-nowrap"
+                    style={{ 
+                      color: 'rgba(255,255,255,0.1)',
+                      fontSize: '80px',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {cityObj.tifinagh}
+                  </div>
+                </div>
+            )}
+            {/* Floating Action Buttons */}
+            <div className="absolute bottom-3 right-3 z-20 md:hidden">
+              <ShopActionButtons shopId={shop.id} contactLabel={t.contact} subscribeLabel={t.subscribe} lang={lang} variant="mobile" />
+            </div>
+          </div>
+
+          {/* Info below banner */}
+          <div className="px-4 py-3 md:py-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 relative z-10 max-w-[1440px] mx-auto w-full">
+            
+            {/* Left side: Avatar + Info */}
+            <div className="flex items-start md:items-center gap-3 md:gap-4 w-full md:w-auto">
               {/* Avatar */}
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-[#493b54] border border-[#493b54] flex-shrink-0 mb-4 flex items-center justify-center text-white font-bold text-3xl rounded-full overflow-hidden">
+              <div className="w-16 h-16 rounded-[10px] overflow-hidden flex-shrink-0 border border-neutral-200 bg-white shadow-sm flex items-center justify-center text-[#493b54] font-bold text-2xl relative z-20">
                 {hasLogo ? (
                   <img src={logoUrl} alt="shop logo" className="w-full h-full object-cover" />
                 ) : (
                   <span className="uppercase">{shop.name ? shop.name.charAt(0) : 'S'}</span>
                 )}
               </div>
-
-              {/* Title & Badges */}
-              <div className="flex items-center justify-start gap-3 mb-1 flex-wrap">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold !font-ariom leading-tight tracking-tight !text-neutral-900">
+              
+              {/* Text */}
+              <div className="flex flex-col pt-0.5 md:pt-0">
+                <h1 className="text-[18px] md:text-xl font-bold text-black leading-tight mb-0.5">
                   {shop.name}
                 </h1>
                 
-                {/* Badges */}
-                <div className="flex items-center gap-2">
+                {/* Location */}
+                <div className="text-neutral-500 text-xs md:text-sm mb-0.5">
+                  {shop.merchant_city || cityObj.name}, Morocco
                 </div>
-              </div>
-              
-              {/* Location */}
-              <div className="flex items-center justify-start gap-1.5 font-medium mb-5 text-neutral-600">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 md:w-5 md:h-5 text-neutral-500">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-                </svg>
-                <span>{shop.merchant_city || cityObj.name}, Morocco</span>
-              </div>
-              
-              {/* Social Links */}
-              {(shop.metadata?.instagram || shop.metadata?.facebook || shop.metadata?.whatsapp || shop.metadata?.phone || shop.metadata?.email) && (
-                <div className="flex items-center justify-start gap-4 mb-5">
-                  {shop.metadata?.instagram && (
-                     <a href={shop.metadata.instagram.startsWith('http') ? shop.metadata.instagram : `https://instagram.com/${shop.metadata.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 text-neutral-600">
-                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                     </a>
-                  )}
-                  {shop.metadata?.facebook && (
-                     <a href={shop.metadata.facebook.startsWith('http') ? shop.metadata.facebook : `https://facebook.com/${shop.metadata.facebook}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 text-neutral-600">
-                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                     </a>
-                  )}
-                  {shop.metadata?.whatsapp && (
-                     <a href={`https://wa.me/${shop.metadata.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 text-neutral-600">
-                       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M11.996 0A12 12 0 000 12c0 2.138.563 4.148 1.547 5.918L0 24l6.233-1.528A11.968 11.968 0 0011.996 24C18.625 24 24 18.625 24 12 24 5.375 18.625 0 11.996 0zm0 22c-1.802 0-3.504-.46-5.011-1.28l-.358-.2-3.73.91.998-3.606-.213-.342C2.79 15.658 2.2 13.882 2.2 12c0-5.41 4.402-9.813 9.796-9.813 5.394 0 9.795 4.403 9.795 9.813 0 5.411-4.401 9.813-9.795 9.813zm5.367-7.318c-.294-.148-1.741-.861-2.012-.958-.271-.098-.468-.148-.665.148-.196.295-.762.958-.934 1.154-.172.197-.344.221-.638.074-1.547-.775-2.613-1.378-3.593-2.684-.251-.334.25-.32.687-.991.147-.221.074-.418 0-.565-.074-.148-.665-1.603-.91-2.193-.241-.577-.487-.499-.665-.508-.172-.01-.369-.01-.566-.01-.197 0-.517.074-.788.37s-1.033 1.009-1.033 2.46c0 1.452 1.058 2.855 1.205 3.052.148.197 2.083 3.181 5.045 4.46.706.305 1.258.487 1.688.623.708.225 1.353.193 1.862.117.57-.084 1.741-.712 1.987-1.401.246-.689.246-1.28.172-1.401-.074-.123-.271-.197-.565-.344z"/></svg>
-                     </a>
-                  )}
-                </div>
-              )}
-
-              {/* Actions & Stats */}
-              <div className="flex flex-col items-start w-full">
                 
-                {/* Container */}
-                <div className="flex flex-col gap-5 w-full md:w-auto">
-                  
-                  {/* Action Buttons (placed above stats as requested) */}
-                  <div className="w-full sm:w-auto">
-                    <ShopActionButtons
-                      shopId={shop.id}
-                      contactLabel={t.contact}
-                      subscribeLabel={t.subscribe}
-                      lang={lang}
-                    />
-                  </div>
+                {/* Mobile: Joined Date */}
+                <div className="md:hidden text-neutral-500 text-xs mb-2">
+                  {lang === 'fr' ? 'Inscrit en ' : lang === 'ar' ? 'انضم في ' : 'Joined '}
+                  {new Intl.DateTimeFormat(lang === 'tz' ? 'fr' : lang, { month: 'long', year: 'numeric' }).format(shop.created_at ? new Date(shop.created_at) : new Date())}
+                </div>
 
-                  {/* Stats with vertical separators */}
-                  <div className="flex items-center justify-start text-sm md:text-base divide-x divide-neutral-200">
-                    <div className="flex flex-col items-start pr-6">
-                      <span className="font-bold text-neutral-800 text-lg leading-none">{completedOrdersCount}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1.5">{t.ordersCount}</span>
-                    </div>
-                    <div className="flex flex-col items-start px-6">
-                      <span className="font-bold flex items-center gap-1 text-neutral-800 text-lg leading-none">
-                        {averageRating}
-                        {averageRating !== "–" && (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 -mt-0.5 text-yellow-500">
-                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.006z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1.5">{t.rating}</span>
-                    </div>
-                    <div className="flex flex-col items-start pl-6">
-                      <span className="font-bold text-neutral-800 text-lg leading-none">{shopProducts.length}</span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 mt-1.5">{t.itemsCount}</span>
-                    </div>
-                  </div>
-
+                {/* Desktop: Inline Stats */}
+                <div className="hidden md:flex items-center text-sm text-neutral-800 gap-3 mt-1">
+                   {averageRating !== "–" && (
+                     <>
+                       <span className="flex items-center gap-1 font-bold">
+                         <svg viewBox="0 0 24 24" fill="#f59e0b" className="w-4 h-4 -mt-0.5"><path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.006z" clipRule="evenodd" /></svg>
+                         {averageRating} <span className="font-normal text-neutral-600">({reviews.length})</span>
+                       </span>
+                       <span className="text-neutral-300">|</span>
+                     </>
+                   )}
+                   <span className="font-bold">{completedOrdersCount} <span className="font-normal text-neutral-600">{t.ordersCount.toLowerCase()}</span></span>
+                   <span className="text-neutral-300">|</span>
+                   <span className="font-bold text-black">
+                     {lang === 'fr' ? 'Inscrit en ' : lang === 'ar' ? 'انضم في ' : 'Joined '}
+                     {new Intl.DateTimeFormat(lang === 'tz' ? 'fr' : lang, { month: 'long', year: 'numeric' }).format(shop.created_at ? new Date(shop.created_at) : new Date())}
+                   </span>
                 </div>
               </div>
-
             </div>
 
-            {/* Right: image or Tifinagh text if no cover */}
-            {hasCover ? (
-              <div className="relative w-full md:w-[45%] lg:w-[50%] min-h-[200px] flex-shrink-0">
-                <img
-                  src={bannerUrl}
-                  alt="shop banner"
-                  className="w-full h-full object-cover banner-img"
-                />
+            {/* Right side: Socials & Actions (Desktop) */}
+            <div className="hidden md:flex items-center gap-5 flex-shrink-0">
+              {/* Social Links on Desktop */}
+              <div className="flex items-center justify-end gap-3 text-neutral-400">
+                {shop.metadata?.instagram && (
+                  <a href={shop.metadata.instagram.startsWith('http') ? shop.metadata.instagram : `https://instagram.com/${shop.metadata.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 hover:text-black">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                  </a>
+                )}
+                {shop.metadata?.facebook && (
+                  <a href={shop.metadata.facebook.startsWith('http') ? shop.metadata.facebook : `https://facebook.com/${shop.metadata.facebook}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 hover:text-black">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  </a>
+                )}
+                {shop.metadata?.whatsapp && (
+                  <a href={`https://wa.me/${shop.metadata.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-100 opacity-70 hover:text-black">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M11.996 0A12 12 0 000 12c0 2.138.563 4.148 1.547 5.918L0 24l6.233-1.528A11.968 11.968 0 0011.996 24C18.625 24 24 18.625 24 12 24 5.375 18.625 0 11.996 0zm0 22c-1.802 0-3.504-.46-5.011-1.28l-.358-.2-3.73.91.998-3.606-.213-.342C2.79 15.658 2.2 13.882 2.2 12c0-5.41 4.402-9.813 9.796-9.813 5.394 0 9.795 4.403 9.795 9.813 0 5.411-4.401 9.813-9.795 9.813zm5.367-7.318c-.294-.148-1.741-.861-2.012-.958-.271-.098-.468-.148-.665.148-.196.295-.762.958-.934 1.154-.172.197-.344.221-.638.074-1.547-.775-2.613-1.378-3.593-2.684-.251-.334.25-.32.687-.991.147-.221.074-.418 0-.565-.074-.148-.665-1.603-.91-2.193-.241-.577-.487-.499-.665-.508-.172-.01-.369-.01-.566-.01-.197 0-.517.074-.788.37s-1.033 1.009-1.033 2.46c0 1.452 1.058 2.855 1.205 3.052.148.197 2.083 3.181 5.045 4.46.706.305 1.258.487 1.688.623.708.225 1.353.193 1.862.117.57-.084 1.741-.712 1.987-1.401.246-.689.246-1.28.172-1.401-.074-.123-.271-.197-.565-.344z"/></svg>
+                  </a>
+                )}
               </div>
-            ) : (
-              <div 
-                className="relative w-full md:w-[45%] lg:w-[50%] min-h-[250px] md:min-h-[300px] flex-shrink-0 flex items-center justify-center overflow-hidden"
-              >
-                <div 
-                  className="font-black select-none whitespace-nowrap"
-                  style={{ 
-                    transform: 'rotate(90deg)', 
-                    color: 'rgba(103, 51, 153, 0.14)',
-                    marginLeft: '350px',
-                    fontSize: `${Math.min(680 / cityObj.tifinagh.length, 180)}px`,
-                    lineHeight: 1,
-                  }}
-                >
-                  {cityObj.tifinagh}
-                </div>
+              <ShopActionButtons shopId={shop.id} contactLabel={t.contact} subscribeLabel={t.subscribe} lang={lang} />
+            </div>
+          </div>
+
+          {/* Stats Box (Mobile Only) */}
+          <div className="px-4 pb-2 md:hidden max-w-[1440px] mx-auto w-full">
+            <div className="border border-neutral-200 rounded-xl flex items-center justify-between divide-x divide-neutral-200 py-3 bg-neutral-50/50">
+              <div className="flex-1 flex flex-col items-center justify-center px-2 text-center">
+                <span className="font-bold text-black text-[15px] leading-none mb-1">{completedOrdersCount}</span>
+                <span className="text-[10px] text-neutral-500 font-bold tracking-wide uppercase">{t.ordersCount}</span>
               </div>
-            )}
+              <div className="flex-1 flex flex-col items-center justify-center px-2 text-center">
+                <span className="font-bold text-black text-[15px] leading-none mb-1 flex items-center gap-1 justify-center">
+                  {averageRating !== "–" && (
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#f59e0b" className="w-3.5 h-3.5">
+                      <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.006z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                  {averageRating}
+                  {reviews.length > 0 && <span className="text-[10px] text-neutral-500 font-normal">({reviews.length})</span>}
+                </span>
+                <span className="text-[10px] text-neutral-500 font-bold tracking-wide uppercase">{t.rating}</span>
+              </div>
+              <div className="flex-1 flex flex-col items-center justify-center px-2 text-center">
+                <span className="font-bold text-black text-[15px] leading-none mb-1">{shopProducts.length}</span>
+                <span className="text-[10px] text-neutral-500 font-bold tracking-wide uppercase">{t.itemsCount}</span>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
       {/* Main Content Area */}
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
