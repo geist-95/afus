@@ -102,6 +102,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       locale: lang === "ar" ? "ar_MA" : lang === "fr" ? "fr_MA" : "en_US",
       type: "website",
     },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "afus",
+    },
+    formatDetection: {
+      telephone: false,
+    },
     twitter: {
       card: "summary_large_image",
       title: t.ogTitle,

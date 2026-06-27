@@ -22,8 +22,8 @@ export default function BrowseByCategory({ lang, className }: { lang: string; cl
 
   return (
     <div className={`py-2 md:py-8${className ? ` ${className}` : ""}`}>
-      <h2 className="text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-start md:text-center !text-black">{title}</h2>
-
+      <h2 className="browse-by-category-title text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-start md:text-center !text-black md:hidden">{title}</h2>
+      
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">
         <div className="flex gap-3 overflow-x-auto pb-2 px-4 -mx-4 sm:mx-0 sm:px-0 scroll-pl-4 sm:scroll-pl-0 after:content-[''] after:w-px after:shrink-0" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>

@@ -89,7 +89,7 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
   ];
 
   const registerText = lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : lang === 'tz' ? 'ⵣⵎⵎⴻⵎ' : 'Register';
-  const continueText = lang === 'fr' ? "Continuer vers l'application" : lang === 'ar' ? 'متابعة إلى التطبيق' : lang === 'tz' ? 'ⴹⴼⵕ ⵖⵔ ⵜⵙⵏⵙⵉⵜ' : 'Continue to app';
+  const continueText = lang === 'fr' ? "Continuer vers l'app" : lang === 'ar' ? 'متابعة إلى التطبيق' : lang === 'tz' ? 'ⴹⴼⵕ ⵖⵔ ⵜⵙⵏⵙⵉⵜ' : 'Continue to app';
 
   const langNames: Record<string, string> = {
     en: 'EN',
@@ -99,10 +99,10 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
   };
 
   const introText: Record<string, string> = {
-    en: "Afus is a Moroccan marketplace for artisans and handmade goods.",
-    fr: "Afus est une place de marché marocaine pour les artisans et les produits faits main.",
-    ar: "Afus هو سوق مغربي للحرفيين والمنتجات المصنوعة يدوياً.",
-    tz: "Afus ⵉⴳⴰ ⵢⴰⵏ ⵓⴷⵖⴰⵔ ⵏ ⵜⵎⴳⵓⵔⵉ ⵉ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴷ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ."
+    en: "Afus is a 🇲🇦 Moroccan marketplace for artisans and handmade goods.",
+    fr: "Afus est une place de marché 🇲🇦 marocaine pour les artisans et les produits faits main.",
+    ar: "Afus هو سوق 🇲🇦 مغربي للحرفيين والمنتجات المصنوعة يدوياً.",
+    tz: "Afus ⵉⴳⴰ ⵢⴰⵏ ⵓⴷⵖⴰⵔ 🇲🇦 ⵏ ⵜⵎⴳⵓⵔⵉ ⵉ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴷ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ."
   };
 
   const statsText: Record<string, string> = {
@@ -196,8 +196,26 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
   ];
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isRelaunch = urlParams.get('relaunch') === 'true';
+
+    const shouldReopen = sessionStorage.getItem('reopenWelcomeModal');
     const hasSeenModal = localStorage.getItem('welcomeModalSeen');
-    if (!hasSeenModal) {
+
+    if (isRelaunch) {
+      // Force open, update localStorage, and remove the parameter from URL
+      localStorage.removeItem('welcomeModalSeen'); // Reset just in case they close it, it will save it again
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (shouldReopen === 'true') {
+      sessionStorage.removeItem('reopenWelcomeModal');
+      setIsOpen(true);
+    } else if (!hasSeenModal) {
       const timer = setTimeout(() => {
         setIsOpen(true);
       }, 500);
@@ -219,15 +237,18 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Lock body scroll when modal is open
+  // Lock body scroll and add marker class when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('welcome-modal-open');
     } else {
       document.body.style.overflow = '';
+      document.body.classList.remove('welcome-modal-open');
     }
     return () => {
       document.body.style.overflow = '';
+      document.body.classList.remove('welcome-modal-open');
     };
   }, [isOpen]);
 
@@ -264,16 +285,15 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 animate-in fade-in duration-300">
       <div className="min-h-full flex items-center justify-center p-4 md:p-6" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <div 
-          className="w-full max-w-xl bg-white rounded-[24px] relative shadow-2xl flex flex-col arabic-frame overflow-hidden"
+          className="w-full max-w-xl bg-white relative shadow-2xl flex flex-col arabic-frame overflow-hidden"
         >
           {/* Top Bar */}
-        <div className="flex items-center justify-between p-5 md:p-6 border-b border-neutral-100 flex-shrink-0">
+        <div className="flex items-start justify-between px-8 pt-6 md:px-10 md:pt-8 pb-2 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Image src="/logo/logo.png" alt="Afus" width={28} height={28} className="w-7 h-7 object-contain" />
-            <Image src="/logo/afus.svg" alt="Afus" width={60} height={20} className="h-4 object-contain" />
+            <Image src="/logo/logo.png" alt="Afus" width={64} height={64} className="w-16 h-16 object-contain" />
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-4">
             <div className="relative" ref={langRef}>
                <button onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1.5 text-sm font-semibold hover:opacity-80 text-black border border-neutral-200 px-3 py-1.5 rounded-full">
                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
@@ -285,7 +305,10 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
                       <Link 
                         key={l}
                         href={`/${l}`} 
-                        onClick={() => setLangOpen(false)} 
+                        onClick={() => {
+                          setLangOpen(false);
+                          sessionStorage.setItem('reopenWelcomeModal', 'true');
+                        }} 
                         className={`relative flex w-full cursor-pointer items-center rounded-sm py-1.5 pl-8 pr-2 text-xs hover:bg-neutral-100 font-bold ${lang === l ? 'text-black' : 'text-neutral-600'}`}
                       >
                         {lang === l && <span className="absolute left-2 text-[#673399]"><Check className="w-3 h-3" strokeWidth={3} /></span>} 
@@ -306,13 +329,13 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
            
            {/* Definition */}
            <div className="text-start mb-8 px-2">
-             <h2 className="text-3xl sm:text-4xl font-semibold leading-tight sm:leading-tight text-black mb-6" style={{ fontWeight: 600 }}>
+             <h2 className="text-3xl sm:text-4xl font-semibold leading-tight sm:leading-tight text-black mb-6 !tracking-[-0.8px] max-w-[92%]" style={{ fontWeight: 600 }}>
                {introText[lang] || introText['en']}
              </h2>
              
              <hr className="border-neutral-200 mb-6" />
              
-             <p className="text-neutral-600 leading-relaxed font-medium text-base sm:text-lg mb-6">
+             <p className="text-neutral-600 leading-relaxed font-medium text-base sm:text-lg mb-6 !tracking-[-0.3px]">
                {descriptionText[lang] || descriptionText['en']}
              </p>
 
@@ -323,8 +346,8 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
              </div>
            </div>
 
-           {/* Buttons */}
-           <div className="flex flex-col sm:flex-row gap-3 mb-10">
+           {/* Actions */}
+           <div className="flex flex-row gap-4 mb-10 w-full px-2">
               <button 
                 onClick={() => { 
                   handleClose(); 
@@ -391,7 +414,7 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
 
            {/* And much more */}
            <section className="mb-12">
-             <div className="grid grid-cols-1 sm:grid-cols-2">
+             <div className="grid grid-cols-2">
                {t.featureItems.map((item: any, i: number) => {
                  const icons = [
                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 256 256" fill="currentColor"><path d="M239.18 91.05A15.75 15.75 0 0 0 224 80h-61l-19.77-60.74a15.93 15.93 0 0 0-30.45-.05L93.06 80H32a16 16 0 0 0-9.37 29l49.46 35.58L53.15 203A15.75 15.75 0 0 0 59 220.88a15.74 15.74 0 0 0 18.77 0L128 184.75l50.23 36.13A16 16 0 0 0 202.85 203l-19-58.46l49.49-35.61a15.74 15.74 0 0 0 5.84-17.88M128 24.15L146.12 80h-36.24ZM32 96h55.87L77.3 128.56Zm36.34 112l17.39-53.59l28.54 20.54Zm22.57-69.57L104.69 96h46.62l13.75 42.38L128 165ZM187.6 208l-45.9-33l28.54-20.54Zm-8.93-79.38L168.13 96H224Z" /></svg>,
@@ -403,7 +426,8 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
                  ];
                  const icon = icons[i];
                  
-                 const borderClasses = `border-neutral-100 ${i < t.featureItems.length - 1 ? 'border-b' : ''} ${i < t.featureItems.length - 2 ? 'sm:border-b' : 'sm:border-b-0'} ${i % 2 === 0 ? 'sm:border-r' : ''}`;
+                 
+                 const borderClasses = `border-neutral-100 ${i < t.featureItems.length - 2 ? 'border-b' : ''} ${i % 2 === 0 ? 'border-r' : ''}`;
                  
                  return (
                    <div key={item.title} className={`flex flex-col items-center text-center p-6 ${borderClasses}`}>
@@ -450,11 +474,11 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
 
            {/* Instagram Banner */}
            <div className="arabic-frame bg-[#f5e9fb] p-8 mb-10 flex flex-col items-center text-center">
-             <h3 className="text-lg sm:text-xl font-bold mb-6 text-[#673399]">
-               {lang === 'fr' ? 'Suivez-nous sur Instagram pour les nouveautés :' :
-                lang === 'ar' ? 'تابعنا على إنستغرام للحصول على التحديثات والأخبار:' :
-                lang === 'tz' ? 'ⴹⴼⵕⴰⵜ ⴰⵖ ⴳ ⵉⵏⵙⵜⴰⴳⵔⴰⵎ:' :
-                'Follow us on Instagram for updates & news:'}
+              <h3 className="text-lg sm:text-xl font-bold mb-6 text-[#673399]">
+               {lang === 'fr' ? 'Suivez-nous sur Instagram pour les nouveautés' :
+                lang === 'ar' ? 'تابعنا على إنستغرام للحصول على التحديثات والأخبار' :
+                lang === 'tz' ? 'ⴹⴼⵕⴰⵜ ⴰⵖ ⴳ ⵉⵏⵙⵜⴰⴳⵔⴰⵎ' :
+                'Follow us on Instagram for updates & news'}
              </h3>
              <a href="https://instagram.com/afus_ma" target="_blank" rel="noopener noreferrer" className="bg-transparent border-2 border-black text-black hover:bg-black/5 px-8 py-3.5 rounded-full font-bold flex items-center justify-center gap-2.5 transition-colors w-full sm:w-auto min-w-[200px]">
                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
