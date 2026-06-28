@@ -11,7 +11,7 @@ import HomeCarousel from "@/components/ui/HomeCarousel";
 import BrowseByCategory from "@/components/ui/BrowseByCategory";
 import CitiesSection from "@/components/ui/CitiesSection";
 import TrustBanner from "@/components/ui/TrustBanner";
-import WelcomeModal from "@/components/ui/WelcomeModal";
+
 
 interface PageProps {
   params: Promise<{ lang: string }> | { lang: string };
@@ -129,7 +129,7 @@ export default async function HomePage({ params }: PageProps) {
 
   return (
     <MainLayout params={params}>
-      <WelcomeModal lang={lang} />
+
       <div className="space-y-8 md:space-y-16">
         <script
         type="application/ld+json"

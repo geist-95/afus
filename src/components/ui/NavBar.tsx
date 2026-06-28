@@ -9,6 +9,7 @@ import { useWishlist } from '@/lib/wishlist';
 import { staticCategories, fetchRecentProductsForShops } from '@/lib/supabase';
 import { getFollowedShops, getLastCheckedNotifications, updateLastCheckedNotifications } from '@/lib/followers';
 import LoginModal from './LoginModal';
+import WelcomeModal from './WelcomeModal';
 import StoreOnboardingModal from './StoreOnboardingModal';
 
 import { ShoppingCartIcon as ShoppingCartSolid, BuildingStorefrontIcon as BriefcaseSolid, BellIcon as BellSolid, ShoppingBagIcon as ShoppingBagSolid, CubeIcon as CubeSolid } from '@heroicons/react/24/solid';
@@ -126,6 +127,12 @@ export default function NavBar({ lang }: NavBarProps) {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleOpenAuthModal = () => setOnboardingModalOpen(true);
+    window.addEventListener('open-auth-modal', handleOpenAuthModal);
+    return () => window.removeEventListener('open-auth-modal', handleOpenAuthModal);
   }, []);
 
   const handleLogout = async () => {
@@ -279,6 +286,12 @@ export default function NavBar({ lang }: NavBarProps) {
           <img src="/logo/afus.svg" alt="afus" width={70} height={18} className="h-4.5 object-contain !rounded-none" />
         </Link>
         <nav className="flex items-center gap-3 text-xs font-medium flex-shrink-0 text-black">
+          <button
+            onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
+            className="text-black font-bold text-[12px] hover:underline px-2 cursor-pointer whitespace-nowrap"
+          >
+            {lang === 'fr' ? 'À propos' : lang === 'ar' ? 'من نحن' : lang === 'tz' ? 'ⴼⵍⵍⴰⵖ' : 'About'}
+          </button>
           {loading ? (
             <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
           ) : session ? (
@@ -404,7 +417,7 @@ export default function NavBar({ lang }: NavBarProps) {
           <nav className="hidden md:flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
             <button
               onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
-              className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer whitespace-nowrap"
+              className="text-black font-bold text-[12px] hover:underline px-2 cursor-pointer whitespace-nowrap"
             >
               {lang === 'fr' ? 'À propos' : lang === 'ar' ? 'من نحن' : lang === 'tz' ? 'ⴼⵍⵍⴰⵖ' : 'About'}
             </button>
@@ -610,6 +623,7 @@ export default function NavBar({ lang }: NavBarProps) {
       </div>
       <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} lang={lang} />
       <StoreOnboardingModal isOpen={onboardingModalOpen} onClose={() => setOnboardingModalOpen(false)} lang={lang} />
+      <WelcomeModal lang={lang} />
     </>
   );
 }
