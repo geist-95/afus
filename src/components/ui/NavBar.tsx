@@ -352,9 +352,15 @@ export default function NavBar({ lang }: NavBarProps) {
             <>
               <button
                 onClick={() => setLoginModalOpen(true)}
-                className="flex items-center text-black hover:opacity-80"
+                className="text-black font-bold text-[12px] hover:underline px-2 whitespace-nowrap cursor-pointer"
               >
-                <UserIcon />
+                {t.login}
+              </button>
+              <button
+                onClick={() => setOnboardingModalOpen(true)}
+                className="bg-primary text-white px-3 py-1 rounded-full text-[12px] font-bold hover:bg-primary/90 whitespace-nowrap"
+              >
+                {t.signup}
               </button>
               <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:opacity-80 relative" title={t.cart}>
                 <ShoppingCartIcon />
