@@ -21,8 +21,8 @@ export default function BrowseByCategory({ lang, className }: { lang: string; cl
   const title = titles[lang] || titles.en;
 
   return (
-    <div className={`py-2 md:py-8${className ? ` ${className}` : ""}`}>
-      <h2 className="browse-by-category-title text-xl md:text-3xl font-bold mb-4 md:mb-[30px] text-start md:text-center !text-black md:hidden">{title}</h2>
+    <div className={`py-0${className ? ` ${className}` : ""}`}>
+      <h2 className="browse-by-category-title text-xl md:text-3xl font-bold mb-4 md:mb-6 text-start md:text-center !text-black">{title}</h2>
       
       {/* Mobile: horizontal scroll */}
       <div className="md:hidden">

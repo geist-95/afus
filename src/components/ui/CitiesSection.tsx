@@ -10,6 +10,11 @@ const cities = [
     name: "Marrakech",
     names: { en: "Marrakech", fr: "Marrakech", ar: "مراكش", tz: "ⵎⵕⵕⴰⴽⵛ" },
     tifinagh: "ⵎⵕⵕⴰⴽⵛ",
+    description: {
+      en: "The Red City, home to souks, dyers, weavers and centuries of artisan tradition.",
+      fr: "La Ville Rouge, berceau des souks, des teinturiers, des tisserands et de siècles de tradition artisanale.",
+      ar: "المدينة الحمراء، موطن الأسواق والصباغين والنساجين وقرون من التراث الحرفي.",
+    },
     image: "/cities-2/marrakesh.avif",
     bg: "#2a0a1e",
     textColor: "#f5deb3",
@@ -19,6 +24,11 @@ const cities = [
     name: "Fès",
     names: { en: "Fez", fr: "Fès", ar: "فاس", tz: "ⴼⴰⵙ" },
     tifinagh: "ⴼⴰⵙ",
+    description: {
+      en: "The spiritual capital, famous for its leather tanneries, zellige tilework and intricate woodcarving.",
+      fr: "La capitale spirituelle, célèbre pour ses tanneries, le zellige et la marqueterie en bois.",
+      ar: "العاصمة الروحية، شهيرة بمدابغها وفسيفساء الزليج ونقوشها الخشبية الرقيقة.",
+    },
     image: "/cities-2/fes.jpg",
     bg: "#0d1f2d",
     textColor: "#c9e0f0",
@@ -28,6 +38,11 @@ const cities = [
     name: "Meknès",
     names: { en: "Meknes", fr: "Meknès", ar: "مكناس", tz: "ⵎⴽⵏⴰⵙ" },
     tifinagh: "ⵎⴽⵏⴰⵙ",
+    description: {
+      en: "City of a hundred minarets, celebrated for ironwork, embroidery and fine Moroccan pottery.",
+      fr: "Ville aux cent minarets, réputée pour sa ferronnerie, ses broderies et sa belle poterie marocaine.",
+      ar: "مدينة المائة مئذنة، مشهورة بأعمال الحديد والتطريز والفخار المغربي الرفيع.",
+    },
     image: "/cities-2/meknes-2.jpg",
     bg: "#1e0a2e",
     textColor: "#e8d5f0",
@@ -37,6 +52,11 @@ const cities = [
     name: "Rabat",
     names: { en: "Rabat", fr: "Rabat", ar: "الرباط", tz: "ⵕⴱⴰⵟ" },
     tifinagh: "ⵕⴱⴰⵟ",
+    description: {
+      en: "The royal capital, a UNESCO Heritage city known for its carpets, pottery and traditional crafts.",
+      fr: "La capitale royale, classée au patrimoine de l'UNESCO pour ses tapis, poteries et artisanat traditionnel.",
+      ar: "العاصمة الملكية، مدينة تراث اليونسكو المشهورة بسجادها وفخارها وحرفها التقليدية.",
+    },
     image: "/cities-2/rabat.jpg",
     bg: "#0a1a0e",
     textColor: "#c5e8cc",
@@ -46,6 +66,11 @@ const cities = [
     name: "Tétouan",
     names: { en: "Tetouan", fr: "Tétouan", ar: "تطوان", tz: "ⵟⵉⵟⵡⴰⵏ" },
     tifinagh: "ⵟⵉⵟⵡⴰⵏ",
+    description: {
+      en: "The White Dove, a UNESCO medina celebrated for Andalusian-Moroccan crafts, textiles and music.",
+      fr: "La Colombe Blanche, médina classée à l'UNESCO, célébrée pour ses artisanats andalou-marocains, textiles et musique.",
+      ar: "الحمامة البيضاء، مدينة عتيقة في قائمة اليونسكو مشهورة بحرف أندلسية-مغربية، نسيج وموسيقى.",
+    },
     image: "/cities-2/hamama.jpg",
     bg: "#1a1200",
     textColor: "#f5e6b0",
@@ -55,6 +80,11 @@ const cities = [
     name: "Casablanca",
     names: { en: "Casablanca", fr: "Casablanca", ar: "الدار البيضاء", tz: "ⴰⵏⴼⴰ" },
     tifinagh: "ⴰⵏⴼⴰ",
+    description: {
+      en: "The economic heart of Morocco, blending modern architecture with Art Deco heritage.",
+      fr: "Le cœur économique du Maroc, alliant architecture moderne et héritage Art Déco.",
+      ar: "القلب الاقتصادي للمغرب، يمزج بين الهندسة المعمارية الحديثة وتراث الآرت ديكو.",
+    },
     image: "/cities-2/casablanca.jpg",
     bg: "#0f172a",
     textColor: "#e2e8f0",
@@ -64,6 +94,11 @@ const cities = [
     name: "Tangier",
     names: { en: "Tangier", fr: "Tanger", ar: "طنجة", tz: "ⵟⴰⵏⵊⴰ" },
     tifinagh: "ⵟⴰⵏⵊⴰ",
+    description: {
+      en: "The gateway between Africa and Europe, a melting pot of cultures and historic medina.",
+      fr: "La porte entre l'Afrique et l'Europe, un creuset de cultures et une médina historique.",
+      ar: "بوابة بين أفريقيا وأوروبا، بوتقة تنصهر فيها الثقافات والمدينة التاريخية.",
+    },
     image: "/cities-2/tangier.jpg",
     bg: "#1e3a8a",
     textColor: "#bfdbfe",
@@ -73,6 +108,11 @@ const cities = [
     name: "Agadir",
     names: { en: "Agadir", fr: "Agadir", ar: "أكادير", tz: "ⴰⴳⴰⴷⵉⵔ" },
     tifinagh: "ⴰⴳⴰⴷⵉⵔ",
+    description: {
+      en: "The sunny capital of Souss, known for its beautiful beaches and Amazigh culture.",
+      fr: "La capitale ensoleillée du Souss, connue pour ses belles plages et sa culture amazighe.",
+      ar: "عاصمة سوس المشمسة، معروفة بشواطئها الجميلة والثقافة الأمازيغية.",
+    },
     image: "/cities-2/agadir.jpg",
     bg: "#451a03",
     textColor: "#fef3c7",
@@ -115,41 +155,38 @@ export default function CitiesSection({ lang }: { lang: string }) {
           <Link
             key={city.slug}
             href={`/${lang}/city/${city.slug}`}
-            className="flex-shrink-0 snap-start w-44 md:w-56 lg:w-[calc(20%-12.8px)] group"
+            className="flex-shrink-0 snap-start w-[85vw] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-10.6px)] group"
           >
             <div
-              className="relative arabic-frame overflow-hidden aspect-square w-full flex flex-col items-center justify-center transition-transform duration-300 group-hover:scale-[0.97]"
+              className="relative w-full arabic-frame overflow-hidden min-h-[120px] md:min-h-[140px] flex flex-row transition-transform duration-300 group-hover:scale-[0.98]"
               style={{ backgroundColor: city.bg }}
             >
-              {/* Background city image */}
-              <Image
-                src={city.image}
-                alt={city.name}
-                fill
-                sizes="(max-width: 768px) 200px, 300px"
-                className="object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-300"
-              />
-
-              {/* Text content */}
-              <div className="relative z-10 flex flex-col items-center justify-center gap-2 px-4 text-center">
-                <span
-                  className="text-xl md:text-2xl lg:text-3xl font-bold !font-ariom leading-tight"
+              {/* Left: solid bg + text */}
+              <div className="flex-1 flex flex-col justify-center px-4 md:px-6 py-4 z-10 w-2/3">
+                <p
+                  className="mb-1 text-sm md:text-base"
+                  style={{ color: city.textColor, fontFamily: "'Noto Sans Tifinagh', sans-serif", opacity: 0.8 }}
+                >
+                  {city.tifinagh}
+                </p>
+                <h3
+                  className="text-2xl md:text-3xl font-bold !font-ariom leading-tight"
                   style={{ color: city.textColor }}
                 >
-                  {city.names[lang as 'en' | 'fr' | 'ar' | 'tz'] || city.name}
-                </span>
-                {lang !== 'tz' && (
-                  <span
-                    className="text-sm md:text-base lg:text-lg leading-none"
-                    style={{
-                      color: city.textColor,
-                      fontFamily: "'Noto Sans Tifinagh', sans-serif",
-                      opacity: 0.75,
-                    }}
-                  >
-                    {city.tifinagh}
-                  </span>
-                )}
+                  {city.names[lang as 'en'|'fr'|'ar'|'tz'] || city.name}
+                </h3>
+              </div>
+
+              {/* Right: image */}
+              <div className="relative w-1/3 flex-shrink-0">
+                <Image
+                  src={city.image}
+                  alt={city.name}
+                  fill
+                  className="object-cover banner-img"
+                  sizes="(max-width: 768px) 33vw, 20vw"
+                  quality={80}
+                />
               </div>
             </div>
           </Link>

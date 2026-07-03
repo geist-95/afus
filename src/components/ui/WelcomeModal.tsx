@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { joinWaitlist } from "@/app/actions/waitlist";
 import { landingTranslations } from '@/components/LandingTranslations';
+import { getActiveSession } from '@/lib/auth';
 
 import { Playfair_Display } from "next/font/google";
 
@@ -69,15 +70,24 @@ function AutoScrollRow({ labels, reverse, duration = 26, isRtl = false }: { labe
 
 interface WelcomeModalProps {
   lang?: string;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onClose: externalOnClose }: WelcomeModalProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  const setIsOpen = externalOnClose || setInternalIsOpen;
   const [langOpen, setLangOpen] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getActiveSession().then(session => setIsLoggedIn(!!session));
+  }, []);
 
   const t = landingTranslations[lang] || landingTranslations['en'];
   
@@ -347,23 +357,25 @@ export default function WelcomeModal({ lang = 'en' }: WelcomeModalProps) {
            </div>
 
            {/* Actions */}
-           <div className="flex flex-row gap-4 mb-10 w-full px-2">
-              <button 
-                onClick={() => { 
-                  handleClose(); 
-                  window.dispatchEvent(new CustomEvent('open-auth-modal')); 
-                }} 
-                className="flex-1 bg-[#372d41] text-white font-bold py-3.5 px-4 rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-[#372d41]/20"
-              >
-                {registerText}
-              </button>
-              <button 
-                onClick={handleClose} 
-                className="flex-1 bg-neutral-50 border-2 border-black text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity"
-              >
-                {continueText}
-              </button>
-           </div>
+           {!isLoggedIn && (
+             <div className="flex flex-row gap-4 mb-10 w-full px-2">
+                <button 
+                  onClick={() => { 
+                    handleClose(); 
+                    window.dispatchEvent(new CustomEvent('open-auth-modal')); 
+                  }} 
+                  className="flex-1 bg-[#372d41] text-white font-bold py-3.5 px-4 rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-[#372d41]/20"
+                >
+                  {registerText}
+                </button>
+                <button 
+                  onClick={handleClose} 
+                  className="flex-1 bg-neutral-50 border-2 border-black text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity"
+                >
+                  {continueText}
+                </button>
+             </div>
+           )}
 
            {/* Features Carousel */}
            <div className="arabic-frame bg-neutral-200 p-[1px] mb-12">

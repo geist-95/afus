@@ -36,10 +36,10 @@ export async function POST(req: Request) {
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   try {
-    const { shop_id, category_id, title, description, price, imageUrl } = await req.json();
+    const { shop_id, category_id, title, description, price, imageUrls } = await req.json();
 
-    if (!shop_id || !category_id || !title || !price || !imageUrl) {
-      return NextResponse.json({ error: 'Missing required product parameters' }, { status: 400 });
+    if (!shop_id || !category_id || !title || !price || !imageUrls || !imageUrls.length) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const titleTranslations = {
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       description_translations: descriptionTranslations,
       slug_translations: slugTranslations,
       base_price_mad: parseFloat(price) || 0,
-      media_gallery: [imageUrl],
+      media_gallery: imageUrls,
       stock_quantity: 99,
       is_active: true,
     }).select().single();

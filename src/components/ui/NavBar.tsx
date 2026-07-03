@@ -10,6 +10,7 @@ import { staticCategories, fetchRecentProductsForShops } from '@/lib/supabase';
 import { getFollowedShops, getLastCheckedNotifications, updateLastCheckedNotifications } from '@/lib/followers';
 import LoginModal from './LoginModal';
 import WelcomeModal from './WelcomeModal';
+import ProductFirstOnboardingModal from './ProductFirstOnboardingModal';
 import StoreOnboardingModal from './StoreOnboardingModal';
 
 import { ShoppingCartIcon as ShoppingCartSolid, BuildingStorefrontIcon as BriefcaseSolid, BellIcon as BellSolid, ShoppingBagIcon as ShoppingBagSolid, CubeIcon as CubeSolid } from '@heroicons/react/24/solid';
@@ -66,6 +67,8 @@ export default function NavBar({ lang }: NavBarProps) {
   const notifRefMobile = useRef<HTMLDivElement>(null);
   const [catCanScrollLeft, setCatCanScrollLeft] = useState(false);
   const [catCanScrollRight, setCatCanScrollRight] = useState(true);
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+  const [productOnboardingModalOpen, setProductOnboardingModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [onboardingModalOpen, setOnboardingModalOpen] = useState(false);
   
@@ -130,9 +133,14 @@ export default function NavBar({ lang }: NavBarProps) {
   }, []);
 
   useEffect(() => {
-    const handleOpenAuthModal = () => setOnboardingModalOpen(true);
+    const handleOpenWelcomeModal = () => setWelcomeModalOpen(true);
+    window.addEventListener('open-welcome-modal', handleOpenWelcomeModal);
+    const handleOpenAuthModal = () => setProductOnboardingModalOpen(true);
     window.addEventListener('open-auth-modal', handleOpenAuthModal);
-    return () => window.removeEventListener('open-auth-modal', handleOpenAuthModal);
+    return () => {
+      window.removeEventListener('open-welcome-modal', handleOpenWelcomeModal);
+      window.removeEventListener('open-auth-modal', handleOpenAuthModal);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -160,7 +168,8 @@ export default function NavBar({ lang }: NavBarProps) {
       cart: 'Cart',
       manageStore: 'Store',
       topStripMessage: 'Your place to buy & sell all things handmade',
-      faqHelp: 'FAQ & Help'
+      faqHelp: 'FAQ & Help',
+      about: 'About'
     },
     fr: {
       searchPlaceholder: 'Rechercher des objets artisanaux uniques...',
@@ -180,7 +189,8 @@ export default function NavBar({ lang }: NavBarProps) {
       cart: 'Panier',
       manageStore: 'Boutique',
       topStripMessage: 'Votre espace pour acheter & vendre du fait main',
-      faqHelp: 'FAQ et Aide'
+      faqHelp: 'FAQ et Aide',
+      about: 'À propos'
     },
     ar: {
       searchPlaceholder: 'ابحث عن مشغولات يدوية فريدة...',
@@ -200,7 +210,8 @@ export default function NavBar({ lang }: NavBarProps) {
       cart: 'السلة',
       manageStore: 'المتجر',
       topStripMessage: 'مكانك لبيع وشراء كل ما هو مصنوع يدوياً',
-      faqHelp: 'الأسئلة الشائعة والمساعدة'
+      faqHelp: 'الأسئلة الشائعة والمساعدة',
+      about: 'من نحن'
     },
     tz: {
       searchPlaceholder: 'ⵔⵣⵓ ⵅⴼ ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵓⴼⵓⵙ...',
@@ -220,7 +231,8 @@ export default function NavBar({ lang }: NavBarProps) {
       cart: 'ⵜⴰⵙⴽⵯⵜⵉⵜ',
       manageStore: 'ⵜⴰⵃⴰⵏⵓⵜ',
       topStripMessage: 'ⴰⴷⵖⴰⵔ ⵏⵏⴽ ⴰⴷ ⵜⵙⵖⵜ ⴷ ⴰⴷ ⵜⵣⵣⵏⵣⵜ ⵜⵉⴳⴰⵡⵉⵏ ⵏ ⵓⴼⵓⵙ',
-      faqHelp: 'ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ'
+      faqHelp: 'ⵉⵙⵇⵙⵉⵜⵏ ⴷ ⵜⵉⵡⵉⵙⵉ',
+      about: 'ⴼⵍⵍⴰⵖ'
     },
   };
 
@@ -272,10 +284,18 @@ export default function NavBar({ lang }: NavBarProps) {
             </div>
 
             {/* Right */}
-            <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer text-[13px]" href={`/${lang}#faq`}>
-              <HelpIcon />
-              <span>{t.faqHelp}</span>
-            </Link>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
+                className="hover:opacity-80 transition-opacity cursor-pointer text-[13px]"
+              >
+                {t.about}
+              </button>
+              <Link className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer text-[13px]" href={`/${lang}#faq`}>
+                <HelpIcon />
+                <span>{t.faqHelp}</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -286,12 +306,6 @@ export default function NavBar({ lang }: NavBarProps) {
           <img src="/logo/afus.svg" alt="afus" width={70} height={18} className="h-4.5 object-contain !rounded-none" />
         </Link>
         <nav className="flex items-center gap-3 text-xs font-medium flex-shrink-0 text-black">
-          <button
-            onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
-            className="text-black font-bold text-[12px] hover:underline px-2 cursor-pointer whitespace-nowrap"
-          >
-            {lang === 'fr' ? 'À propos' : lang === 'ar' ? 'من نحن' : lang === 'tz' ? 'ⴼⵍⵍⴰⵖ' : 'About'}
-          </button>
           {loading ? (
             <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
           ) : session ? (
@@ -357,10 +371,10 @@ export default function NavBar({ lang }: NavBarProps) {
                 {t.login}
               </button>
               <button
-                onClick={() => setOnboardingModalOpen(true)}
-                className="bg-primary text-white px-3 py-1 rounded-full text-[12px] font-bold hover:bg-primary/90 whitespace-nowrap"
+                onClick={() => setProductOnboardingModalOpen(true)}
+                className="bg-primary text-white px-3 py-1 rounded-full text-[12px] font-bold hover:bg-primary/90 whitespace-nowrap cursor-pointer"
               >
-                {t.signup}
+                {lang === 'fr' ? 'Vendre un produit' : lang === 'ar' ? 'بيع منتج' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴰⴼⴰⵔⵉⵙ' : 'Sell a product'}
               </button>
               <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:opacity-80 relative" title={t.cart}>
                 <ShoppingCartIcon />
@@ -378,14 +392,16 @@ export default function NavBar({ lang }: NavBarProps) {
       <header className="border-b border-primary/10 bg-white sticky top-0 z-50">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3 md:justify-between">
           
-          {/* Desktop Logo */}
-          <Link
-            href={`/${lang}`}
-            className="hidden md:flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
-          >
-            <img src="/logo/logo.png" alt="Afus Logo" width={32} height={32} className="w-8 h-8 object-contain !rounded-none" />
-            <img src="/logo/afus.svg" alt="afus" width={80} height={20} className="h-5 object-contain !rounded-none" />
-          </Link>
+          {/* Desktop Logo & About */}
+          <div className="flex items-center gap-4">
+            <Link
+              href={`/${lang}`}
+              className="hidden md:flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0"
+            >
+              <img src="/logo/logo.png" alt="Afus Logo" width={32} height={32} className="w-8 h-8 object-contain !rounded-none" />
+              <img src="/logo/afus.svg" alt="afus" width={80} height={20} className="h-5 object-contain !rounded-none" />
+            </Link>
+          </div>
 
           {/* Hamburger (Mobile only) */}
           <button className="md:hidden text-black flex-shrink-0 p-1 -ml-1 cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
@@ -421,12 +437,6 @@ export default function NavBar({ lang }: NavBarProps) {
 
           {/* Nav Actions */}
           <nav className="hidden md:flex items-center gap-3 md:gap-4.5 text-xs font-medium flex-shrink-0 text-black">
-            <button
-              onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
-              className="text-black font-bold text-[12px] hover:underline px-2 cursor-pointer whitespace-nowrap"
-            >
-              {lang === 'fr' ? 'À propos' : lang === 'ar' ? 'من نحن' : lang === 'tz' ? 'ⴼⵍⵍⴰⵖ' : 'About'}
-            </button>
             {loading ? (
               <div className="h-5 w-20 bg-primary/10 animate-pulse rounded-lg" />
             ) : session ? (
@@ -486,8 +496,6 @@ export default function NavBar({ lang }: NavBarProps) {
                   )}
                 </div>
 
-                {/* Mobile User Icon removed in favor of unified dropdown */}
-
                 {/* Notification Bell */}
                 <div className="relative flex items-center" ref={notifRefDesktop}>
                   <button onClick={handleOpenNotifications} className="flex items-center text-black hover:opacity-80 relative cursor-pointer" title="Notifications">
@@ -535,22 +543,16 @@ export default function NavBar({ lang }: NavBarProps) {
             ) : (
               <>
                 <button
-                  onClick={() => setOnboardingModalOpen(true)}
-                  className="text-black font-bold text-[12px] hover:underline px-2 hidden md:block cursor-pointer"
+                  onClick={() => setProductOnboardingModalOpen(true)}
+                  className="hidden md:block bg-primary text-white px-5 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[12px] whitespace-nowrap cursor-pointer"
                 >
-                  {lang === 'fr' ? 'Vendre sur afus' : lang === 'ar' ? 'البيع على afus' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴳ ⴰⴼⵓⵙ' : 'Sell on afus'}
+                  {lang === 'fr' ? 'Vendre un produit' : lang === 'ar' ? 'بيع منتج' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴰⴼⴰⵔⵉⵙ' : 'Sell a product'}
                 </button>
                 <button
                   onClick={() => setLoginModalOpen(true)}
-                  className="hidden md:block bg-primary text-white px-5 py-2 hover:bg-primary/95 font-bold rounded-full transition-colors text-[12px] whitespace-nowrap"
+                  className="hidden md:block text-black font-bold text-[13px] hover:underline px-2 cursor-pointer whitespace-nowrap"
                 >
                   {t.login}
-                </button>
-                <button
-                  onClick={() => setLoginModalOpen(true)}
-                  className="md:hidden flex items-center text-black hover:opacity-80"
-                >
-                  <UserIcon />
                 </button>
                 <Link href={`/${lang}/cart`} className="flex items-center gap-1.5 text-black hover:opacity-80 relative ml-1" title={t.cart}>
                   <ShoppingCartIcon />
@@ -627,9 +629,10 @@ export default function NavBar({ lang }: NavBarProps) {
           </div>
         </div>
       </div>
+      <WelcomeModal isOpen={welcomeModalOpen} onClose={() => setWelcomeModalOpen(false)} lang={lang} />
+      <ProductFirstOnboardingModal isOpen={productOnboardingModalOpen} onClose={() => setProductOnboardingModalOpen(false)} lang={lang} />
       <LoginModal isOpen={loginModalOpen} onClose={() => setLoginModalOpen(false)} lang={lang} />
       <StoreOnboardingModal isOpen={onboardingModalOpen} onClose={() => setOnboardingModalOpen(false)} lang={lang} />
-      <WelcomeModal lang={lang} />
     </>
   );
 }

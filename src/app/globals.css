@@ -277,6 +277,11 @@ h6 {
   html {
     @apply font-sans;
   }
+
+  h2 {
+    font-weight: 600 !important;
+    letter-spacing: -1px !important;
+  }
 }
 /* Hide BrowseByCategory title when welcome modal is open */
 body.welcome-modal-open .browse-by-category-title {

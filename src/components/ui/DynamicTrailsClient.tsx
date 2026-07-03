@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ProductCard, SimpleProductCard } from './ProductGrid';
 import { staticCategories, legacyCategoryMapping } from '@/lib/supabase';
+import { APP_COLLECTIONS } from '@/lib/app_collections';
+import CitiesSection from './CitiesSection';
 
 interface DynamicTrailsClientProps {
   newProducts: any[];
@@ -12,6 +14,9 @@ interface DynamicTrailsClientProps {
   categoryMap: Record<string, any[]>;
   shops: any[];
   lang: string;
+  geoProducts?: any[];
+  targetCity?: string;
+  summerProducts?: any[];
 }
 
 function ScrollableTrail({ children }: { children: React.ReactNode }) {
@@ -101,13 +106,15 @@ function AccordionItem({ question, answer }: { question: string; answer: string 
   );
 }
 
-export default function DynamicTrailsClient({ newProducts, under100Products, freeShippingProducts, categoryMap, shops, lang }: DynamicTrailsClientProps) {
+export default function DynamicTrailsClient({ newProducts, under100Products, freeShippingProducts, categoryMap, shops, lang, geoProducts = [], targetCity = "", summerProducts = [] }: DynamicTrailsClientProps) {
   const [recentCategoryId, setRecentCategoryId] = useState<string | null>(null);
   const newArrivalsRef = useRef<HTMLDivElement>(null);
   const recentlyViewedRef = useRef<HTMLDivElement>(null);
   const under100Ref = useRef<HTMLDivElement>(null);
   const freeShippingRef = useRef<HTMLDivElement>(null);
   const newestStoresRef = useRef<HTMLDivElement>(null);
+  const geoTrailRef = useRef<HTMLDivElement>(null);
+  const summerTrailRef = useRef<HTMLDivElement>(null);
 
   const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
     if (!ref.current) return;
@@ -281,7 +288,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
   return (
     <div className="space-y-16">
 
-      {/* New Items Trail */}
+{/* New Items Trail */}
       {newProducts.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-4 md:mb-[30px]">
@@ -307,81 +314,34 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
         </section>
       )}
 
-      {/* 4. Recently Viewed Category Trail */}
-      {recentCategoryName && recentCategoryProducts.length > 0 && (
+            {/* Cities Section */}
+      <CitiesSection lang={lang} />
+
+{/* Summer Collection Trail */}
+      {summerProducts.length > 0 && (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-4 md:mb-[30px]">
             <div>
-              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">
-                {t.recentlyViewed} ({recentCategoryName})
+              <h2 className="text-xl md:text-3xl font-bold !text-black">
+                {APP_COLLECTIONS['summer-2026'].name[lang as 'en'|'fr'|'ar'|'tz'] || APP_COLLECTIONS['summer-2026'].name.en}
               </h2>
-              <p className="text-xs text-neutral-500 mt-1 text-start">{t.recentlyViewedSub}</p>
+              <p className="text-xs text-neutral-500 mt-1">
+                {lang === 'fr' ? 'Préparez-vous pour la saison estivale' : lang === 'ar' ? 'استعد لموسم الصيف' : lang === 'tz' ? 'ⵙⵡⵊⴷ ⵉ ⵓⵏⴱⴷⵓ' : 'Get ready for the summer season'}
+              </p>
             </div>
             <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-              <button onClick={() => scrollContainer(recentlyViewedRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <button onClick={() => scrollContainer(summerTrailRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
               </button>
-              <button onClick={() => scrollContainer(recentlyViewedRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+              <button onClick={() => scrollContainer(summerTrailRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
               </button>
             </div>
           </div>
-          <div ref={recentlyViewedRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
-            {recentCategoryProducts.map((p) => {
+          <div ref={summerTrailRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {summerProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Under 100 DH Trail */}
-      {under100Products.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
-            <div>
-              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.under100}</h2>
-              <p className="text-xs text-neutral-500 mt-1 text-start">{t.under100Sub}</p>
-            </div>
-            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-              <button onClick={() => scrollContainer(under100Ref, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-              </button>
-              <button onClick={() => scrollContainer(under100Ref, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-              </button>
-            </div>
-          </div>
-          <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
-            {under100Products.map((p) => {
-              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Free Shipping Trail */}
-      {freeShippingProducts.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
-            <div>
-              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.freeShipping}</h2>
-              <p className="text-xs text-neutral-500 mt-1 text-start">{t.freeShippingSub}</p>
-            </div>
-            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-              <button onClick={() => scrollContainer(freeShippingRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-              </button>
-              <button onClick={() => scrollContainer(freeShippingRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-              </button>
-            </div>
-          </div>
-          <div ref={freeShippingRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
-            {freeShippingProducts.map((p) => {
-              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>
@@ -441,8 +401,112 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
         </div>
       </section>
 
+{/* Under 100 DH Trail */}
+      {under100Products.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.under100}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.under100Sub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(under100Ref, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(under100Ref, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {under100Products.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
 
+      {/* Geo-IP Trail */}
+      {geoProducts.length > 0 && targetCity && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.yourCity}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.yourCitySub} {targetCity}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(geoTrailRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(geoTrailRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={geoTrailRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {geoProducts.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
 
-    </div>
+      {/* 4. Recently Viewed Category Trail */}
+      {recentCategoryName && recentCategoryProducts.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">
+                {t.recentlyViewed} ({recentCategoryName})
+              </h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.recentlyViewedSub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(recentlyViewedRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(recentlyViewedRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={recentlyViewedRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {recentCategoryProducts.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Free Shipping Trail */}
+      {freeShippingProducts.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.freeShipping}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.freeShippingSub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(freeShippingRef, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(freeShippingRef, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={freeShippingRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {freeShippingProducts.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
+
+          </div>
   );
 }

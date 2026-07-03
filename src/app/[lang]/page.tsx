@@ -9,8 +9,10 @@ import { optimizeProducts, optimizeShops } from "@/lib/utils";
 import DynamicTrailsClient from "@/components/ui/DynamicTrailsClient";
 import HomeCarousel from "@/components/ui/HomeCarousel";
 import BrowseByCategory from "@/components/ui/BrowseByCategory";
-import CitiesSection from "@/components/ui/CitiesSection";
 import TrustBanner from "@/components/ui/TrustBanner";
+import { headers } from 'next/headers';
+import { findClosestCityWithProducts, MOROCCAN_CITIES } from '@/lib/geo';
+import { APP_COLLECTIONS } from '@/lib/app_collections';
 
 
 interface PageProps {
@@ -102,6 +104,57 @@ export default async function HomePage({ params }: PageProps) {
     }
   });
 
+  const headersList = await headers();
+  const ipCity = headersList.get('x-vercel-ip-city');
+  const ipLat = headersList.get('x-vercel-ip-latitude');
+  const ipLon = headersList.get('x-vercel-ip-longitude');
+
+  const cityProductsCount: Record<string, number> = {};
+  for (const p of products) {
+    const shop = shops.find(s => s.id === p.shop_id);
+    if (shop && shop.merchant_city) {
+      const c = shop.merchant_city.toLowerCase();
+      const matchedCity = MOROCCAN_CITIES.find(mc => c.includes(mc.name.toLowerCase()));
+      if (matchedCity) {
+        cityProductsCount[matchedCity.name] = (cityProductsCount[matchedCity.name] || 0) + 1;
+      }
+    }
+  }
+
+  const validCities = new Set(
+    MOROCCAN_CITIES.filter(c => (cityProductsCount[c.name] || 0) >= 5).map(c => c.name)
+  );
+
+  let targetCity = "";
+  if (ipCity) {
+    const matchedCity = MOROCCAN_CITIES.find(c => c.name.toLowerCase() === ipCity.toLowerCase());
+    if (matchedCity && validCities.has(matchedCity.name)) {
+      targetCity = matchedCity.name;
+    } else if (ipLat && ipLon) {
+      targetCity = findClosestCityWithProducts(parseFloat(ipLat), parseFloat(ipLon), validCities);
+    }
+  }
+
+  // Use a fallback if still empty and we have valid cities
+  if (!targetCity && validCities.size > 0) {
+    targetCity = "Marrakech"; // typical fallback
+    if (!validCities.has(targetCity)) {
+       targetCity = Array.from(validCities)[0];
+    }
+  }
+
+  const geoProducts = targetCity ? products.filter(p => {
+    const shop = shops.find(s => s.id === p.shop_id);
+    return shop?.merchant_city?.toLowerCase().includes(targetCity.toLowerCase());
+  }).slice(0, 8) : [];
+
+  const summerKeywords = APP_COLLECTIONS["summer-2026"].keywords.map(k => k.toLowerCase());
+  const summerProducts = products.filter(p => {
+    const titleEn = p.title_translations?.en?.toLowerCase() || '';
+    const titleFr = p.title_translations?.fr?.toLowerCase() || '';
+    return summerKeywords.some(k => titleEn.includes(k) || titleFr.includes(k));
+  }).slice(0, 8);
+
   // Trilingual hero translation strings
   const pageLabels: Record<string, Record<string, string>> = {
     en: {
@@ -171,21 +224,25 @@ export default async function HomePage({ params }: PageProps) {
         <HomeCarousel lang={lang} />
       </div>
 
-      {/* Browse by Category */}
-      <BrowseByCategory className="md:mt-8" lang={lang} />
-
-      {/* Cities */}
-      <CitiesSection lang={lang} />
+      {/* Categories block */}
+      <div className="!mt-8 md:!mt-12">
+        <BrowseByCategory lang={lang} />
+      </div>
 
       {/* Dynamic Trails & FAQ section */}
-      <DynamicTrailsClient 
+      <div className="!mt-10 md:!mt-14">
+        <DynamicTrailsClient 
         newProducts={newProducts} 
         under100Products={under100Products} 
         freeShippingProducts={freeShippingProducts} 
         categoryMap={categoryMap} 
         shops={shops} 
         lang={lang} 
+        geoProducts={geoProducts}
+        targetCity={targetCity}
+        summerProducts={summerProducts}
       />
+      </div>
 
       {/* Trust Banner */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8">
