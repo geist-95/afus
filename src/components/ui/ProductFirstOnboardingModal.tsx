@@ -373,6 +373,9 @@ const MOROCCAN_CITIES = [
 ];
 
 const MOROCCAN_CITIES_SECTORS: Record<string, string[]> = {
+  'Casablanca': ['Anfa', 'Maârif', 'Sidi Belyout', 'Aïn Diab', 'Bourgogne', 'Gauthier', 'Autre secteur'],
+  'Tanger': ['Médina', 'Malabata', 'Marchan', 'Iberia', 'Beni Makada', 'Autre secteur'],
+  'Agadir': ['Centre Ville', 'Marina', 'Talborjt', 'Haut Founty', 'Dakhla', 'Autre secteur'],
   'Marrakech': ['Médina', 'Guéliz', 'Hivernage', 'Palmeraie', 'Targa', 'Sidi Youssef Ben Ali', 'Daoudiate', 'Autre secteur'],
   'Fès': ['Fès El Bali', 'Fès El Jdid', 'Ville Nouvelle', 'Narjiss', 'Mont Fleuri', 'Agdal', 'Autre secteur'],
   'Meknès': ['Médina', 'Hamria', 'Ville Nouvelle', 'Bassatine', 'Toulal', 'Autre secteur'],

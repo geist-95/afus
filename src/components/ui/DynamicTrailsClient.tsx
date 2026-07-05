@@ -347,6 +347,32 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
         </section>
       )}
 
+      {/* Under 100 DH Trail */}
+      {under100Products.length > 0 && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
+            <div>
+              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.under100}</h2>
+              <p className="text-xs text-neutral-500 mt-1 text-start">{t.under100Sub}</p>
+            </div>
+            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
+              <button onClick={() => scrollContainer(under100Ref, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+              </button>
+              <button onClick={() => scrollContainer(under100Ref, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+              </button>
+            </div>
+          </div>
+          <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
+            {under100Products.map((p) => {
+              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+            })}
+          </div>
+        </section>
+      )}
+
       {/* 5. Newest Stores Trail */}
       <section className="space-y-4">
         <div className="flex items-center justify-between mb-4 md:mb-[30px]">
@@ -401,33 +427,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
         </div>
       </section>
 
-{/* Under 100 DH Trail */}
-      {under100Products.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between mb-4 md:mb-[30px]">
-            <div>
-              <h2 className="text-xl md:text-3xl font-bold text-start !text-black">{t.under100}</h2>
-              <p className="text-xs text-neutral-500 mt-1 text-start">{t.under100Sub}</p>
-            </div>
-            <div className="flex items-center gap-2 hidden sm:flex" dir="ltr">
-              <button onClick={() => scrollContainer(under100Ref, 'left')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-              </button>
-              <button onClick={() => scrollContainer(under100Ref, 'right')} className="w-10 h-10 rounded-full border border-neutral-200 flex items-center justify-center hover:bg-neutral-50 transition-colors text-black">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-              </button>
-            </div>
-          </div>
-          <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
-            {under100Products.map((p) => {
-              const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Geo-IP Trail */}
+{/* Geo-IP Trail */}
       {geoProducts.length > 0 && targetCity && (
         <section className="space-y-4">
           <div className="flex items-center justify-between mb-4 md:mb-[30px]">

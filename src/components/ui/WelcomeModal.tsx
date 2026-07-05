@@ -98,8 +98,8 @@ export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onCl
     { title: t.features[3].title, desc: t.features[3].desc, image: "/landing/d.png", color: "#ae74e4" }
   ];
 
-  const registerText = lang === 'fr' ? "S'inscrire" : lang === 'ar' ? 'إنشاء حساب' : lang === 'tz' ? 'ⵣⵎⵎⴻⵎ' : 'Register';
-  const continueText = lang === 'fr' ? "Continuer vers l'app" : lang === 'ar' ? 'متابعة إلى التطبيق' : lang === 'tz' ? 'ⴹⴼⵕ ⵖⵔ ⵜⵙⵏⵙⵉⵜ' : 'Continue to app';
+  const registerText = lang === 'fr' ? 'Vendre un produit' : lang === 'ar' ? 'بيع منتج' : lang === 'tz' ? 'ⵣⵣⵏⵣ ⴰⴼⴰⵔⵉⵙ' : 'Sell a product';
+  const continueText = lang === 'fr' ? 'Visiter' : lang === 'ar' ? 'زيارة' : lang === 'tz' ? 'ⵔⵣⴼ' : 'Visit';
 
   const langNames: Record<string, string> = {
     en: 'EN',
@@ -109,9 +109,9 @@ export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onCl
   };
 
   const introText: Record<string, string> = {
-    en: "Afus is a 🇲🇦 Moroccan marketplace for artisans and handmade goods.",
-    fr: "Afus est une platforme 🇲🇦 marocaine pour les artisans et les produits faits main.",
-    ar: "Afus هو سوق 🇲🇦 مغربي للحرفيين والمنتجات المصنوعة يدوياً.",
+    en: "Afus is a Moroccan 🇲🇦 marketplace for artisans and handmade products.",
+    fr: "Afus est une plateforme marocaine 🇲🇦 pour les artisans et les produits faits main.",
+    ar: "أفوس هي منصة مغربية 🇲🇦 للحرفيين والمنتجات اليدوية.",
     tz: "Afus ⵉⴳⴰ ⵢⴰⵏ ⵓⴷⵖⴰⵔ 🇲🇦 ⵏ ⵜⵎⴳⵓⵔⵉ ⵉ ⵉⵎⴳⵓⵔⵉⵢⵏ ⴷ ⵜⵖⴰⵡⵙⵉⵡⵉⵏ ⵏ ⵓⴼⵓⵙ."
   };
 
@@ -295,7 +295,7 @@ export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onCl
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 animate-in fade-in duration-300">
       <div className="min-h-full flex items-center justify-center p-4 md:p-6" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
         <div 
-          className="w-full max-w-xl bg-white relative shadow-2xl flex flex-col arabic-frame overflow-hidden"
+          className="w-full max-w-[520px] bg-white relative shadow-2xl flex flex-col arabic-frame overflow-hidden"
         >
           {/* Top Bar */}
         <div className="flex items-start justify-between px-8 pt-6 md:px-10 md:pt-8 pb-2 flex-shrink-0">
@@ -339,7 +339,7 @@ export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onCl
            
            {/* Definition */}
            <div className="text-start mb-8 px-2">
-             <h2 className="text-3xl sm:text-4xl font-semibold leading-tight sm:leading-tight text-black mb-6 !tracking-[-0.8px] max-w-[92%]" style={{ fontWeight: 600 }}>
+             <h2 className="text-2xl sm:text-3xl font-semibold leading-tight sm:leading-tight text-black mb-6 !tracking-[-0.8px] max-w-[92%]" style={{ fontWeight: 600 }}>
                {introText[lang] || introText['en']}
              </h2>
              
@@ -364,15 +364,18 @@ export default function WelcomeModal({ lang = 'en', isOpen: externalIsOpen, onCl
                     handleClose(); 
                     window.dispatchEvent(new CustomEvent('open-auth-modal')); 
                   }} 
-                  className="flex-1 bg-[#372d41] text-white font-bold py-3.5 px-4 rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-[#372d41]/20"
+                  className="flex-[1.5] sm:flex-[2] bg-primary text-white font-bold py-3.5 px-4 rounded-full hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
                 >
                   {registerText}
                 </button>
                 <button 
                   onClick={handleClose} 
-                  className="flex-1 bg-neutral-50 border-2 border-black text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity"
+                  className="flex-1 bg-neutral-50 border-2 border-black text-black font-bold py-3.5 px-4 rounded-full hover:opacity-80 transition-opacity flex items-center justify-center gap-2"
                 >
-                  {continueText}
+                  <span>{continueText}</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 rtl:rotate-180">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
                 </button>
              </div>
            )}

@@ -37,7 +37,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           title: "The world of handmade",
           desc: "Launch your digital storefront in minutes. Connect with a growing community of conscious shoppers.",
           descColor: "text-[#F3E2F5]",
-          btnText: "Become a seller now",
+          btnText: "Sell your product",
           image: "/seller.png",
           action: "onboarding",
         },
@@ -71,7 +71,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           title: "Le monde du fait main",
           desc: "Lancez votre vitrine numérique en quelques minutes. Connectez-vous à une communauté grandissante.",
           descColor: "text-[#F3E2F5]",
-          btnText: "Devenir vendeur",
+          btnText: "Vendre votre produit",
           image: "/seller.png",
           action: "onboarding",
         },
@@ -105,7 +105,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           title: "عالم الصناعة اليدوية",
           desc: "أطلق واجهة متجرك الرقمية في دقائق. تواصل مع مجتمع متنامٍ من المتسوقين الواعين.",
           descColor: "text-[#F3E2F5]",
-          btnText: "كن بائعاً الآن",
+          btnText: "بيع منتجك",
           image: "/seller.png",
           action: "onboarding",
         },
@@ -139,7 +139,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
           title: "ⴰⵎⴰⴹⴰⵍ ⵏ ⵜⵡⵓⵔⵉ ⵏ ⵓⴼⵓⵙ",
           desc: "ⵙⵙⵏⵜⵉ ⵜⴰⵃⴰⵏⵓⵜ ⵏⵏⴽ ⵜⴰⵎⵓⵟⵟⵓⵏⵜ ⴳ ⵎⵏⵏⴰⵡ ⵜⵓⵙⴷⴰⴷⵉⵏ. ⵎⵓⵏ ⴷ ⵢⴰⵜ ⵜⵔⴰⴱⴱⵓⵜ ⵉⵎⵇⵇⵓⵔⵏ ⵏ ⵉⵎⵙⴰⵖⵏ.",
           descColor: "text-[#F3E2F5]",
-          btnText: "ⵓⵖⴰⵍ ⴷ ⴰⵎⵣⵣⵏⵣⵉ ⴷⵖⵉ",
+          btnText: "ⵣⵣⵏⵣ ⴰⴼⴰⵔⵉⵙ ⵏⵏⴽ",
           image: "/seller.png",
           action: "onboarding",
         },
@@ -179,7 +179,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
       if (session?.shop) {
         router.push(`/${lang}/dashboard`);
       } else {
-        setOnboardingOpen(true);
+        window.dispatchEvent(new Event('open-auth-modal'));
       }
     } else if (action === "copy_link") {
       navigator.clipboard.writeText("https://afus.ma").then(() => {
@@ -204,7 +204,7 @@ export default function HomeCarousel({ lang }: HomeCarouselProps) {
     if (session?.shop) {
       router.push(`/${lang}/dashboard`);
     } else {
-      setOnboardingOpen(true);
+      window.dispatchEvent(new Event('open-auth-modal'));
     }
   };
 

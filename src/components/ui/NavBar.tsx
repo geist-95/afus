@@ -285,6 +285,7 @@ export default function NavBar({ lang }: NavBarProps) {
 
             {/* Right */}
             <div className="flex items-center gap-4">
+              <span className="text-primary select-none text-[10px] flex-shrink-0">✦</span>
               <button
                 onClick={() => window.dispatchEvent(new Event('open-welcome-modal'))}
                 className="hover:opacity-80 transition-opacity cursor-pointer text-[13px]"
