@@ -316,7 +316,17 @@ export default function NavBar({ lang }: NavBarProps) {
                 className="flex items-center gap-2 rounded-lg py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
               >
                 {(session as any).avatar_url ? (
-                  <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
+                  <img 
+                    src={(session as any).avatar_url} 
+                    alt="avatar" 
+                    width={24} 
+                    height={24} 
+                    className="w-6 h-6 rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`;
+                    }}
+                  />
                 ) : (
                   <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
                 )}
@@ -449,7 +459,17 @@ export default function NavBar({ lang }: NavBarProps) {
                     className="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-neutral-100 cursor-pointer text-black transition-colors"
                   >
                     {(session as any).avatar_url ? (
-                      <img src={(session as any).avatar_url} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full object-cover" />
+                      <img 
+                        src={(session as any).avatar_url} 
+                        alt="avatar" 
+                        width={24} 
+                        height={24} 
+                        className="w-6 h-6 rounded-full object-cover" 
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`;
+                        }}
+                      />
                     ) : (
                       <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(shortName || 'User')}&background=E8583F&color=fff&bold=true`} alt="avatar" width={24} height={24} className="w-6 h-6 rounded-full" />
                     )}

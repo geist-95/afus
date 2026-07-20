@@ -367,7 +367,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
           <div ref={under100Ref} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {under100Products.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>
@@ -447,7 +447,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
           <div ref={geoTrailRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {geoProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>
@@ -475,7 +475,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
           <div ref={recentlyViewedRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {recentCategoryProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>
@@ -501,7 +501,7 @@ export default function DynamicTrailsClient({ newProducts, under100Products, fre
           <div ref={freeShippingRef} className="grid grid-cols-2 gap-3 md:flex md:gap-4 md:overflow-x-auto pb-4 md:scrollbar-none md:snap-x md:scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0">
             {freeShippingProducts.map((p) => {
               const shop = shops.find((s) => s.id === p.shop_id) || shops[0];
-              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[18%]" />;
+              return <SimpleProductCard key={p.id} product={p} lang={lang} shop={shop} className="w-full md:flex-shrink-0 md:snap-start md:w-48 lg:w-[calc(20%-12.8px)]" />;
             })}
           </div>
         </section>

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { getActiveSession, loginUser, registerUser, createShopForExistingUser, UserSession } from '@/lib/auth';
+import { GoogleLogin } from '@react-oauth/google';
+import { getActiveSession, loginUser, registerUser, createShopForExistingUser, loginWithGoogleToken, UserSession } from '@/lib/auth';
 import { checkShopSlugAvailable, uploadImage, createProductListing, staticCategories } from '@/lib/supabase';
 import {
   IconX,
@@ -49,7 +50,7 @@ interface ProductFirstOnboardingModalProps {
   lang: string;
 }
 
-type Step = 'step1' | 'step_category' | 'step2' | 'account' | 'success';
+type Step = 'step1' | 'step_category' | 'step2' | 'account' | 'auth' | 'success';
 
 const STEPS: Step[] = ['step1', 'step_category', 'step2', 'account', 'success'];
 
@@ -377,10 +378,24 @@ const MOROCCAN_CITIES_SECTORS: Record<string, string[]> = {
   'Tanger': ['Médina', 'Malabata', 'Marchan', 'Iberia', 'Beni Makada', 'Autre secteur'],
   'Agadir': ['Centre Ville', 'Marina', 'Talborjt', 'Haut Founty', 'Dakhla', 'Autre secteur'],
   'Marrakech': ['Médina', 'Guéliz', 'Hivernage', 'Palmeraie', 'Targa', 'Sidi Youssef Ben Ali', 'Daoudiate', 'Autre secteur'],
-  'Fès': ['Fès El Bali', 'Fès El Jdid', 'Ville Nouvelle', 'Narjiss', 'Mont Fleuri', 'Agdal', 'Autre secteur'],
-  'Meknès': ['Médina', 'Hamria', 'Ville Nouvelle', 'Bassatine', 'Toulal', 'Autre secteur'],
+  'Fes': ['Fès El Bali', 'Fès El Jdid', 'Ville Nouvelle', 'Narjiss', 'Mont Fleuri', 'Agdal', 'Autre secteur'],
+  'Meknes': ['Médina', 'Hamria', 'Ville Nouvelle', 'Bassatine', 'Toulal', 'Autre secteur'],
   'Rabat': ['Médina', 'Agdal', 'Hassan', 'Hay Riad', 'Souissi', 'Les Orangers', 'Youssoufia', 'Océan', 'Autre secteur'],
-  'Tétouan': ['Médina', 'Ensanche', 'Sania Rmel', 'Kabila', 'Autre secteur'],
+  'Tetouan': ['Médina', 'Ensanche', 'Sania Rmel', 'Kabila', 'Autre secteur'],
+  'Oujda': ['Centre Ville', 'Lazaret', 'Sidi Yahya', 'Village Toba', 'Hay Al Andalous', 'Autre secteur'],
+  'Kenitra': ['Maamora', 'Bir Rami', 'Saknia', 'Centre Ville', 'Khabazate', 'Autre secteur'],
+  'Sale': ['Bab Lamrissa', 'Tabriquet', 'Bettana', 'Hay Salam', 'Sala Al Jadida', 'Autre secteur'],
+  'Nador': ['Centre Ville', 'Hay El Matar', 'Al Aaroui', 'Beni Ensar', 'Zeghanghane', 'Autre secteur'],
+  'Beni Mellal': ['Centre Ville', 'Hay Al Atlas', 'Hay Riad', 'Ouled Hamdane', 'Autre secteur'],
+  'El Jadida': ['Centre Ville', 'Sidi Bouzid', 'Plateau', 'Hay Salam', 'Autre secteur'],
+  'Taza': ['Taza Haut', 'Taza Bas', 'Centre Ville', 'Autre secteur'],
+  'Mohammedia': ['Parc', 'Centre Ville', 'Alia', 'Monica', 'Les Sablettes', 'Autre secteur'],
+  'Khouribga': ['Centre Ville', 'Hay Al Qods', 'Hay Nahda', 'Village OCP', 'Autre secteur'],
+  'Settat': ['Centre Ville', 'Hay Al Farah', 'Hay Salam', 'Autre secteur'],
+  'Safi': ['Centre Ville', 'Sidi Bouzid', 'Plateau', 'Hay Anas', 'Autre secteur'],
+  'Essaouira': ['Médina', 'Borj', 'Lotissement Argane', 'Ghazoua', 'Autre secteur'],
+  'Ouarzazate': ['Centre Ville', 'Hay Al Mansour', 'Taourirt', 'Tabount', 'Autre secteur'],
+  'Errachidia': ['Centre Ville', 'Boutalamine', 'Targa', 'Ain Al Ati', 'Autre secteur'],
 };
 
 export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: ProductFirstOnboardingModalProps) {
@@ -532,12 +547,9 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
 
   const handleAccountNext = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!hasSession) {
-      if (!fullName || !email || !password) { setError(t.errFillRequired); return; }
-      if (password.length < 6) { setError(t.errPasswordLength); return; }
-    }
     const cleanName = shopName.trim();
     if (!cleanName) { setError(t.errShopNameEmpty || 'Shop name is required'); return; }
+    if (!city) { setError(t.errSelectCity); return; }
     
     setLoading(true);
     try {
@@ -548,12 +560,33 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
         setLoading(false);
         return;
       }
+      
+      if (!hasSession) {
+        setLoading(false);
+        setError('');
+        setStep('auth');
+        return;
+      }
+      
       await handleCreateShop();
     } catch (err) {
       setError(t.errVerifyingShop || 'Error verifying shop');
       setLoading(false);
     }
+  };
 
+  const handleAuthNext = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName || !email || !password) { setError(t.errFillRequired); return; }
+    if (password.length < 6) { setError(t.errPasswordLength); return; }
+    
+    setLoading(true);
+    try {
+      await handleCreateShop();
+    } catch (err) {
+      setError(t.errVerifyingShop || 'Error verifying shop');
+      setLoading(false);
+    }
   };
 
 
@@ -566,10 +599,6 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
       setError(lang === 'fr' ? 'Veuillez ajouter au moins une image.' : lang === 'ar' ? 'يرجى إضافة صورة واحدة على الأقل.' : 'Please add at least one image.');
       return;
     }
-    
-    
-    if (!city) { setError(t.errSelectCity); return; }
-
     setLoading(true);
     try {
       
@@ -606,14 +635,12 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
     try {
       let createdShop = null;
 
-      if (hasSession) {
-        const active = await getActiveSession();
-        if (!active) {
-          throw new Error('No active session found.');
-        }
+      const active = await getActiveSession();
+      
+      if (active) {
         const result = await createShopForExistingUser({
           userId: active.id,
-          fullName: active.full_name,
+          fullName: active.full_name || fullName,
           phone: phone || active.phone_number || '',
           shopName: cleanName,
           merchantCity: finalCity,
@@ -694,9 +721,10 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
 
   if (!isOpen) return null;
 
+  const activeIndex = step === 'auth' ? contentSteps.length - 1 : contentStepIndex;
   const progressPercent = step === 'success' ? 100
     : isLoginMode ? 0
-    : ((contentStepIndex + 1) / contentSteps.length) * 100;
+    : ((activeIndex + 1) / contentSteps.length) * 100;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-0 md:p-6 overflow-y-auto">
@@ -716,13 +744,14 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
         {/* Unified header */}
         <div className="flex items-center px-6 pt-6 pb-2 md:px-10 lg:px-14 md:pt-8 md:pb-2 bg-white z-20 gap-4 md:gap-8 lg:gap-12">
           <div className="w-16 md:w-24 shrink-0">
-            {!isLoginMode && (step === 'step2' || step === 'step_category' || step === 'account') && (
+            {!isLoginMode && (step === 'step2' || step === 'step_category' || step === 'account' || step === 'auth') && (
               <button
                 onClick={() => {
                   setError('');
                   if (step === 'step_category') setStep('step1');
                   else if (step === 'step2') setStep('step_category');
                   else if (step === 'account') setStep('step2');
+                  else if (step === 'auth') setStep('account');
                 }}
                 className="w-10 h-10 rounded-full bg-neutral-50 md:bg-white border border-neutral-200 flex items-center justify-center text-neutral-600 hover:text-black hover:bg-neutral-100 transition-all shrink-0"
               >
@@ -884,61 +913,73 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
                         </div>
                       </div>
 
-                      {!hasSession && (
-                        <>
-
-                      <div className="space-y-1">
-                        <label className="text-sm font-semibold text-black block">{t.fullName} <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <IconUser className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
-                          <input
-                            type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
-                            placeholder="Youssef Alami"
-                          />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-sm font-semibold text-black block text-left">
+                            Ville <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <select
+                              value={city}
+                              onChange={(e) => {
+                                setCity(e.target.value);
+                                setSecteur('');
+                              }}
+                              className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3.5 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer text-left"
+                            >
+                              <option value="" disabled>Sélectionner une ville...</option>
+                              {[...MOROCCAN_CITIES].sort((a, b) => a.localeCompare(b)).map((c) => (
+                                <option key={c} value={c}>
+                                  {c}
+                                </option>
+                              ))}
+                            </select>
+                            <IconSelector className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 z-10 pointer-events-none" strokeWidth={1.8} />
+                          </div>
                         </div>
+
+                        <div className="space-y-1">
+                            <label className="text-sm font-semibold text-black block text-left">
+                              Secteur <span className="text-neutral-400 font-normal ml-1">(Optionnel)</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                value={secteur}
+                                onChange={(e) => setSecteur(e.target.value)}
+                                disabled={!city}
+                                className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3.5 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <option value="" disabled>{city ? 'Sélectionner un secteur...' : 'Sélectionnez d\'abord une ville...'}</option>
+                                {city && MOROCCAN_CITIES_SECTORS[city] ? MOROCCAN_CITIES_SECTORS[city].map((s) => (
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
+                                )) : city ? (
+                                  <option value="Autre secteur">Autre secteur</option>
+                                ) : null}
+                              </select>
+                              <IconSelector className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 z-10 pointer-events-none" strokeWidth={1.8} />
+                            </div>
+                          </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <label className="text-sm font-semibold text-black block">{t.email} <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <IconMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
-                          <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
-                            placeholder="you@example.com"
-                          />
-                        </div>
-                      </div>
 
-                      <div className="space-y-1">
-                        <label className="text-sm font-semibold text-black block">{t.password} <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <IconLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
-                          <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
-                            placeholder="At least 6 characters"
-                          />
-                        </div>
-                      </div>
-
-                      </>
-                      )}
 
                       <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 md:pb-8 bg-white z-50 flex flex-row-reverse items-center justify-between gap-3 -mx-6 md:-mx-10 lg:-mx-14 px-6 md:px-10 lg:px-14 mt-auto">
                         <button
                           type="submit"
                           className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all"
                         >
-                          {lang === 'fr' ? 'Publier mon produit' : lang === 'ar' ? 'نشر منتجي' : 'Publish my product'}
-                          <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                          {loading ? (
+                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              {hasSession 
+                                ? (lang === 'fr' ? 'Publier mon produit' : lang === 'ar' ? 'نشر منتجي' : 'Publish my product')
+                                : t.next}
+                              <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                            </>
+                          )}
                         </button>
                       </div>
 
@@ -946,12 +987,133 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
                     </form>
                   </div>
                 )}
+                {/* ── STEP 4.5: AUTH ── */}
+                {step === 'auth' && !hasSession && (
+                  <div className="space-y-6 text-center flex-1 flex flex-col">
+                    <div>
+                      <h1 className="text-2xl md:text-3xl font-semibold tracking-[-1px] text-neutral-900 leading-tight">
+                        {lang === 'fr' ? 'Créez votre compte pour publier' : lang === 'ar' ? 'أنشئ حسابك للنشر' : 'Create your account to publish'}
+                      </h1>
+                      <p className="text-neutral-500 mt-2 text-base">
+                        {lang === 'fr' ? 'Dernière étape pour publier ' : lang === 'ar' ? 'الخطوة الأخيرة لنشر ' : 'Last step to publish '}&quot;{productTitle}&quot;
+                      </p>
+                    </div>
 
+                    <form onSubmit={handleAuthNext} className="space-y-6 text-left flex-1 flex flex-col">
+                      {error && (
+                        <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-200">
+                          {error}
+                        </div>
+                      )}
+
+                      <div className="flex flex-col gap-4">
+                        <div className="flex justify-center w-full">
+                          <GoogleLogin
+                            onSuccess={async (credentialResponse) => {
+                              if (credentialResponse.credential) {
+                                setLoading(true);
+                                setError('');
+                                try {
+                                  const { loginWithGoogleToken } = await import('@/lib/auth');
+                                  await loginWithGoogleToken(credentialResponse.credential);
+                                  await handleCreateShop();
+                                } catch (err: any) {
+                                  setError(err.message || 'Google login failed');
+                                  setLoading(false);
+                                }
+                              }
+                            }}
+                            onError={() => {
+                              setError('Google login failed');
+                            }}
+                            useOneTap
+                            shape="pill"
+                            size="large"
+                            text="continue_with"
+                            width="400"
+                          />
+                        </div>
+
+                        <div className="relative my-4">
+                          <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-neutral-200"></div>
+                          </div>
+                          <div className="relative flex justify-center text-xs">
+                            <span className="bg-white px-4 text-neutral-500 font-semibold uppercase tracking-wider">
+                              {lang === 'fr' ? 'OU AVEC EMAIL' : lang === 'ar' ? 'أو بالبريد الإلكتروني' : 'OR WITH EMAIL'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 relative">
+                          <div className="space-y-1">
+                            <label className="text-sm font-semibold text-black block">{t.fullName} <span className="text-red-500">*</span></label>
+                            <div className="relative">
+                              <IconUser className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
+                              <input
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                                placeholder="Youssef Alami"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-sm font-semibold text-black block">{t.email} <span className="text-red-500">*</span></label>
+                            <div className="relative">
+                              <IconMail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
+                              <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                                placeholder="you@example.com"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-sm font-semibold text-black block">{t.password} <span className="text-red-500">*</span></label>
+                            <div className="relative">
+                              <IconLock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" strokeWidth={1.8} />
+                              <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3.5 text-base text-left text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300"
+                                placeholder="At least 6 characters"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 md:pb-8 bg-white z-50 flex flex-row-reverse items-center justify-between gap-3 -mx-6 md:-mx-10 lg:-mx-14 px-6 md:px-10 lg:px-14 mt-auto">
+                        <button
+                          type="submit"
+                          disabled={loading || !fullName || !email || !password || password.length < 6}
+                          className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {loading ? (
+                            <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <>
+                              {lang === 'fr' ? 'Publier mon produit' : lang === 'ar' ? 'نشر منتجي' : 'Publish my product'}
+                              <IconArrowRight className="w-5 h-5" strokeWidth={2.5} />
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
                 {/* ── STEP 1: BASICS ── */}
                 {step === 'step1' && (
                   <div className="space-y-6 text-center flex-1 flex flex-col">
                     <div>
-                      <h1 className="text-2xl md:text-3xl font-semibold tracking-[-1px] text-neutral-900 leading-tight">{lang === 'fr' ? 'Quelle est votre création ?' : lang === 'ar' ? 'ما هو إبداعك؟' : 'What is your creation?'}</h1>
+                      <h1 className="text-2xl md:text-3xl font-semibold tracking-[-1px] text-neutral-900 leading-tight">{lang === 'fr' ? 'Quelle est votre produit?' : lang === 'ar' ? 'ما هو إبداعك؟' : 'What is your creation?'}</h1>
                       
                     </div>
 
@@ -1037,58 +1199,11 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
 
                       
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-sm font-semibold text-black block text-left">
-                            Ville <span className="text-red-500">*</span>
-                          </label>
-                          <div className="relative">
-                            <select
-                              value={city}
-                              onChange={(e) => {
-                                setCity(e.target.value);
-                                setSecteur('');
-                              }}
-                              className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3.5 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer text-left"
-                            >
-                              <option value="" disabled>Sélectionner une ville...</option>
-                              {[...Object.keys(MOROCCAN_CITIES_SECTORS)].sort((a, b) => a.localeCompare(b)).map((c) => (
-                                <option key={c} value={c}>
-                                  {c}
-                                </option>
-                              ))}
-                            </select>
-                            <IconSelector className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 z-10 pointer-events-none" strokeWidth={1.8} />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label className="text-sm font-semibold text-black block text-left">
-                              Secteur <span className="text-neutral-400 font-normal ml-1">(Optionnel)</span>
-                            </label>
-                            <div className="relative">
-                              <select
-                                value={secteur}
-                                onChange={(e) => setSecteur(e.target.value)}
-                                disabled={!city}
-                                className="w-full border border-neutral-200 rounded-2xl pl-4 pr-10 py-3.5 text-sm text-black focus:outline-none focus:ring-[3px] focus:ring-primary/10 focus:border-primary/50 transition-all bg-white hover:border-neutral-300 appearance-none cursor-pointer text-left disabled:opacity-50 disabled:cursor-not-allowed"
-                              >
-                                <option value="" disabled>{city ? 'Sélectionner un secteur...' : 'Sélectionnez d\'abord une ville...'}</option>
-                                {city && MOROCCAN_CITIES_SECTORS[city] && MOROCCAN_CITIES_SECTORS[city].map((s) => (
-                                  <option key={s} value={s}>
-                                    {s}
-                                  </option>
-                                ))}
-                              </select>
-                              <IconSelector className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 z-10 pointer-events-none" strokeWidth={1.8} />
-                            </div>
-                          </div>
-                      </div>
 
                       <div className="sticky bottom-0 left-0 right-0 pt-4 pb-6 md:pb-8 bg-white z-50 flex flex-row-reverse items-center justify-between gap-3 -mx-6 md:-mx-10 lg:-mx-14 px-6 md:px-10 lg:px-14 mt-auto">
                         <button
                           type="submit"
-                          disabled={loading || productImageFiles.length === 0 || !city}
+                          disabled={loading || productImageFiles.length === 0}
                           className="flex-1 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 md:py-4 rounded-full font-bold text-sm md:text-base hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading ? (
@@ -1127,7 +1242,7 @@ export default function ProductFirstOnboardingModal({ isOpen, onClose, lang }: P
                         return;
                       }
                       setStep('step2');
-                    }} className="space-y-6 text-left flex-1 flex flex-col">
+                    }} className="space-y-6 text-left flex-1 flex flex-col pb-6 md:pb-8">
                       
                       <div className="space-y-1">
                         

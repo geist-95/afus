@@ -243,6 +243,54 @@ export async function loginWithGoogle(): Promise<void> {
   if (error) throw error;
 }
 
+export async function loginWithGoogleToken(idToken: string): Promise<UserSession> {
+  const { data: { session }, error } = await supabase.auth.signInWithIdToken({
+    provider: 'google',
+    token: idToken,
+  });
+
+  if (error) throw error;
+  if (!session?.user) throw new Error('sign in failed: no user in session');
+
+  const { data: profile, error: profileErr } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', session.user.id)
+    .single();
+
+  if (profileErr || !profile) {
+    throw profileErr || new Error('profile not found in database');
+  }
+
+  let shop = null;
+  if (profile.role === 'seller') {
+    const { data: shopData } = await supabase
+      .from('shops')
+      .select('*')
+      .eq('owner_id', profile.id)
+      .single();
+    shop = shopData;
+  }
+
+  const userSession: UserSession = {
+    id: profile.id,
+    email: profile.email,
+    full_name: profile.full_name,
+    role: profile.role,
+    phone_number: profile.phone_number,
+    avatar_url: profile.avatar_url,
+    email_notifications_orders: profile.email_notifications_orders,
+    email_notifications_messages: profile.email_notifications_messages,
+    shop,
+  };
+
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('afus_session_user', JSON.stringify(userSession));
+  }
+
+  return userSession;
+}
+
 export async function createShopForExistingUser(payload: {
   userId: string;
   fullName: string;

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { loginUser, registerUser, loginWithGoogle } from '@/lib/auth';
+import { GoogleLogin } from '@react-oauth/google';
+import { loginUser, registerUser, loginWithGoogleToken } from '@/lib/auth';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -35,11 +36,23 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
     };
   }, [isOpen]);
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSuccess = async (credential: string) => {
     setLoading(true);
     setError('');
     try {
-      await loginWithGoogle();
+      const sessionUser = await loginWithGoogleToken(credential);
+      
+      // Automatically unlock beta access for logged in / registered users
+      document.cookie = "afus_beta_unlocked=true; path=/; max-age=31536000";
+      localStorage.setItem("afus_beta_unlocked", "true");
+
+      onClose();
+      
+      if (sessionUser?.shop || sessionUser?.role === 'seller') {
+        window.location.href = `/${lang}/dashboard`;
+      } else {
+        window.location.href = `/${lang}`;
+      }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google.');
       setLoading(false);
@@ -210,7 +223,34 @@ export default function LoginModal({ isOpen, onClose, lang }: LoginModalProps) {
           )}
         </form>
 
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-neutral-200"></div>
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-white px-4 text-neutral-500 font-semibold uppercase tracking-wider">
+              {t.or}
+            </span>
+          </div>
+        </div>
 
+        <div className="flex justify-center w-full">
+          <GoogleLogin
+            onSuccess={(credentialResponse) => {
+              if (credentialResponse.credential) {
+                handleGoogleSuccess(credentialResponse.credential);
+              }
+            }}
+            onError={() => {
+              setError('Google login failed');
+            }}
+            useOneTap
+            shape="pill"
+            size="large"
+            text="continue_with"
+            width="400"
+          />
+        </div>
 
         <div className="mt-8 text-xs text-neutral-500 leading-relaxed text-center px-4">
           {t.terms}

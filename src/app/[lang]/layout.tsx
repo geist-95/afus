@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
+import { GoogleAuthProvider } from "@/components/providers/GoogleAuthProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { Readex_Pro, Instrument_Sans, Noto_Sans_Tifinagh } from 'next/font/google';
@@ -144,6 +145,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html lang={lang} dir={dir} className={`h-full ${readexPro.variable} ${instrumentSans.variable} ${tifinagh.variable}`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-white text-black antialiased font-sans" suppressHydrationWarning>
+        <GoogleAuthProvider>
         <WishlistProvider>
         <CartProvider>
           {children}
@@ -152,6 +154,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <Analytics />
         </CartProvider>
         </WishlistProvider>
+        </GoogleAuthProvider>
       </body>
     </html>
   );
